@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
+import TestSearch from './Components/TestSearch'
+import TestView from './Components/TestView'
+import TestTake from './Components/TestTake';
 
 function App() {
+  const [test, setTest] = useState(JSON.parse(localStorage.getItem("current_test")))
+
+
+  useEffect(() => {
+    localStorage.setItem("current_test", JSON.stringify(test))
+  }, [test])
+
   return (
-    <div>
-        <h1>Coming soon</h1>
-    </div>
+    <>
+    <Router>
+        <Route path="/Tmsca-viewer" exact> <TestSearch setTest={setTest}/> </Route>
+        <Route path="/Tmsca-viewer/view"> <TestView test={test}/> </Route>
+        <Route path="/Tmsca-viewer/take"> <TestTake test={test}/> </Route>
+    </Router>
+   </>
   );
 }
 

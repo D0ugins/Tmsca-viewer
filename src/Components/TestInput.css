@@ -1,0 +1,16 @@
+.test-input{
+    font-weight: 900;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.correct{
+    background-color: rgba(0, 128, 0, 0.33);
+}
+
+.wrong {
+    background-color: rgba(128, 0, 0, 0.33);
+}
+
+.skipped {
+    background-color: rgba(128, 64, 0, 0.33);
+}

@@ -1,0 +1,56 @@
+
+.select-container{
+    text-align: center;
+}
+
+.test-select{
+    margin: 3% auto;
+    border: 3px solid rgb(173, 204, 177);
+    border-radius: 20px;
+    width: 40%;
+    padding: 1%;
+    text-align: left;
+}
+
+.test-select h1{
+    text-align: center;
+}
+
+.test-select .arg{
+    margin: 20px auto;
+}
+
+.test-select label{
+    font-size: 16px;
+    width: 40%;
+}
+
+.test-select input, .test-select select{
+    width: 50%;
+    float: right;
+    border: none;
+    border-bottom: 1px solid rgb(188, 202, 167);
+    padding: 5px 10px;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.test-select *:focus{
+    outline: none;
+    border-bottom: 2px solid rgb(155, 179, 124);
+}
+
+.search-button{
+    display: inline-block;
+    margin: 20px;
+    width: 15%;
+    height: 5%;
+    font-size: 18px;
+}
+
+.alert-danger{
+    width: 90%;
+    margin: auto;
+    margin-top: 5%;
+    font-size: 20px;
+    padding: 10px;
+}
