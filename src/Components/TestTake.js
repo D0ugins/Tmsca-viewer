@@ -188,7 +188,6 @@ export default function TestTake ({ test }) {
         if (type === "Number Sense") {
             var answered = Object.keys(answers);
             var last = Math.max(...answered.map(x => parseInt(x)))
-            console.log(last)
             var score = last * key.penalty * -1;
 
             for (var i = 1; i <= 80; i++) {
@@ -265,7 +264,7 @@ export default function TestTake ({ test }) {
                 pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} key={page}/>)
                 : <Page className="pdf-page" pageNumber={1} scale={window.innerWidth / 600} />}
             </Document>
-            
+
             <div id="inputs">
                 { !done ? areas.map(area => {
                     return <TestInput data={area} setAnswer={updateAnswers} key={area.id}/>

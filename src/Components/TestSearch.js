@@ -104,7 +104,7 @@ export default function TestSearch({ setTest }) {
             className="btn btn-success search-button">View test</Link>
 
             <Link to={nums.includes(num) ? "/Tmsca-viewer/take" : "#"} onClick={findTest}
-            className="btn btn-success search-button" hidden={type === "Calculator"} disabled={type !== "Number sense"}>Take test</Link>
+            className="btn btn-success search-button" hidden={type !== "Number Sense"}>Take test</Link>
             
             <div className="alert alert-danger" hidden={!message}>{message}</div>
         </div>
