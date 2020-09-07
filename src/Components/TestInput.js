@@ -46,7 +46,7 @@ export default function TestInput({ data, setAnswer, gradeState = "", correct = 
             }
 
             // Condition is for wheter or not there should be space
-            setValue(old + gradeState === "wrong" ? ` Correct: ${answer}` : `Correct: ${answer}`);
+            setValue(gradeState === "wrong" ? `${old} Correct: ${answer}` : `Correct: ${answer}`);
         }
     // eslint-disable-next-line
     }, [gradeState])
