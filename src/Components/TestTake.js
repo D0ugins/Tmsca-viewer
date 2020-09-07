@@ -257,6 +257,7 @@ export default function TestTake ({ test }) {
 
             <Document
             file={test.tpath}
+            loading=""
             onLoadSuccess={udpateReady}
             onLoadError={console.error}
             className="pdf">
