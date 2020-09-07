@@ -187,7 +187,8 @@ export default function TestTake ({ test }) {
         
         if (type === "Number Sense") {
             var answered = Object.keys(answers);
-            var last = Math.max(...answered.map(x => parseInt(x)))
+            var last = 0;
+            if (answered.length) last = Math.max(...answered.map(x => parseInt(x)))
             var score = last * key.penalty * -1;
 
             for (var i = 1; i <= 80; i++) {
