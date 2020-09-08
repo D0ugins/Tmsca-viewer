@@ -28,16 +28,21 @@ export default function TestInput({ data, setAnswer, gradeState = "", correct = 
     // Positions and sizes elements 
     var styles = {
             "position": "absolute", 
-            "left": data.left - percent(1.5, "w") - 5, 
+            "left": data.left - percent(1.5, "w"), 
             "top": data.top + percent(0.25, "h"),
             "width": data.width - percent(1.5, "w"),
             "height": percent(1.8, "w") + "px",
             "fontSize": ((window.innerWidth / 54.34).toFixed(1) - 2) + "px"
     }
 
+    // Fixes missalignments on mobile
     if (/Mobi|Android/i.test(navigator.userAgent)) {
         styles["top"] *= 1.0035
         styles["left"] += 10
+    }
+
+    if (styles["width"] <= percent(1, "w")) {
+        styles["width"] += percent(1, "w")
     }
 
     useEffect(() => {
