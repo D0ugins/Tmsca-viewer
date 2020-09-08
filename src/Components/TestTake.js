@@ -58,8 +58,8 @@ export default function TestTake ({ test }) {
     const getWidth = (string) => {
         var canvas = document.createElement("canvas");
         var context = canvas.getContext("2d");
-        var fontsize = document.querySelector(".pdf-page span").style.fontSize
-        context.font = `normal normal 900 ${fontsize} times new roman`
+        var fontsize = (window.innerWidth / 54.34).toFixed(1)
+        context.font = `normal normal 900 ${fontsize}px times new roman`
         return context.measureText(string).width;
     }
 
