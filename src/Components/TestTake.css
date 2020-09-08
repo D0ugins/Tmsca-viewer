@@ -16,15 +16,6 @@
     user-select: none;
 }
 
-#timer {
-    position: fixed;
-    top:1%;
-    left: 2.5%;
-    width: 95%;
-    z-index: 100;
-    font-size: 20px;
-}
-
 #grade-button {
     position: fixed;
     z-index: 100;

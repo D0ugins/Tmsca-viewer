@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import './TestInput.css'
+import './NsInput.css'
 
-export default function TestInput({ data, setAnswer, gradeState = "", correct = "", old = ""}) {
+export default function NsInput({ data, setAnswer, gradeState = "", correct = "", old = ""}) {
 
     const [value, setValue] = useState("")
     
@@ -20,18 +20,17 @@ export default function TestInput({ data, setAnswer, gradeState = "", correct = 
     }
 
     // Gets width of screen (d is direction width/height)
-    const percent = (p, d) => {
-        if (d === "w") return window.innerWidth * (p/100);
-        else return window.innerHeight * (p/100);
+    const percent = (p) => {
+        return window.innerWidth * (p/100);
     }
 
     // Positions and sizes elements 
     var styles = {
             "position": "absolute", 
-            "left": data.left - percent(1.5, "w"), 
-            "top": data.top + percent(0.25, "h"),
-            "width": data.width - percent(1.5, "w"),
-            "height": percent(1.8, "w") + "px",
+            "left": data.left - percent(1.5), 
+            "top": data.top + percent(0.2),
+            "width": data.width - percent(1.5),
+            "height": percent(1.8) + "px",
             "fontSize": ((window.innerWidth / 54.34).toFixed(1) - 2) + "px"
     }
 
@@ -60,7 +59,9 @@ export default function TestInput({ data, setAnswer, gradeState = "", correct = 
         }
     // eslint-disable-next-line
     }, [gradeState])
+
+    var gradeClass = ` ns-${gradeState}`
     return (
-        <input type="text" id={`input${data.id}`} className={"test-input " + gradeState} style={styles} value={value} onChange={e => update(e)} autoComplete="off"/>
+        <input type="text" id={`input${data.id}`} className={"test-input" + gradeClass} style={styles} value={value} onChange={e => update(e)} autoComplete="off"/>
     )
 }

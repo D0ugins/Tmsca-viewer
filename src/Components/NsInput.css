@@ -3,14 +3,14 @@
     font-family: 'Times New Roman', Times, serif;
 }
 
-.correct{
+.ns-correct{
     background-color: rgba(0, 128, 0, 0.33);
 }
 
-.wrong {
+.ns-wrong {
     background-color: rgba(128, 0, 0, 0.33);
 }
 
-.skipped {
+.ns-skipped {
     background-color: rgba(128, 64, 0, 0.33);
 }
