@@ -113,7 +113,7 @@ export default function TestTake({ test }) {
                 if (mode === "new") {
                     if (text.str.includes("=")) {
                         areas[question] = {
-                            "id": question,
+                            "id": question + 1,
                             "top": text.top + offset,
                             // Takes into account text before and after the actual _'s)
                             "left": text.left + getWidth("  "),
@@ -148,7 +148,7 @@ export default function TestTake({ test }) {
                 // If there was an _
                 if (index > -1) {
                     areas[question] = {
-                        "id": question,
+                        "id": question + 1,
                         "top": text.top + offset,
                         // Takes into account text before and after the actual _'s)
                         "left": text.left + getWidth(text.str.slice(0, index)),
@@ -388,6 +388,7 @@ export default function TestTake({ test }) {
     const gradeTest = () => {
         var states = {};
         var is_ns = type === "Number Sense";
+        console.log(answers)
 
         var score = 0;
         var answered = Object.keys(answers);
