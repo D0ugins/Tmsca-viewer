@@ -9,18 +9,33 @@ import './TestTake.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export default function TestTake ({ test }) {
+export default function TestTake({ test }) {
     const [type] = useState(test.type)
     const [pages, setPages] = useState([]);
     const [data, setData] = useState();
 
     const [ready, setReady] = useState(false);
-    const udpateReady = (pdf) => {setReady(true); setData(pdf)}
+    const onLoad = (pdf) => {
+        // Set what pages to load once test is started
+        if (test.type === "Number Sense") setPages([3, 4])
+        else if (test.type === "Math") setPages([3, 4, 5, 6])
+        else {
+            let scpages = []
+            let total = pdf.numPages
+            for (let i = 3; i <= total - 1; i++) {scpages.push(i)}
+            setPages(scpages)
+        }
+
+        // That one test dosent have title pages for some reason
+        if (test.name === 'MSNS STATE 18-19') setPages([1, 2])
+        setReady(true); 
+        setData(pdf);
+    }
     const [started, setStarted] = useState(false);
     const [done, setDone] = useState(false)
-    
+
     const [areas, setAreas] = useState([]);
-    
+
     const [key, setKey] = useState({});
     const [answers, setAnswers] = useState({})
     const updateAnswers = (id, value) => {
@@ -30,43 +45,74 @@ export default function TestTake ({ test }) {
     };
     const [gradeStates, setGradeStates] = useState({})
     const [score, setScore] = useState(null);
-    
-    const getWidth = (string) => {
-        var canvas = document.createElement("canvas");
-        var context = canvas.getContext("2d");
-        var fontsize = (window.innerWidth / 54.34).toFixed(1)
-        context.font = `normal normal 900 ${fontsize}px times new roman`
-        return context.measureText(string).width;
+
+    const getWidth = (string, el = "") => {
+        
+        const fontsize = (window.innerWidth / 54.34).toFixed(1);
+        const fontweight = type === "Science" ? 500 : 900
+        var width = 0;
+        if (string.length === 0) return 0;
+
+        else if (el === "") {
+            // For getting width of string not in text
+            var canvas = document.createElement("canvas");
+            var context = canvas.getContext("2d");
+            context.font = `normal normal ${fontweight} ${fontsize}px times new roman`
+            width = context.measureText(string).width;
+        }
+        else {
+            // Spaces are calculated as the wrong size in the other method so for science you need this
+            var index = string.length
+            let range = new Range()
+            range.setStart(el.firstChild, 0)
+            range.setEnd(el.firstChild, index)
+
+            let selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            var sel = window.getSelection();
+            range = sel.getRangeAt(0).cloneRange();
+            selection.removeAllRanges();
+
+            var rect = range.getBoundingClientRect();
+            width = rect.right - rect.left;
+            // Deals with that font being slightly to small for some reason
+            if (el.style.fontFamily.includes("g_d0_f8")) width *= 1.01
+
+        }
+
+        return width;
     }
 
     const findNs = (texts) => {
-        var question = 1;
+        var question = 0;
         var areas = [];
-        
-        const pageheight = (window.innerWidth / 600.6) * 792
-        var page = 0;    
+
+        const pageheight = (window.innerWidth / 600.575) * 792;
+        var page = 0;
         var offset = pageheight * page;
-        
+
         var mode = "new"
-        for (var i = 0; i < texts.length ; i++) {
+        for (var i = 0; i < texts.length; i++) {
             const text = texts[i];
             var index = text.str.indexOf("_");
             var lastindex = text.str.lastIndexOf("_");
 
             // List of weidly formated questions (num, test)
-            var exeptions = [
+            var exceptions = [
                 "68, MSNS1 19-20",
                 "67, MSNS6 18-19",
                 "63, MSNS7 18-19",
                 "59, MSNS8 18-19",
                 "67, MSNS8 18-19"
-            ]
-            
+            ];
+
             // Deals with wierdly formatted questions
-            if (exeptions.includes(`${question}, ${test.name}`)) {
+            if (exceptions.includes(`${question + 1}, ${test.name}`)) {
                 if (mode === "new") {
                     if (text.str.includes("=")) {
-                        areas[question - 1] = {
+                        areas[question] = {
                             "id": question,
                             "top": text.top + offset,
                             // Takes into account text before and after the actual _'s)
@@ -79,7 +125,7 @@ export default function TestTake ({ test }) {
                 else {
                     let reg = new RegExp('^[ ]$')
                     if (reg.test(text.str)) {
-                        areas[question - 1].width += (getWidth("_") * .65);
+                        areas[question].width += (getWidth("_") * .65);
                     }
                     else {
                         mode = "new";
@@ -91,17 +137,17 @@ export default function TestTake ({ test }) {
 
             // If looking for start of new question or looking for rest of current
             if (mode === "new") {
-                
+
                 // Checks if new page
-                if (question !== 1 && index > -1){
-                    let last = areas[question - 2]
-                    if (last.top > (text.top + offset) && last.left > text.left) {page++}
-                    offset = page * pageheight
+                if (question !== 0 && index > -1) {
+                    let last = areas[question - 1];
+                    if (last.top > (text.top + offset) && last.left > text.left) { page++ }
+                    offset = page * pageheight;
                 }
 
                 // If there was an _
-                if (index > -1){
-                    areas[question - 1] = {
+                if (index > -1) {
+                    areas[question] = {
                         "id": question,
                         "top": text.top + offset,
                         // Takes into account text before and after the actual _'s)
@@ -116,12 +162,12 @@ export default function TestTake ({ test }) {
                 // Checks if there was an _
                 if (lastindex > -1) {
                     // Checks if the blank was only one span 
-                    if (text.str.includes(`(${question + 1})`)) {
+                    if (text.str.includes(`(${question + 2})`)) {
                         mode = "new";
                         i--
                         question++;
                     }
-                    else areas[question - 1].width += getWidth(text.str.slice(index, lastindex + 1))
+                    else areas[question].width += getWidth(text.str.slice(index, lastindex + 1))
                 }
                 // If no _ move to next question
                 else {
@@ -133,20 +179,13 @@ export default function TestTake ({ test }) {
         return areas
     }
 
-    const findMthSci = (texts) => {
-        
-        const pageheight = (window.innerWidth / 600.6) * 792
+    const findMth = (texts) => {
 
-        const choices = ["A", "B", "C", "D", "E"]
-            
-        const widths = {
-            "A": getWidth("A."),
-            "B": getWidth("B."),
-            "C": getWidth("C."),
-            "D": getWidth("D."),
-            "E": getWidth("E.")
-        }
+        const pageheight = (window.innerWidth / 600.7) * 792;
 
+        const choices = ["A", "B", "C", "D", "E"];
+
+        // Horizontal location is the same for every question 
         let windowW = window.innerWidth
         const lefts = {
             "A": windowW * .06,
@@ -154,33 +193,156 @@ export default function TestTake ({ test }) {
             "C": windowW * .42,
             "D": windowW * .60,
             "E": windowW * .78,
-        }
+        };
 
         var areas = [];
-        for (let i = 0, question = 1, offset = 0, page=0; i < texts.length ; i++) {
-            const text = texts[i]
+        for (let i = 0, question = 0, offset = 0, page = 0; i < texts.length; i++) {
+            const text = texts[i];
 
+            // Looks for New answer choices
             if (text.str.includes('A.')) {
                 // Checks if new page
-                if (question !== 1){
-                    let last = areas[question - 2]
-                    if (last.choices[0].top > (text.top + offset)) {page++}
-                    offset = page * pageheight
+                if (question !== 0) {
+                    let last = areas[question - 1];
+                    if (last.choices[0].top > (text.top + offset)) { page++ }
+                    offset = page * pageheight;
                 }
 
-                areas[question - 1] = {
-                    "id": question,
+                areas[question] = {
+                    "id": question + 1,
                 }
 
-                areas[question - 1].choices = choices.map(choice => {
+                areas[question].choices = choices.map(choice => {
                     return {
                         "top": text.top + offset,
                         "left": lefts[choice],
-                        "width": widths[choice]
-                    }
+                    };
                 })
                 question++;
             }
+        }
+        return areas
+    }
+
+    const findSci = (texts) => {
+        const pageheight = (window.innerWidth / 600.575) * 792;
+
+        var areas = [];
+        var choice = 0;
+        var choices = ["A", "B", "C", "D"]
+
+        // List of questions with exceptions that have to be dealt with (choice, num, test : type)
+        const exceptions = {
+            "0, 4, MSSC1 19-20": "intext",
+            "0, 27, MSSC1 19-20": "missing",
+            "1, 48, MSSC2 19-20": "order",
+            "2, 48, MSSC2 19-20": "order",
+            "2, 48, MSSC3 19-20": "intext",
+            "1, 37, MSSC5 19-20": "order",
+            "2, 37, MSSC5 19-20": "order",
+            "3, 32, MSSC13 19-20": "intext",
+            "2, 1, MSSC10 18-19": "repeat",
+            "3, 1, MSSC10 18-19": "repeat",
+            "1, 6, MSSC12 18-19": "missing",
+            "3, 37, MSSC13 18-19": "repeat",
+        }
+
+        // Tracks if current exception has been handled
+        var exception_state = 0
+        for (let i = 0, question = 0, offset = 0, page = 0; i < texts.length - 1; i++) {
+            let text = texts[i]
+            var str = text.str
+            
+            // In the 17-18 tests it uses the form A) instead of A.
+            let endchar = test.name.includes("17-18") ? ')' : "."
+
+
+            // Checks If Choice got split over mutiple texts
+            var split = text.str.charAt(str.length - 1) === choices[choice] && texts[i+1].str.charAt(0) === endchar
+
+            // Check if question is exception
+            if (Object.keys(exceptions).includes(`${choice}, ${question + 1}, ${test.name}`)) {
+                const fixed_strs = {
+                    "A   cup marked in ounces":  "A.   cup marked in ounces",
+                    "B    ": "B.    "
+                }
+                var exception = exceptions[`${choice}, ${question + 1}, ${test.name}`]
+
+                if (exception === "intext") {
+                    // Skips over falsley detected text
+                    if (exception_state === 0 && (str.includes(choices[choice] + '.') || split)) {
+                        exception_state++;
+                        continue;
+                    }
+                }
+                
+                else if (exception === "order" && str.includes(choices[choice + 1] + endchar) && exception_state === 0) {
+                    let index = str.indexOf(choices[choice + 1] + endchar)
+                    areas[question].choices[choice + 1] = {
+                        "top": text.top + offset,
+                        // Takes into accout any text before the choice if there was any
+                        "left": text.left + (getWidth(str.slice(0, index), text.span)),
+                    };
+                    exception_state++
+                    if (choice === 2) {choice = 0; question++;}
+                    continue;
+                }
+                // Adds .'s to strings missing them
+                else if (exception === "missing" && Object.keys(fixed_strs).includes(str)) {
+                    str = fixed_strs[str]
+                }
+
+                else if (exception === "repeat" && str.includes(choices[choice - 1] + endchar)){
+                    let index = str.lastIndexOf(choices[choice - 1] + endchar)
+                    areas[question].choices[choice] = {
+                        "top": text.top + offset,
+                        // Takes into accout any text before the choice if there was any
+                        "left": text.left + (getWidth(str.slice(0, index), text.span)),
+                    };
+
+                    if (choice === 3) {choice = 0; question++; exception_state = 0; continue;}
+                    choice++;
+                    // Deals with multiple choices in same string
+                    if (str.includes(choices[choice - 1] + '.') || split) i--
+                    
+                    exception_state++;
+                    continue;
+                }
+
+            }
+
+            if (str.includes(choices[choice] + endchar) || split) {
+                
+                var index = str.indexOf(choices[choice] + endchar)
+                if (choice === 0) {
+                    // Checks for new page
+                    if (question !== 0) {
+                        let last = areas[question - 1];
+                        if (last.choices[0].top > (text.top + offset)) { page++ }
+                        offset = page * pageheight;
+                    }
+
+                    areas[question] = {
+                        "id": question + 1,
+                        "choices": []
+                    }
+                };
+                areas[question].choices[choice] = {
+                    "top": text.top + offset,
+                    // Takes into accout any text before the choice if there was any
+                    "left": text.left + (getWidth(str.slice(0, index), text.span)),
+                };
+                choice++;
+                exception_state=0;
+                
+                // Checks if 2 choices were in the same text
+                split = text.str.charAt(str.length - 1) === choices[choice] && texts[i+1].str.charAt(0) === endchar
+                if (str.includes(choices[choice] + endchar) || split) i--
+
+                if (choice === 4) {choice = 0; question++;}
+
+            }
+            
         }
         return areas
     }
@@ -189,42 +351,50 @@ export default function TestTake ({ test }) {
         // Loads text content from pdf to wait for page to do the same so it can load spans
         var texts = []
         for (const page in pages) {
-            texts[page] = data.getPage(pages[page])
+            texts[page] = data.getPage(pages[page]);
         }
 
         texts = await Promise.all(texts)
         for (const page in texts) {
-            texts[page] = await texts[page].getTextContent()
+            texts[page] = await texts[page].getTextContent();
         }
 
         texts = [];
         // Returns all spans in document
         var spans = document.querySelectorAll("span")
         for (var i = 0; i < spans.length; i++) {
-            let span = spans[i]
+            let span = spans[i];
             texts[i] = {
                 "str": span.innerText,
                 "top": parseFloat(span.style.top.slice(0, -2)),
-                "left": parseFloat(span.style.left.slice(0, -2))
-            }
+                "left": parseFloat(span.style.left.slice(0, -2)),
+                "span": span
+            };
         }
 
-        if (type === "Number Sense") {
-            setAreas(findNs(texts))
-        }
-
-        else {
-            setAreas(findMthSci(texts))
+        switch (type) {
+            case 'Number Sense':
+                setAreas(findNs(texts));
+                break;
+            case 'Math':
+                setAreas(findMth(texts));
+                break;
+            case "Science":
+                setAreas(findSci(texts));
+                break;
+            default:
+                console.error("Unsupported test type");
+                break;
         }
         setReady(true)
     }
 
     const startTest = async () => {
         if (!started) {
-            setReady(false)
+            setReady(false);
             setStarted(true);
-            await findInputs()
-            setReady(true)
+            await findInputs();
+            setReady(true);
         }
     }
 
@@ -236,56 +406,56 @@ export default function TestTake ({ test }) {
         }
 
         else return ans === correct
-    } 
+    }
 
     const gradeTest = () => {
-        var states = {}
-        var is_ns = type === "Number Sense"
-        
-        var score = 0
+        var states = {};
+        var is_ns = type === "Number Sense";
+
+        var score = 0;
         var answered = Object.keys(answers);
         if (is_ns) {
             var last = 0;
-            if (answered.length) last = Math.max(...answered.map(x => parseInt(x)))
-            score = last * key.penalty * -1
+            if (answered.length) last = Math.max(...answered.map(x => parseInt(x)));
+            score = last * key.penalty * -1;
         }
         else {
-            score = answered.length * key.penalty * -1
+            score = answered.length * key.penalty * -1;
         }
 
         for (var i = 1; i <= 80; i++) {
 
             if (i <= last || !is_ns) {
                 if (answered.includes(i.toString())) {
-                    var correct = key.answers[i]
+                    var correct = key.answers[i];
 
                     var is_correct = is_ns ? checkNs(answers[i], correct, i) : answers[i] === correct
 
                     if (is_correct) {
                         score += key.prize + key.penalty;
-                        states[i] = "correct"
+                        states[i] = "correct";
                     }
                     else {
-                        states[i] = "wrong"
+                        states[i] = "wrong";
                     }
                 }
                 else {
-                    if (is_ns) states[i] = "skipped"
-                    else states[i] = "na"
+                    if (is_ns) states[i] = "skipped";
+                    else states[i] = "na";
                 }
             }
             else {
-                states[i] = "na"
+                states[i] = "na";
             }
-                
+
         }
-        
-        setGradeStates(states)
-        setScore(score)
+
+        setGradeStates(states);
+        setScore(score);
     }
 
     const endTest = (manual) => {
-        if (!manual) {alert("Time is up!")}
+        if (!manual) { alert("Time is up!") }
         gradeTest();
     }
 
@@ -298,70 +468,60 @@ export default function TestTake ({ test }) {
             setKey(key);
         }
         loadJson();
-
-        // Set what pages to load once test is started
-        if (test.type === "Number Sense") setPages([3,4])
-        else if (test.type === "Math") setPages([3,4,5,6])
-        else (setPages([3,4,5,6,7,8,9]))
-        
-        // That one test dosent have title pages for some reason
-        if (test.tpath.includes('MSNS STATE 18-19')) setPages([1,2])
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [test])
- 
+
     useEffect(() => {
         if (score !== null) {
-            console.log(1)
             setDone(true)
         }
     }, [score])
 
-    
+
     return (
         <>
             {(!started || done || !ready) ? <button id="timer" className="btn btn-primary" onClick={startTest} disabled={!(ready || started || done)}>
                 {done ? `Score: ${score}` : (!ready ? "Loading..." : "Start test")}
-            </button> 
-            : <Timer type={type} endTest={endTest}></Timer>}
+            </button>
+                : <Timer type={type} endTest={endTest}></Timer>}
 
             <Document
-            file={test.tpath}
-            loading=""
-            onLoadSuccess={udpateReady}
-            onLoadError={console.error}
-            className="pdf">
-                {started ? 
-                pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} key={page}/>)
-                : <Page className="pdf-page" pageNumber={1} scale={window.innerWidth / 600} />}
+                file={test.tpath}
+                loading=""
+                onLoadSuccess={onLoad}
+                onLoadError={console.error}
+                className="pdf">
+                {started ?
+                    pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} key={page} />)
+                    : <Page className="pdf-page" pageNumber={1} scale={window.innerWidth / 600} />}
             </Document>
 
             <div id="inputs">
-                { type === "Number Sense" 
-                    ? 
-                    (!done ? 
-                        areas.map(area => {
-                            return <NsInput data={area} setAnswer={updateAnswers} key={area.id}/>
-                        }) 
-                        
-                        : areas.map(area => {
-                            return <NsInput data={area} key={area.id} 
-                            gradeState={gradeStates[area.id]} correct={key.answers[area.id]} disabled="true" old={answers[area.id]}/>
-                        })
-                    ) 
-                    : 
+                {type === "Number Sense"
+                    ?
                     (!done ?
                         areas.map(area => {
-                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers}/>
+                            return <NsInput data={area} setAnswer={updateAnswers} key={area.id} />
                         })
 
                         : areas.map(area => {
-                            return <MthSciInput data={area} key={area.id} 
-                            gradeState={gradeStates[area.id]} correct={key.answers[area.id]} old={answers[area.id]}/>
+                            return <NsInput data={area} key={area.id}
+                                gradeState={gradeStates[area.id]} correct={key.answers[area.id]} disabled="true" old={answers[area.id]} />
+                        })
+                    )
+                    :
+                    (!done ?
+                        areas.map(area => {
+                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} />
+                        })
+
+                        : areas.map(area => {
+                            return <MthSciInput data={area} key={area.id}
+                                gradeState={gradeStates[area.id]} correct={key.answers[area.id]} old={answers[area.id]} />
                         })
                     )
                 }
             </div>
-
             <button onClick={endTest} id="grade-button" className="btn btn-success" hidden={(!started) || done}><p>Grade Test</p></button>
         </>
     )

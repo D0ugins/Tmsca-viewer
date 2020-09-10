@@ -12,9 +12,13 @@
     margin-top: -.1%;
 } 
 .pdf-page span{
-    font-weight: 900;
-    user-select: none;
+    font-weight: 500;
 }
+
+/* .pdf-page span ::selection {
+    background: white;
+    color: black;
+} */
 
 #grade-button {
     position: fixed;

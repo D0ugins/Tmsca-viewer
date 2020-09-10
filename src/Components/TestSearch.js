@@ -2,29 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import './TestSearch.css'
 
+const getNums = (year) => {
+    // Creates array for test numbers 1-13
+    var base = []
+    for (let i = 1; i <= 13; i++) {base.push(i.toString())}
+
+    // List of all the non standard 1-13 tests for each year
+    const extras = {
+        "19-20": ['Kickoff', 'Regional'],
+        "18-19": ['Kickoff', 'Gear up', 'Tune up', 'Regional', 'State'],
+        "17-18": ['Regional', 'State']
+    };
+
+    return base.concat(extras[year]);
+}
+
 export default function TestSearch({ setTest }) {
 
-    const [type, setType] = useState("Number Sense")
-    const [year, setYear] = useState("19-20");
-    const [nums, setNums] = useState([''])
-    const [num, setNum] = useState(nums[0])
+    const [type, setType] = useState(localStorage.getItem('type') || "Number Sense")
+    const [year, setYear] = useState(localStorage.getItem('year') ||"19-20");
+    const [nums, setNums] = useState(getNums("19-20"))
+    const [num, setNum] = useState('')
     const [message, setMessage] = useState("")
 
     useEffect(() => {
-        
-        // Creates array for test numbers 1-13
-        var base = []
-        for (let i = 1; i <= 13; i++) {base.push(i.toString())}
-
-        // List of all the non standard 1-13 tests for each year
-        const extras = {
-            "19-20": ['Kickoff', 'Regional'],
-            "18-19": ['Kickoff', 'Gear up', 'Tune up', 'Regional', 'State'],
-            "17-18": ['Regional', 'State']
-        };
-
-        setNums(base.concat(extras[year]));
-
+        setNums(getNums(year))
     }, [year])
 
     const findTest = () => {
@@ -62,6 +64,17 @@ export default function TestSearch({ setTest }) {
             "type": type,
         })
     }
+    
+    const brokentest = () => {
+        // Certain tests formatting are just broken beyond repair you cant take those tests
+        return num === "Kickoff" && year === "18-19" && (type === "Science" || type === "Math")
+    }
+
+    useEffect(() => {
+        localStorage.setItem('type', type);
+        localStorage.setItem('year', year);
+        localStorage.setItem('num', num);
+    }, [type, year, num])
 
     return (
         <div className="select-container">
@@ -104,7 +117,9 @@ export default function TestSearch({ setTest }) {
             className="btn btn-success search-button">View test</Link>
 
             <Link to={nums.includes(num) ? "/Tmsca-viewer/take" : "#"} onClick={findTest}
-            className="btn btn-success search-button" hidden={type !== "Number Sense" && type !== "Math"}>Take test</Link>
+            /* brokentest is a function that returns 
+            whether or not a test is one of the ones thats formatting is completley broken*/
+            className="btn btn-success search-button" hidden={type === "Calculator" || brokentest()}>Take test</Link>
             
             <div className="alert alert-danger" hidden={!message}>{message}</div>
         </div>

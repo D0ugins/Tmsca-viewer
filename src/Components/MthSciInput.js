@@ -17,10 +17,22 @@ export default function MthSciInput ({data, setAnswer , correct="", gradeState="
         3: "D",
         4: "E"
     }
+    
+    // Each letter has a slightly different alignment that works best
+    const heightmap = {
+        "A": 25,
+        "B": 23,
+        "C": 25,
+        "D": 22,
+        "E": 22
+    }
 
     const update = (val) => {
-        setSelected(val);
-        setAnswer(data.id, val);
+        if (gradeState === ""){
+            if (val === selected) val = ""
+            setSelected(val);
+            setAnswer(data.id, val);
+        }
     }
 
     var states = {
@@ -44,31 +56,25 @@ export default function MthSciInput ({data, setAnswer , correct="", gradeState="
             states[correct] = "mthsci-missed-correct"
         }
     }
+    
     else {
+        for (var i in states) states[i] = "unselected"
         states[selected] = "selected"
     }
 
+    // Uses divs insread of radios because of easier styling and unselecting
     return (
         <div id={"container"+data.id}>
             {data.choices.map((input, i) => {
+                let choice = map[i]
                 return (
-                <div id={`box${data.id}${map[i]}`} key={`${data.id}${i}`} className={states[map[i]]} style={{
+                <div id={`box${data.id}${choice}`} key={`${data.id}${choice}`} className={states[choice]} data-value={choice} style={{
                     "position": "absolute",
-                    "top": input.top + percent(.1),
-                    "left": input.left - percent(2.25),
-                    "width": percent(2.5),
-                    "height": input.width + percent(.5)
-                }}>
-                    <input type="radio" id={`input${data.id}${map[i]}`} className="mthsci-input" style={{
-                        "opacity": "0",
-                        "position": "absolute",
-                        "top": "0",
-                        "left": "0",
-                        "width": percent(4),
-                        "height": percent(4),
-                        "transform": "translate(-10%,-25%)"
-                    }}
-                    name={data.id} value={map[i]} key={`${data.id}${map[i]}`} onClick={e => update(e.target.value)}/>
+                    "top": input.top + percent(heightmap[choice] / 100),
+                    "left": input.left - percent(2.33),
+                    "width": percent(2.75),
+                    "height": percent(2.25)
+                }} onClick={e => update(e.target.dataset.value)}>
                 </div>
                 )
             })}
