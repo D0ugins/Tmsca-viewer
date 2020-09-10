@@ -179,72 +179,46 @@ export default function TestTake({ test }) {
         return areas
     }
 
-    const findMth = (texts) => {
-
+    const findMthSci = (texts) => {
         const pageheight = (window.innerWidth / 600.7) * 792;
-
-        const choices = ["A", "B", "C", "D", "E"];
-
-        // Horizontal location is the same for every question 
-        let windowW = window.innerWidth
-        const lefts = {
-            "A": windowW * .06,
-            "B": windowW * .24,
-            "C": windowW * .42,
-            "D": windowW * .60,
-            "E": windowW * .78,
-        };
-
-        var areas = [];
-        for (let i = 0, question = 0, offset = 0, page = 0; i < texts.length; i++) {
-            const text = texts[i];
-
-            // Looks for New answer choices
-            if (text.str.includes('A.')) {
-                // Checks if new page
-                if (question !== 0) {
-                    let last = areas[question - 1];
-                    if (last.choices[0].top > (text.top + offset)) { page++ }
-                    offset = page * pageheight;
-                }
-
-                areas[question] = {
-                    "id": question + 1,
-                }
-
-                areas[question].choices = choices.map(choice => {
-                    return {
-                        "top": text.top + offset,
-                        "left": lefts[choice],
-                    };
-                })
-                question++;
-            }
-        }
-        return areas
-    }
-
-    const findSci = (texts) => {
-        const pageheight = (window.innerWidth / 600.575) * 792;
-
+        
+        var last = type === "Science" ? 4 : 5
         var areas = [];
         var choice = 0;
-        var choices = ["A", "B", "C", "D"]
+        var choices = ["A", "B", "C", "D", "E"]
 
-        // List of questions with exceptions that have to be dealt with (choice, num, test : type)
+        // List of questions with exceptions/typos that have to be dealt with (choice, num, test : [type, flags])
+        // The fact that this list is so long makes me sad
         const exceptions = {
-            "0, 4, MSSC1 19-20": "intext",
-            "0, 27, MSSC1 19-20": "missing",
-            "1, 48, MSSC2 19-20": "order",
-            "2, 48, MSSC2 19-20": "order",
-            "2, 48, MSSC3 19-20": "intext",
-            "1, 37, MSSC5 19-20": "order",
-            "2, 37, MSSC5 19-20": "order",
-            "3, 32, MSSC13 19-20": "intext",
-            "2, 1, MSSC10 18-19": "repeat",
-            "3, 1, MSSC10 18-19": "repeat",
-            "1, 6, MSSC12 18-19": "missing",
-            "3, 37, MSSC13 18-19": "repeat",
+            "0, 4, MSSC1 19-20": ["intext"],
+            "0, 27, MSSC1 19-20": ["missing"],
+            "1, 48, MSSC2 19-20": ["order"],
+            "2, 48, MSSC2 19-20": ["order"],
+            "2, 48, MSSC3 19-20": ["intext"],
+            "1, 37, MSSC5 19-20": ["order"],
+            "2, 37, MSSC5 19-20": ["order"],
+            "3, 32, MSSC13 19-20": ["intext"],
+            "2, 1, MSSC10 18-19": ["repeat", -1],
+            "3, 1, MSSC10 18-19": ["repeat", -1],
+            "1, 6, MSSC12 18-19": ["missing"],
+            "3, 37, MSSC13 18-19": ["repeat", -1],
+
+            "2, 6, MSMA2 19-20": ["repeat", 1],
+            "2, 32, MSMA2 19-20": ["repeat", -1],
+            "3, 23, MSMA4 19-20": ["repeat", -1],
+            "1, 4, MSMA KO 19-20": ["missing"],
+            "2, 15, MSMA5 18-19": ["missing"],
+            "1, 8, MSMA11 18-19": ["missing"],
+            "4, 13, MSMA2 17-18": ["missing"],
+            "4, 47, MSMA2 17-18": ["missing"],
+            "4, 40, MSMA6 17-18": ["repeat", -1],
+            "0, 31, MSMA7 17-18": ["missing"],
+            "1, 48, MSMA7 17-18": ["repeat", 1],
+            "1, 49, MSMA7 17-18": ["repeat", 1],
+            "1, 50, MSMA7 17-18": ["repeat", 1],
+            "3, 5, MSMA11 17-18": ["missing"],
+            "3, 25, MSMA11 17-18": ["missing"]
+            
         }
 
         // Tracks if current exception has been handled
@@ -253,22 +227,20 @@ export default function TestTake({ test }) {
             let text = texts[i]
             var str = text.str
             
-            // In the 17-18 tests it uses the form A) instead of A.
-            let endchar = test.name.includes("17-18") ? ')' : "."
-
+            // In the 17-18 Science tests it uses the form A) instead of A.
+            let endchar = test.name.includes("17-18") && type === "Science" ? ')' : "."
 
             // Checks If Choice got split over mutiple texts
             var split = text.str.charAt(str.length - 1) === choices[choice] && texts[i+1].str.charAt(0) === endchar
 
             // Check if question is exception
             if (Object.keys(exceptions).includes(`${choice}, ${question + 1}, ${test.name}`)) {
-                const fixed_strs = {
-                    "A   cup marked in ounces":  "A.   cup marked in ounces",
-                    "B    ": "B.    "
+                const manual_fixed_strs = {
                 }
+
                 var exception = exceptions[`${choice}, ${question + 1}, ${test.name}`]
 
-                if (exception === "intext") {
+                if (exception[0] === "intext") {
                     // Skips over falsley detected text
                     if (exception_state === 0 && (str.includes(choices[choice] + '.') || split)) {
                         exception_state++;
@@ -276,7 +248,8 @@ export default function TestTake({ test }) {
                     }
                 }
                 
-                else if (exception === "order" && str.includes(choices[choice + 1] + endchar) && exception_state === 0) {
+                // Deals with if answer Choices are detected out of order (ie. A, C, B, D)
+                else if (exception[0] === "order" && str.includes(choices[choice + 1] + endchar) && exception_state === 0) {
                     let index = str.indexOf(choices[choice + 1] + endchar)
                     areas[question].choices[choice + 1] = {
                         "top": text.top + offset,
@@ -284,26 +257,29 @@ export default function TestTake({ test }) {
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
                     exception_state++
-                    if (choice === 2) {choice = 0; question++;}
+                    if (choice === last - 2) {choice = 0; question++;}
                     continue;
                 }
                 // Adds .'s to strings missing them
-                else if (exception === "missing" && Object.keys(fixed_strs).includes(str)) {
-                    str = fixed_strs[str]
+                else if (exception[0] === "missing" && (str.indexOf(choices[choice] + " ") === 0 || Object.keys(manual_fixed_strs).includes(str))) {
+                    if (Object.keys(manual_fixed_strs).includes(str)) str = manual_fixed_strs[str]
+                    else str = str.slice(0, 1) + '.' + str.slice(1)
+                    text.left -= 3
                 }
 
-                else if (exception === "repeat" && str.includes(choices[choice - 1] + endchar)){
-                    let index = str.lastIndexOf(choices[choice - 1] + endchar)
+                // Deals with if there is a choice repeated (ie. A, B, B, C)
+                else if (exception[0] === "repeat" && str.includes(choices[choice + exception[1]] + endchar)){
+                    let index = str.lastIndexOf(choices[choice + exception[1]] + endchar)
                     areas[question].choices[choice] = {
                         "top": text.top + offset,
                         // Takes into accout any text before the choice if there was any
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
 
-                    if (choice === 3) {choice = 0; question++; exception_state = 0; continue;}
+                    if (choice === last + exception[1]) {choice = 0; question++; exception_state = 0; continue;}
                     choice++;
                     // Deals with multiple choices in same string
-                    if (str.includes(choices[choice - 1] + '.') || split) i--
+                    if (str.includes(choices[choice + exception[1]] + '.') || split) i--
                     
                     exception_state++;
                     continue;
@@ -312,8 +288,9 @@ export default function TestTake({ test }) {
             }
 
             if (str.includes(choices[choice] + endchar) || split) {
-                
+
                 var index = str.indexOf(choices[choice] + endchar)
+                // Slightly different stuff for first choice
                 if (choice === 0) {
                     // Checks for new page
                     if (question !== 0) {
@@ -339,7 +316,7 @@ export default function TestTake({ test }) {
                 split = text.str.charAt(str.length - 1) === choices[choice] && texts[i+1].str.charAt(0) === endchar
                 if (str.includes(choices[choice] + endchar) || split) i--
 
-                if (choice === 4) {choice = 0; question++;}
+                if (choice === last) {choice = 0; question++;}
 
             }
             
@@ -377,10 +354,10 @@ export default function TestTake({ test }) {
                 setAreas(findNs(texts));
                 break;
             case 'Math':
-                setAreas(findMth(texts));
+                setAreas(findMthSci(texts));
                 break;
             case "Science":
-                setAreas(findSci(texts));
+                setAreas(findMthSci(texts));
                 break;
             default:
                 console.error("Unsupported test type");
@@ -512,11 +489,11 @@ export default function TestTake({ test }) {
                     :
                     (!done ?
                         areas.map(area => {
-                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} />
+                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type}/>
                         })
 
                         : areas.map(area => {
-                            return <MthSciInput data={area} key={area.id}
+                            return <MthSciInput data={area} key={area.id} type={type}
                                 gradeState={gradeStates[area.id]} correct={key.answers[area.id]} old={answers[area.id]} />
                         })
                     )

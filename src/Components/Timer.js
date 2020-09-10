@@ -14,7 +14,7 @@ export default function Timer ({ type, endTest }) {
     useEffect(() => {
         if (time <= 0) {endTest(false); return}
 
-        var id = setTimeout(decreaseTime, 1000);
+        var id = setTimeout(decreaseTime, 10);
         return () => clearTimeout(id);
         // eslint-disable-next-line
     }, [time])

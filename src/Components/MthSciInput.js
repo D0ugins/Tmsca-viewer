@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './MthSciInput.css'
 
 
-export default function MthSciInput ({data, setAnswer , correct="", gradeState="", old=""}) {
+export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeState="", old=""}) {
     const [selected, setSelected] = useState("")
 
     // Gets width screen (d is direction width/height)
@@ -46,20 +46,20 @@ export default function MthSciInput ({data, setAnswer , correct="", gradeState="
     // Calculates what styles go on which choices
     if (gradeState !== "") {
         if (old !== "" ) {
-            if (old === correct) states[old] = "mthsci-correct"
+            if (old === correct) states[old] = "mthsci-correct";
             else {
-                states[old] = "mthsci-wrong"
-                states[correct] = "mthsci-missed-correct"
+                states[old] = "mthsci-wrong";
+                states[correct] = "mthsci-missed-correct";
             }
         }
         else {
-            states[correct] = "mthsci-missed-correct"
+            states[correct] = "mthsci-missed-correct";
         }
     }
     
     else {
-        for (var i in states) states[i] = "unselected"
-        states[selected] = "selected"
+        for (var i in states) states[i] = "unselected";
+        states[selected] = "selected";
     }
 
     // Uses divs insread of radios because of easier styling and unselecting
@@ -70,8 +70,9 @@ export default function MthSciInput ({data, setAnswer , correct="", gradeState="
                 return (
                 <div id={`box${data.id}${choice}`} key={`${data.id}${choice}`} className={states[choice]} data-value={choice} style={{
                     "position": "absolute",
-                    "top": input.top + percent(heightmap[choice] / 100),
-                    "left": input.left - percent(2.33),
+                    // Slightly different align for math and for choice e
+                    "top": input.top + percent(heightmap[choice] / 100 * (type === "Math" ? .3 : 1)),
+                    "left": input.left - percent(choice !== "E" ? (type === "Math" ? 2.6 : 2.33) : 2.75),
                     "width": percent(2.75),
                     "height": percent(2.25)
                 }} onClick={e => update(e.target.dataset.value)}>

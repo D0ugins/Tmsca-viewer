@@ -67,7 +67,7 @@ export default function TestSearch({ setTest }) {
     
     const brokentest = () => {
         // Certain tests formatting are just broken beyond repair you cant take those tests
-        return num === "Kickoff" && year === "18-19" && (type === "Science" || type === "Math")
+        return num === "Kickoff" && year === "18-19" && (type === "Science")
     }
 
     useEffect(() => {
