@@ -10,9 +10,11 @@
     margin: 0px;
     margin-left: -2%;
     margin-top: -.1%;
-} 
-.pdf-page span{
+}
+
+span{
     font-weight: 500;
+    pointer-events: none !important;
     user-select: none;
 }
 
