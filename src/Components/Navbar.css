@@ -1,0 +1,22 @@
+.navbar{
+    padding-left: 1.5rem;
+}
+
+.navbar-brand {
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    color: rgb(41, 41, 41);
+    margin-right: 2rem;
+    font-weight: 400;
+}
+
+.nav-link{
+    font-size: 1.5rem;
+    color: gray;
+    margin-right: 1rem;
+}
+
+.nav-disabled{
+    color: lightgray;
+    pointer-events: none;
+}

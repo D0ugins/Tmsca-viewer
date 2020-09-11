@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import './TestSearch.css'
+import Navbar from "./Navbar.js"
 
 const getNums = (year) => {
     // Creates array for test numbers 1-13
@@ -23,8 +24,7 @@ export default function TestSearch({ setTest }) {
     const [year, setYear] = useState(localStorage.getItem('year') ||"19-20");
     const [nums, setNums] = useState(getNums("19-20"))
     const [num, setNum] = useState('')
-    const [message, setMessage] = useState("")
-
+   
     useEffect(() => {
         setNums(getNums(year))
     }, [year])
@@ -32,9 +32,12 @@ export default function TestSearch({ setTest }) {
     const findTest = () => {
         
         // Check for invalid test name
-        if (!nums.includes(num)) { 
-            setMessage("Please enter a valid test"); 
-            return
+        if (!nums.includes(num)) {
+            // Focus num input box and give it invalid style
+            document.getElementById("num").focus();
+            // Style gets reset on change
+            document.getElementById("num").className = "invalid"
+            return;
         }
         
         // Map of human readable options to the codes used in the test names
@@ -77,6 +80,8 @@ export default function TestSearch({ setTest }) {
     }, [type, year, num])
 
     return (
+        <>
+        <Navbar/>
         <div className="select-container">
             <div className="test-select">
                 
@@ -103,7 +108,9 @@ export default function TestSearch({ setTest }) {
 
                 <div className="arg">
                     <label htmlFor="num">Choose test number: </label>
-                    <input name="num" value={num} onChange={e => setNum(e.target.value)} list="nums" />
+                    {/* Onchange update num and reset classname */}
+                    <input id="num" name="num" value={num} onChange={e => {setNum(e.target.value); e.target.className = ""}} list="nums" 
+                    className={""}/>
                     <datalist id="nums">
                         {nums.map(n =>
                             <option value={n} key={n} />
@@ -121,8 +128,8 @@ export default function TestSearch({ setTest }) {
             whether or not a test is one of the ones thats formatting is completley broken*/
             className="btn btn-success search-button" hidden={type === "Calculator" || brokentest()}>Take test</Link>
             
-            <div className="alert alert-danger" hidden={!message}>{message}</div>
         </div>
+        </>
     );
 
 }

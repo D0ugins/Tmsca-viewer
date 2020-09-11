@@ -151,8 +151,8 @@ export default function TestTake({ test }) {
                         "id": question + 1,
                         "top": text.top + offset,
                         // Takes into account text before and after the actual _'s)
-                        "left": text.left + getWidth(text.str.slice(0, index)),
-                        "width": getWidth(text.str.slice(index, lastindex + 1))
+                        "left": text.left + getWidth(text.str.slice(0, index), text.span),
+                        "width": getWidth(text.str.slice(index, lastindex + 1), text.span)
                     };
                     mode = "expand";
                 }
@@ -167,7 +167,7 @@ export default function TestTake({ test }) {
                         i--
                         question++;
                     }
-                    else areas[question].width += getWidth(text.str.slice(index, lastindex + 1))
+                    else areas[question].width += getWidth(text.str.slice(index, lastindex + 1), text.span)
                 }
                 // If no _ move to next question
                 else {
@@ -339,6 +339,7 @@ export default function TestTake({ test }) {
         texts = [];
         // Returns all spans in document
         var spans = document.querySelectorAll("span")
+        var weight = type === "Science" ? 500 : 900
         for (var i = 0; i < spans.length; i++) {
             let span = spans[i];
             texts[i] = {
@@ -347,6 +348,8 @@ export default function TestTake({ test }) {
                 "left": parseFloat(span.style.left.slice(0, -2)),
                 "span": span
             };
+            // Sets font-weight based off of test type
+            span.style.fontWeight = weight;
         }
 
         switch (type) {
@@ -388,7 +391,6 @@ export default function TestTake({ test }) {
     const gradeTest = () => {
         var states = {};
         var is_ns = type === "Number Sense";
-        console.log(answers)
 
         var score = 0;
         var answered = Object.keys(answers);

@@ -5,6 +5,7 @@
 
 .test-select{
     margin: 3% auto;
+    margin-top: 7%;
     border: 3px solid rgb(173, 204, 177);
     border-radius: 20px;
     max-width: 90%;
@@ -49,10 +50,11 @@
     font-size: 18px;
 }
 
-.alert-danger{
-    width: 90%;
-    margin: auto;
-    margin-top: 5%;
-    font-size: 20px;
-    padding: 10px;
+.invalid {
+    border-color: rgb(220, 0, 0) !important;
+    color: red;
+}
+/* Padding is a bit different on select box */
+#num {
+    padding-left: .8rem;
 }

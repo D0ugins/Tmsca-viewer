@@ -1,0 +1,16 @@
+.resource-title{
+    padding-top: 5%;
+    text-align: center;
+    font-size: 3rem;
+}
+
+.resource{
+    display: inline-block;
+    vertical-align: top;
+    width: 22%;
+    margin: 5% 5%;
+}
+
+.resource li {
+    margin-bottom: 5%;
+}
