@@ -120,10 +120,10 @@ export default function TestSearch({ setTest }) {
             
             </div>
             
-            <Link to={nums.includes(num) ? "/Tmsca-viewer/view" : "#"} onClick={findTest}
+            <Link to={nums.includes(num) ? "/view" : "#"} onClick={findTest}
             className="btn btn-success search-button">View test</Link>
 
-            <Link to={nums.includes(num) ? "/Tmsca-viewer/take" : "#"} onClick={findTest}
+            <Link to={nums.includes(num) ? "/take" : "#"} onClick={findTest}
             /* brokentest is a function that returns 
             whether or not a test is one of the ones thats formatting is completley broken*/
             className="btn btn-success search-button" hidden={type === "Calculator" || brokentest()}>Take test</Link>

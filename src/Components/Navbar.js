@@ -7,8 +7,8 @@ export default function Navbar() {
         <nav className="navbar navbar-expand-lg navbar-ld bg-light">
             <div className="navbar-collapse">
                 <div className="navbar-nav">
-                    <Link className="navbar-brand" to="/Tmsca-viewer/">Search</Link>
-                    <Link className="nav-item nav-link" to="/Tmsca-viewer/resources">Resources</Link>
+                    <Link className="navbar-brand" to="/">Search</Link>
+                    <Link className="nav-item nav-link" to="/resources">Resources</Link>
                 </div>
             </div>
         </nav>

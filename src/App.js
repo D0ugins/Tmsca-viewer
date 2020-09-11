@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { HashRouter, Route } from "react-router-dom";
 
 import TestSearch from './Components/TestSearch'
 import TestView from './Components/TestView'
@@ -17,12 +17,12 @@ function App() {
 
   return (
     <>
-    <Router>
-        <Route path="/Tmsca-viewer" exact> <TestSearch setTest={setTest}/> </Route>
-        <Route path="/Tmsca-viewer/view"> <TestView test={test}/> </Route>
-        <Route path="/Tmsca-viewer/take"> <TestTake test={test}/> </Route>
-        <Route path="/Tmsca-viewer/resources"> <Resources/> </Route>
-    </Router>
+    <HashRouter>
+        <Route path="/" exact> <TestSearch setTest={setTest}/> </Route>
+        <Route path="/view"> <TestView test={test}/> </Route>
+        <Route path="/take"> <TestTake test={test}/> </Route>
+        <Route path="/resources"> <Resources/> </Route>
+    </HashRouter>
    </>
   );
 }
