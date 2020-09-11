@@ -325,16 +325,9 @@ export default function TestTake({ test }) {
     }
 
     const findInputs = async () => {
-        // Loads text content from pdf to wait for page to do the same so it can load spans
-        var texts = []
-        for (const page in pages) {
-            texts[page] = data.getPage(pages[page]);
-        }
-
-        texts = await Promise.all(texts)
-        for (const page in texts) {
-            texts[page] = await texts[page].getTextContent();
-        }
+        // Loads a page to wait enough time for document to load its pages
+        var texts = await data.getPage(pages[0]);
+        texts = await texts.getTextContent();
 
         texts = [];
         // Returns all spans in document
@@ -460,7 +453,8 @@ export default function TestTake({ test }) {
 
     return (
         <>
-            {(!started || done || !ready) ? <button id="timer" className="btn btn-primary" onClick={startTest} disabled={!(ready || started || done)}>
+            {(!started || done || !ready) ? 
+            <button id="timer" className={"btn btn-primary" + (done ? " score-button" : "")} onClick={startTest} disabled={!(ready || started) || done}>
                 {done ? `Score: ${score}` : (!ready ? "Loading..." : "Start test")}
             </button>
                 : <Timer type={type} endTest={endTest}></Timer>}
@@ -471,9 +465,10 @@ export default function TestTake({ test }) {
                 onLoadSuccess={onLoad}
                 onLoadError={console.error}
                 className="pdf">
-                {started ?
-                    pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} key={page} />)
-                    : <Page className="pdf-page" pageNumber={1} scale={window.innerWidth / 600} />}
+                {!started ? <Page className="pdf-page" pageNumber={1} scale={window.innerWidth / 600} loading="" /> : ""}
+                {/* Loads pages at start but only shows them once test starts */}
+                {pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} loading="" key={page} 
+                renderMode={started ? "canvas" : "none"} />)}
             </Document>
 
             <div id="inputs">

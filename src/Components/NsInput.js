@@ -39,9 +39,9 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
         styles["top"] *= 1.0035
         styles["left"] += 10
     }
-
-    if (styles["width"] <= percent(1, "w")) {
-        styles["width"] += percent(1, "w")
+    
+    if (styles.width <= percent(3)) {
+        styles.width += percent(1)
     }
 
     useEffect(() => {
