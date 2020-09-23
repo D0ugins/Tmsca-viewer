@@ -9,8 +9,6 @@ export default function Timer ({ type, endTest }) {
     const [time, setTime] = useState(totalTime)
     const decreaseTime = () => {
         // Calculates time elapsed since start
-        console.log(startTime - Date.now())
-        // console.log(Date.now())
         setTime(totalTime - Math.floor((Date.now() - startTime) / 1000))
     }
 
