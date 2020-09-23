@@ -3,13 +3,20 @@ import './Timer.css'
 
 export default function Timer ({ type, endTest }) {
     
-    const [time, setTime] = useState(2);
-    const decreaseTime = () => {setTime(time - 1)}
+    const [startTime, setStartTime] = useState(Date.now())
+    // Sets time inseconds based on test type
+    const [totalTime] = useState(type === "Number Sense" ? (10 * 60) : (40 * 60))
+    const [time, setTime] = useState(totalTime)
+    const decreaseTime = () => {
+        // Calculates time elapsed since start
+        console.log(startTime - Date.now())
+        // console.log(Date.now())
+        setTime(totalTime - Math.floor((Date.now() - startTime) / 1000))
+    }
 
     useEffect(() => {
-        var mins = type === "Number Sense" ? 10 : 40
-        setTime(mins * 60)
-    }, [type])
+        setStartTime(Date.now())
+    }, [])
 
     useEffect(() => {
         if (time <= 0) {endTest(false); return}
