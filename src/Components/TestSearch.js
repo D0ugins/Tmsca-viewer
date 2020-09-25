@@ -29,6 +29,13 @@ export default function TestSearch({ setTest }) {
         setNums(getNums(year))
     }, [year])
 
+    const findTestView = (e) => {
+        e.preventDefault();
+
+        let path = findTest().tpath
+        if (path) window.location.pathname = path // Makes sure test is valid
+    }
+
     const findTest = () => {
         
         // Check for invalid test name
@@ -37,7 +44,7 @@ export default function TestSearch({ setTest }) {
             document.getElementById("num").focus();
             // Style gets reset on change
             document.getElementById("num").className = "invalid"
-            return;
+            return false;
         }
         
         // Map of human readable options to the codes used in the test names
@@ -59,13 +66,17 @@ export default function TestSearch({ setTest }) {
         const type_code = map[type]
         const test_name = `MS${type_code}${test_num} ${year}`
 
+        // Sets data about test
+        let test = {
+            "tpath": `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`, // Path of pdf file
+            "jpath": `${process.env.PUBLIC_URL}/keys/${type}f/${type} ${year}/${test_name} Key Formatted.json`, // Path of answer key
+            "name": test_name, // Test name
+            "type": type, // Test type
+        }
         // setTest function from parent component
-        setTest({
-            "tpath": `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`,
-            "jpath": `${process.env.PUBLIC_URL}/keys/${type}f/${type} ${year}/${test_name} Key Formatted.json`,
-            "name": test_name,
-            "type": type,
-        })
+        setTest(test)
+
+        return test
     }
     
     const brokentest = () => {
@@ -76,8 +87,7 @@ export default function TestSearch({ setTest }) {
     useEffect(() => {
         localStorage.setItem('type', type);
         localStorage.setItem('year', year);
-        localStorage.setItem('num', num);
-    }, [type, year, num])
+    }, [type, year])
 
     return (
         <>
@@ -120,8 +130,8 @@ export default function TestSearch({ setTest }) {
             
             </div>
             
-            <Link to={nums.includes(num) ? "/view" : "#"} onClick={findTest}
-            className="btn btn-success search-button">View test</Link>
+            <a href={"/view"} onClick={e => findTestView(e)}
+            className="btn btn-success search-button">View test</a>
 
             <Link to={nums.includes(num) ? "/take" : "#"} onClick={findTest}
             /* brokentest is a function that returns 
