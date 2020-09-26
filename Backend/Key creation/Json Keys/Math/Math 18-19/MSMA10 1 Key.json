@@ -3,6 +3,8 @@
     "year": "18-19",
     "name": "MSMA10 1",
     "path": "Math/Math 18-19/MSMA10 1",
+    "prize": 5,
+    "penatly": 2,
     "answers": {
         "1": "A",
         "2": "B",

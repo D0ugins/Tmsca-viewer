@@ -3,6 +3,8 @@
     "year": "19-20",
     "name": "MSNS13 19-20",
     "path": "Number Sense/Number Sense 19-20/MSNS13 19-20",
+    "prize": 5,
+    "penatly": 4,
     "answers": {
         "1": "979",
         "2": "6678",

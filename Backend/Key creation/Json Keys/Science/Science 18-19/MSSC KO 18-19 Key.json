@@ -3,6 +3,8 @@
     "year": "18-19",
     "name": "MSSC KO 18-19",
     "path": "Science/Science 18-19/MSSC KO 18-19",
+    "prize": 5,
+    "penatly": 2,
     "answers": {
         "1": "A",
         "2": "A",

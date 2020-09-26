@@ -33,6 +33,8 @@ async function parseKey(text_path) {
             "year": path_array[2].slice(-5),
             "name": name,
             "path": type + '/' + path_array[2] + '/' + name,
+            "prize": 5,
+            "penatly": type === "Number Sense" ? 4 : 2,
             "answers": {}
         }
         
