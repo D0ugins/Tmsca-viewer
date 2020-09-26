@@ -1,0 +1,47 @@
+.pdf{
+    width: 100%;
+    display: inline-block;
+}
+
+/* text aligning */
+.pdf-page > canvas{
+    max-width: 105%;
+    height: auto !important;
+    margin: 0px;
+    margin-left: -2%;
+    margin-top: -.1%;
+}
+
+span{
+    font-weight: 900;
+    pointer-events: none !important;
+    user-select: none;
+}
+
+#grade-button {
+    position: fixed;
+    z-index: 100;
+
+    bottom: 2%;
+    right: 5%;
+    width: 10%;
+    height: auto;
+    padding: 1.5%;
+
+    text-align: center;
+}
+
+#grade-button p {
+    font-size: 1vw;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.score-button {
+    font-size: 2rem !important;
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(0, 0, 255) !important;
+    font-weight: bold;
+}
