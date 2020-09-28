@@ -33,15 +33,12 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
             "height": percent(1.8) + "px",
             "fontSize": ((window.innerWidth / 54.34).toFixed(1) - 2) + "px"
     }
-
-    // Fixes missalignments on mobile
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-        styles["top"] *= 1.0035
-        styles["left"] += 10
-    }
     
-    if (styles.width <= percent(3)) {
-        styles.width += percent(1)
+    if (styles.width <= percent(5)) {
+        console.log(data.id)
+        styles.width += percent(.9)
+        styles["padding"] = "2px"
+        styles.fontSize *= 0.8
     }
 
     useEffect(() => {
