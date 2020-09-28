@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 
-import NsInput from './NsInput'
-import MthSciInput from './MthSciInput'
+import NsInput from './Inputs/NsInput'
+import MthSciInput from './Inputs/MthSciInput'
 
 import Timer from './Timer'
 import './TestTake.css'
@@ -62,10 +62,11 @@ export default function TestTake({ test }) {
         }
         else {
             // Spaces are calculated as the wrong size in the other method so for science you need this
-            var index = string.length
+            let start = el.innerText.indexOf(string)
+            let end = start + string.length
             let range = new Range()
-            range.setStart(el.firstChild, 0)
-            range.setEnd(el.firstChild, index)
+            range.setStart(el.firstChild, start)
+            range.setEnd(el.firstChild, end)
 
             let selection = window.getSelection();
             selection.removeAllRanges();
@@ -76,7 +77,7 @@ export default function TestTake({ test }) {
             selection.removeAllRanges();
 
             var rect = range.getBoundingClientRect();
-            width = rect.right - rect.left;
+            width = rect.width
             // Deals with that font being slightly to small for some reason
             if (el.style.fontFamily.includes("g_d0_f8")) width *= 1.01
 
@@ -88,7 +89,6 @@ export default function TestTake({ test }) {
     const findNs = (texts) => {
         var question = 0;
         var areas = [];
-
         const pageheight = (window.innerWidth / 600.575) * 792;
         var page = 0;
         var offset = pageheight * page;
