@@ -1,0 +1,28 @@
+.unselected {
+    border: 2px solid rgba(35, 68, 255, 0.5);
+    border-radius: 20%;
+}
+
+.selected {
+    background: rgba(65, 147, 255, 0.3);
+    border: 2px solid rgba(35, 68, 255, 0.7);
+    border-radius: 20%;
+}
+
+.mthsci-correct {
+    background: rgba(65, 255, 75, 0.3);
+    border: 2px solid rgba(0, 156, 34, 0.7);
+    border-radius: 20%;
+}
+
+.mthsci-wrong {
+    background: rgba(255, 65, 65, 0.3);
+    border: 2px solid rgba(156, 0, 0, 0.7);
+    border-radius: 20%;
+}
+
+
+.mthsci-missed-correct {
+    border: 2px solid rgba(26, 221, 0, 0.5);
+    border-radius: 20%;
+}
