@@ -35,10 +35,10 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
     }
     
     if (styles.width <= percent(5)) {
-        console.log(data.id)
-        styles.width += percent(.9)
-        styles["padding"] = "2px"
-        styles.fontSize *= 0.8
+        console.log(data.id);
+        styles.width += percent(.9);
+        styles["padding"] = "2px";
+        styles.fontSize *= 0.8;
     }
 
     useEffect(() => {
