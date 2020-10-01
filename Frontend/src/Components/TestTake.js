@@ -17,9 +17,10 @@ export default function TestTake({ test }) {
     const [ready, setReady] = useState(false);
     const onLoad = (pdf) => {
         // Set what pages to load once test is started
-        if (test.type === "Number Sense") setPages([3, 4])
-        else if (test.type === "Math") setPages([3, 4, 5, 6])
+        if (type === "Number Sense") setPages([3, 4])
+        else if (type === "Math") setPages([3, 4, 5, 6])
         else {
+            // Sets pages for Science
             let scpages = []
             let total = pdf.numPages
             for (let i = 3; i <= total - 1; i++) {scpages.push(i)}
@@ -36,7 +37,6 @@ export default function TestTake({ test }) {
 
     const [areas, setAreas] = useState([]);
 
-    const [key, setKey] = useState({});
     const [answers, setAnswers] = useState({})
     const updateAnswers = (id, value) => {
         var new_data = answers
@@ -371,78 +371,26 @@ export default function TestTake({ test }) {
         }
     }
 
-    const checkNs = (ans, correct, num) => {
-        // Deals with esimation problems and ones with mutiple correct answers
-        if (typeof correct === "object") {
-            if (num % 10 === 0) return (ans >= correct[0] && ans <= correct[1])
-            else return correct.includes(ans)
-        }
-
-        else return ans === correct
-    }
-
-    const gradeTest = () => {
-        var states = {};
-        var is_ns = type === "Number Sense";
-
-        var score = 0;
-        var answered = Object.keys(answers);
-        if (is_ns) {
-            var last = 0;
-            if (answered.length) last = Math.max(...answered.map(x => parseInt(x)));
-            score = last * key.penalty * -1;
-        }
-        else {
-            score = answered.length * key.penalty * -1;
-        }
-
-        for (var i = 1; i <= 80; i++) {
-
-            if (i <= last || !is_ns) {
-                if (answered.includes(i.toString())) {
-                    var correct = key.answers[i];
-
-                    var is_correct = is_ns ? checkNs(answers[i], correct, i) : answers[i] === correct
-
-                    if (is_correct) {
-                        score += key.prize + key.penalty;
-                        states[i] = "correct";
-                    }
-                    else {
-                        states[i] = "wrong";
-                    }
-                }
-                else {
-                    if (is_ns) states[i] = "skipped";
-                    else states[i] = "na";
-                }
-            }
-            else {
-                states[i] = "na";
-            }
-
-        }
-
-        setGradeStates(states);
-        setScore(score);
-    }
-
     const endTest = (manual) => {
         if (!manual) { alert("Time is up!") }
-        gradeTest();
+        fetch(`http://${window.location.hostname}:5000/grade`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'type': type,
+                'keypath': test.path,
+                'answers': answers
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            setGradeStates(data.gradeStates)
+            setScore(data.score)
+        })
+        .catch(err => {console.error(err)})
     }
-
-    // Load stuff
-    useEffect(() => {
-        // Load answer key
-        async function loadJson() {
-            let key = await fetch(test.jpath);
-            key = await key.json();
-            setKey(key);
-        }
-        loadJson();
-        // eslint-disable-next-line
-    }, [test])
 
     useEffect(() => {
         if (score !== null) {
@@ -460,7 +408,7 @@ export default function TestTake({ test }) {
                 : <Timer type={type} endTest={endTest}></Timer>}
 
             <Document
-                file={test.tpath}
+                file={`${process.env.PUBLIC_URL}/tests/${test.path}.pdf`}
                 loading=""
                 onLoadSuccess={onLoad}
                 onLoadError={console.error}
@@ -481,7 +429,7 @@ export default function TestTake({ test }) {
 
                         : areas.map(area => {
                             return <NsInput data={area} key={area.id}
-                                gradeState={gradeStates[area.id]} correct={key.answers[area.id]} disabled="true" old={answers[area.id]} />
+                                gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} disabled="true" old={gradeStates[area.id].answer} />
                         })
                     )
                     :
@@ -492,7 +440,7 @@ export default function TestTake({ test }) {
 
                         : areas.map(area => {
                             return <MthSciInput data={area} key={area.id} type={type}
-                                gradeState={gradeStates[area.id]} correct={key.answers[area.id]} old={answers[area.id]} />
+                            gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} old={gradeStates[area.id].answer} />
                         })
                     )
                 }

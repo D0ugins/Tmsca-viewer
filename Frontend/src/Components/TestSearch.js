@@ -61,8 +61,7 @@ export default function TestSearch({ setTest }) {
 
         // setTest function from parent component
         setTest({
-            "tpath": `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`,
-            "jpath": `${process.env.PUBLIC_URL}/keys/${type}f/${type} ${year}/${test_name} Key Formatted.json`,
+            "path": `${type}/${type} ${year}/${test_name}`,
             "name": test_name,
             "type": type,
         })

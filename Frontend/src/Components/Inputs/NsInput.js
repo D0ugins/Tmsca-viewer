@@ -15,8 +15,10 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
     
     // Sets inputs value and updates answer list from parent
     const update = (e) => {
-        var valid = validate(e.target.value);
-        if (valid) {setAnswer(data.id, e.target.value); setValue(e.target.value)};
+        if (gradeState === "") {
+            var valid = validate(e.target.value);
+            if (valid) {setAnswer(data.id, e.target.value); setValue(e.target.value)};
+        }
     }
 
     // Gets width of screen (d is direction width/height)
@@ -62,6 +64,8 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
 
     var gradeClass = ` ns-${gradeState}`
     return (
-        <input type="text" id={`input${data.id}`} className={"form-control test-input" + gradeClass} style={styles} value={value} onChange={e => update(e)} autoComplete="off"/>
+        <input type="text" id={`input${data.id}`} className={"form-control test-input" + gradeClass} 
+        style={styles} value={value} onChange={e => update(e)} 
+        autoComplete="off"/>
     )
 }
