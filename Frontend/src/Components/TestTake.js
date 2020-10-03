@@ -373,7 +373,7 @@ export default function TestTake({ test }) {
 
     const endTest = (manual) => {
         if (!manual) { alert("Time is up!") }
-        fetch(`http://${window.location.hostname}:5000/grade`, {
+        fetch(`http://${window.location.hostname}:5000/api/grade`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
