@@ -429,7 +429,7 @@ export default function TestTake({ test }) {
 
                         : areas.map(area => {
                             return <NsInput data={area} key={area.id}
-                                gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} disabled="true" old={gradeStates[area.id].answer} />
+                                gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} old={gradeStates[area.id].answer} />
                         })
                     )
                     :
