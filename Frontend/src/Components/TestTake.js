@@ -82,10 +82,12 @@ export default function TestTake() {
         }
         else {
             // Spaces are calculated as the wrong size in the other method so for science you need this
-            var index = string.length
+            let start = el.innerText.indexOf(string)
+            let end = start + string.length
+            
             let range = new Range()
-            range.setStart(el.firstChild, 0)
-            range.setEnd(el.firstChild, index)
+            range.setStart(el.firstChild, start)
+            range.setEnd(el.firstChild, end)
 
             let selection = window.getSelection();
             selection.removeAllRanges();
@@ -96,7 +98,7 @@ export default function TestTake() {
             selection.removeAllRanges();
 
             var rect = range.getBoundingClientRect();
-            width = rect.right - rect.left;
+            width = rect.width
             // Deals with that font being slightly to small for some reason
             if (el.style.fontFamily.includes("g_d0_f8")) width *= 1.05
 
