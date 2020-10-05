@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { HashRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Axios from "axios"
 
 import TestSearch from './Components/TestSearch'
@@ -12,7 +12,6 @@ import Register from './Components/Users/Register';
 import UserContext from './Context/UserContext'
 
 function App() {
-  const [test, setTest] = useState()
   const [user, setUser] = useState({
     token: undefined,
     user: undefined
@@ -23,7 +22,7 @@ function App() {
     const checkLoggedIn = async () => {
       let token = localStorage.getItem("auth-token")
       if (token === undefined) { localStorage.setItem("auth-token", ""); token = "" }
-      
+
       const valid = await Axios.post(`http://localhost:5000/api/users/isTokenValid`, null,
         { headers: { "x-auth-token": token } }
       )
@@ -46,15 +45,15 @@ function App() {
   return (
     <>
       <UserContext.Provider value={{ user, setUser }}>
-        <HashRouter>
+        <Router>
           <Switch>
-            <Route path="/" exact> <TestSearch setTest={setTest} /> </Route>
-            <Route path="/take"> <TestTake test={test} /> </Route>
+            <Route path="/" exact> <TestSearch /> </Route>
+            <Route path="/take"> <TestTake /> </Route>
             <Route path="/resources"> <Resources /> </Route>
             <Route path="/login"> <Login /> </Route>
             <Route path="/register"> <Register /> </Route>
           </Switch>
-        </HashRouter>
+        </Router>
       </UserContext.Provider>
     </>
   );

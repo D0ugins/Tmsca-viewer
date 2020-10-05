@@ -1,8 +1,8 @@
-import React, { useState,  useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Timer.css'
 
-export default function Timer ({ type, endTest }) {
-    
+export default function Timer({ type, endTest }) {
+
     const [startTime, setStartTime] = useState(Date.now())
     // Sets time inseconds based on test type
     const [totalTime] = useState(type === "Number Sense" ? (10 * 60) : (40 * 60))
@@ -17,7 +17,7 @@ export default function Timer ({ type, endTest }) {
     }, [])
 
     useEffect(() => {
-        if (time <= 0) {endTest(false); return}
+        if (time <= 0) { endTest(false); return }
 
         var id = setTimeout(decreaseTime, 1000);
         return () => clearTimeout(id);

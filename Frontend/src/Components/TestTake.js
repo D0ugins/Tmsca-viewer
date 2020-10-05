@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 import Axios from "axios"
 
 import NsInput from './Inputs/NsInput'
 import MthSciInput from './Inputs/MthSciInput'
 
+import UserContext from '../Context/UserContext'
 import Timer from './Timer'
 import './TestTake.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-export default function TestTake({ test }) {
-    const [type] = useState(test.type)
+export default function TestTake() {
+    const { user } = useContext(UserContext);
+    const [type, setType] = useState("")
+    const [test, setTest] = useState({})
+
+    useEffect(() => {
+        const typeMap = {
+            'NS': 'Number Sense',
+            'MA': 'Math',
+            'SC': 'Science',
+            'CA': 'Calculator'
+        }
+
+        const name = window.location.pathname.split("/").slice(-1)[0].replace("_", " ")
+        const type = typeMap[name.slice(2, 4)]
+        setType(type)
+        const path = `${type}/${type} ${name.slice(-5)}/${name}`
+
+        setTest({ name, path })
+    }, [])
+
+
     const [pages, setPages] = useState([]);
     const [data, setData] = useState();
 
@@ -371,15 +392,37 @@ export default function TestTake({ test }) {
     }
 
     const endTest = async (manual) => {
-        if (!manual) { alert("Time is up!") }
-        const res = await Axios.post(`http://localhost:5000/api/grade`, {
-            type,
-            keypath: test.path,
-            answers
-        })
-        const { score, gradeStates } = res.data
-        setGradeStates(gradeStates)
-        setScore(score)
+        try {
+            const valid = await Axios.post(`http://localhost:5000/api/users/isTokenValid`, null,
+                { headers: { "x-auth-token": user.token } }
+            )
+            let save = false
+
+            if (valid) save = window.confirm(`${!manual ? "Time is up!\n" : ""} Would you like to save these results?`)
+
+            const res = await Axios.post(`http://localhost:5000/api/grade`, {
+                type,
+                keypath: test.path,
+                answers
+            })
+            const { score, gradeStates } = res.data
+            setGradeStates(gradeStates)
+            setScore(score)
+
+            if (save) {
+                await Axios.post(`http://localhost:5000/api/results`, {
+                    type,
+                    test_name: test.name,
+                    score,
+                    gradeStates
+
+                }, { headers: { "x-auth-token": user.token } }
+                )
+            }
+        } catch (err) {
+            console.error("Something went wrong with saving or grading your test results")
+        }
+
         setDone(true)
     }
 

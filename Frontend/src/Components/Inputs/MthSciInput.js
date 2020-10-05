@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import './MthSciInput.css'
 
 
-export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeState="", old=""}) {
+export default function MthSciInput({ data, setAnswer, type, correct = "", gradeState = "", old = "" }) {
     const [selected, setSelected] = useState("")
 
     // Gets width screen (d is direction width/height)
     const percent = (p) => {
-        return window.innerWidth * (p/100);
+        return window.innerWidth * (p / 100);
     }
 
     const map = {
@@ -17,7 +17,7 @@ export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeS
         3: "D",
         4: "E"
     }
-    
+
     // Each letter has a slightly different alignment that works best
     const heightmap = {
         "A": 25,
@@ -28,7 +28,7 @@ export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeS
     }
 
     const update = (val) => {
-        if (gradeState === ""){
+        if (gradeState === "") {
             if (val === selected) val = ""
             setSelected(val);
             setAnswer(data.id, val);
@@ -45,7 +45,7 @@ export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeS
 
     // Calculates what styles go on which choices
     if (gradeState !== "") {
-        if (old !== "" ) {
+        if (old !== "") {
             if (old === correct) states[old] = "mthsci-correct";
             else {
                 states[old] = "mthsci-wrong";
@@ -56,7 +56,7 @@ export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeS
             states[correct] = "mthsci-missed-correct";
         }
     }
-    
+
     else {
         for (var i in states) states[i] = "unselected";
         states[selected] = "selected";
@@ -64,19 +64,19 @@ export default function MthSciInput ({ data, setAnswer, type ,correct="", gradeS
 
     // Uses divs insread of radios because of easier styling and unselecting
     return (
-        <div id={"container"+data.id}>
+        <div id={"container" + data.id}>
             {data.choices.map((input, i) => {
                 let choice = map[i]
                 return (
-                <div id={`box${data.id}${choice}`} key={`${data.id}${choice}`} className={states[choice]} data-value={choice} style={{
-                    "position": "absolute",
-                    // Slightly different align for math and for choice e
-                    "top": input.top + percent(heightmap[choice] / 100 * (type === "Math" ? .3 : 1)),
-                    "left": input.left - percent(choice !== "E" ? (type === "Math" ? 2.6 : 2.33) : 2.75),
-                    "width": percent(2.75),
-                    "height": percent(2.25)
-                }} onClick={e => update(e.target.dataset.value)}>
-                </div>
+                    <div id={`box${data.id}${choice}`} key={`${data.id}${choice}`} className={states[choice]} data-value={choice} style={{
+                        "position": "absolute",
+                        // Slightly different align for math and for choice e
+                        "top": input.top + percent(heightmap[choice] / 100 * (type === "Math" ? .3 : 1)),
+                        "left": input.left - percent(choice !== "E" ? (type === "Math" ? 2.6 : 2.33) : 2.75),
+                        "width": percent(2.75),
+                        "height": percent(2.25)
+                    }} onClick={e => update(e.target.dataset.value)}>
+                    </div>
                 )
             })}
         </div>

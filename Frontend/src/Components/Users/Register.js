@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import Axios from 'axios'
 
 import './Register.css'
@@ -60,7 +60,7 @@ export default function Register() {
                     password
                 })
                 setUser(user.data)
-                window.location.hash = "/"
+                window.location.pathname = "/"
             }
         } catch (err) {
             if (err.response.data.msg) { setError(err.response.data.msg); document.documentElement.scrollTop = 0; }

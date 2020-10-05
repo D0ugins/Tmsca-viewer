@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const bycrypt = require("bcrypt")
+const bycrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-const User = require("../models/userModel")
-const auth = require('../middleware/auth')
+const User = require("../models/userModel");
+const auth = require('../middleware/auth');
 
 router.post("/register", async (req, res) => {
     try {
@@ -19,9 +19,9 @@ router.post("/register", async (req, res) => {
             return res.status(400).json({ msg: "Passwords do not match" });
 
         if (firstName.length > 32 || firstName.length < 2)
-            return res.status(400).json({ msg: `First name is too ${firstName.length > 2 ? 'long': 'short'}` })
+            return res.status(400).json({ msg: `First name is too ${firstName.length > 2 ? 'long' : 'short'}` })
         if (firstName.length > 32 || firstName.length < 2)
-            return res.status(400).json({ msg: `Last name is too ${firstName.length > 2 ? 'long': 'short'}` })
+            return res.status(400).json({ msg: `Last name is too ${firstName.length > 2 ? 'long' : 'short'}` })
 
         if (await User.findOne({ email: email }))
             return res.status(400).json({ msg: "Account with this email already exists" });
@@ -112,7 +112,7 @@ router.post("/isTokenValid", async (req, res) => {
             const user = await User.findById(decoded.id)
             if (!user) return res.json(false)
         });
-        
+
         return res.json(true)
 
     } catch (err) {

@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const fs = require('fs');
 const path = require('path');
+
 require('dotenv').config();
 
 // Express setup
@@ -13,7 +14,7 @@ app.use(express.json());
 const port = process.env.PORT || 5000;
 
 // Mongoose setup
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}, (err) => {
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }, (err) => {
     if (err) throw err;
     console.log("Mongodb connection successful")
 })
@@ -24,7 +25,8 @@ if (process.env.NODE_ENV === "development") {
     }));
 }
 
-app.use("/api/users", require("./routes/userRouter"))
+app.use("/api/users", require("./routes/userRouter"));
+app.use("/api/results", require("./routes/resultsRouter"));
 
 const KEYFOLDER = '../Key creation/AnswerKeys';
 
@@ -57,7 +59,7 @@ const gradeTest = (key, answers, type) => {
         score = answered.length * key.penalty * -1;
     }
 
-    for (let i = 1; i <= 80; i++) {
+    for (let i = 1; i <= (is_ns ? 80 : 50); i++) {
         let correct = key.answers[i];
         let state = "";
         if (i <= last || !is_ns) {
@@ -83,7 +85,7 @@ const gradeTest = (key, answers, type) => {
         }
         states[i] = {
             "state": state,
-            "answer": answers[i] || "",
+            "answer": answers[i] || "na",
             "correct": correct
         };
     }
@@ -95,13 +97,12 @@ const gradeTest = (key, answers, type) => {
 
 app.post('/api/grade', cors(), (req, res) => {
     try {
-        const { type, keypath, answers } = req.body
+        const { type, keypath, answers} = req.body
 
         // Load answer key from file
         const key = JSON.parse(fs.readFileSync(path.join(KEYFOLDER, keypath + " Key.json"), 'utf-8'))
-
-        res.status(200)
-            .json(gradeTest(key, answers, type))
+        
+        res.json(gradeTest(key, answers, type))
     } catch (err) {
         res.status(500).json({ "err": err.message })
         console.error(err)

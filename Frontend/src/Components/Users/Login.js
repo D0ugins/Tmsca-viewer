@@ -22,7 +22,7 @@ export default function Login() {
             })
             if (res.status === 200) {
                 setUser(res.data)
-                window.location.hash = "/"
+                window.location.pathname = "/"
             }
         } catch (err) {
             if (err.response.data.msg) { setError(err.response.data.msg); document.documentElement.scrollTop = 0; }
