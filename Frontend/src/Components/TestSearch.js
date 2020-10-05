@@ -75,8 +75,7 @@ export default function TestSearch({ setTest }) {
     useEffect(() => {
         localStorage.setItem('type', type);
         localStorage.setItem('year', year);
-        localStorage.setItem('num', num);
-    }, [type, year, num])
+    }, [type, year])
 
     return (
         <>

@@ -1,0 +1,22 @@
+.login-container{
+    text-align: center;
+    margin: 5% 20%;
+    padding: 2%;
+    border: 2px solid rgba(11, 184, 5, 0.596);
+    border-radius: 20px;
+}
+
+.login-container h1{
+    font-size: xx-large;
+}
+
+.login-container input {
+    margin-bottom: 5%;
+    margin-top: 5%;
+}
+
+.login-container .btn {
+    margin-top: 5%;
+    font-size: 1.25rem;
+    padding: 1% 3%;
+}

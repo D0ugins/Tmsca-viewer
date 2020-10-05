@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
+import Axios from "axios"
 
 import NsInput from './Inputs/NsInput'
 import MthSciInput from './Inputs/MthSciInput'
@@ -23,13 +24,13 @@ export default function TestTake({ test }) {
             // Sets pages for Science
             let scpages = []
             let total = pdf.numPages
-            for (let i = 3; i <= total - 1; i++) {scpages.push(i)}
+            for (let i = 3; i <= total - 1; i++) { scpages.push(i) }
             setPages(scpages)
         }
 
         // That one test dosent have title pages for some reason
         if (test.name === 'MSNS STATE 18-19') setPages([1, 2])
-        setReady(true); 
+        setReady(true);
         setData(pdf);
     }
     const [started, setStarted] = useState(false);
@@ -39,15 +40,13 @@ export default function TestTake({ test }) {
 
     const [answers, setAnswers] = useState({})
     const updateAnswers = (id, value) => {
-        var new_data = answers
-        new_data[id] = value;
-        setAnswers(new_data)
+        setAnswers(answers => { answers[id] = value; return answers })
     };
     const [gradeStates, setGradeStates] = useState({})
     const [score, setScore] = useState(null);
 
     const getWidth = (string, el = "") => {
-        
+
         const fontsize = (window.innerWidth / 54.34).toFixed(1);
         const fontweight = type === "Science" ? 500 : 900
         var width = 0;
@@ -70,7 +69,7 @@ export default function TestTake({ test }) {
             let selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
-            
+
             var sel = window.getSelection();
             range = sel.getRangeAt(0).cloneRange();
             selection.removeAllRanges();
@@ -78,7 +77,7 @@ export default function TestTake({ test }) {
             var rect = range.getBoundingClientRect();
             width = rect.right - rect.left;
             // Deals with that font being slightly to small for some reason
-            if (el.style.fontFamily.includes("g_d0_f8")) width *= 1.01
+            if (el.style.fontFamily.includes("g_d0_f8")) width *= 1.05
 
         }
 
@@ -181,14 +180,14 @@ export default function TestTake({ test }) {
 
     const findMthSci = (texts) => {
         const pageheight = (window.innerWidth / 600.7) * 792;
-        
+
         var last = type === "Science" ? 4 : 5
         var areas = [];
         var choice = 0;
         var choices = ["A", "B", "C", "D", "E"]
 
-        // List of questions with exceptions/typos that have to be dealt with (choice, num, test : [type, flags])
-        // The fact that this list is so long makes me sad
+        /* List of questions with exceptions/typos that have to be dealt with (choice, num, test : [type, flags])
+           The fact that this list is so long makes me sad */
         const exceptions = {
             "0, 4, MSSC1 19-20": ["intext"],
             "0, 27, MSSC1 19-20": ["missing"],
@@ -218,7 +217,7 @@ export default function TestTake({ test }) {
             "1, 50, MSMA7 17-18": ["repeat", 1],
             "3, 5, MSMA11 17-18": ["missing"],
             "3, 25, MSMA11 17-18": ["missing"]
-            
+
         }
 
         // Tracks if current exception has been handled
@@ -226,12 +225,12 @@ export default function TestTake({ test }) {
         for (let i = 0, question = 0, offset = 0, page = 0; i < texts.length - 1; i++) {
             let text = texts[i]
             var str = text.str
-            
+
             // In the 17-18 Science tests it uses the form A) instead of A.
             let endchar = test.name.includes("17-18") && type === "Science" ? ')' : "."
 
             // Checks If Choice got split over mutiple texts
-            var split = text.str.charAt(str.length - 1) === choices[choice] && texts[i+1].str.charAt(0) === endchar
+            var split = text.str.charAt(str.length - 1) === choices[choice] && texts[i + 1].str.charAt(0) === endchar
 
             // Check if question is exception
             if (Object.keys(exceptions).includes(`${choice}, ${question + 1}, ${test.name}`)) {
@@ -247,7 +246,7 @@ export default function TestTake({ test }) {
                         continue;
                     }
                 }
-                
+
                 // Deals with if answer Choices are detected out of order (ie. A, C, B, D)
                 else if (exception[0] === "order" && str.includes(choices[choice + 1] + endchar) && exception_state === 0) {
                     let index = str.indexOf(choices[choice + 1] + endchar)
@@ -257,7 +256,7 @@ export default function TestTake({ test }) {
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
                     exception_state++
-                    if (choice === last - 2) {choice = 0; question++;}
+                    if (choice === last - 2) { choice = 0; question++; }
                     continue;
                 }
                 // Adds .'s to strings missing them
@@ -268,7 +267,7 @@ export default function TestTake({ test }) {
                 }
 
                 // Deals with if there is a choice repeated (ie. A, B, B, C)
-                else if (exception[0] === "repeat" && str.includes(choices[choice + exception[1]] + endchar)){
+                else if (exception[0] === "repeat" && str.includes(choices[choice + exception[1]] + endchar)) {
                     let index = str.lastIndexOf(choices[choice + exception[1]] + endchar)
                     areas[question].choices[choice] = {
                         "top": text.top + offset,
@@ -276,11 +275,11 @@ export default function TestTake({ test }) {
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
 
-                    if (choice === last + exception[1]) {choice = 0; question++; exception_state = 0; continue;}
+                    if (choice === last + exception[1]) { choice = 0; question++; exception_state = 0; continue; }
                     choice++;
                     // Deals with multiple choices in same string
                     if (str.includes(choices[choice + exception[1]] + '.') || split) i--
-                    
+
                     exception_state++;
                     continue;
                 }
@@ -310,16 +309,16 @@ export default function TestTake({ test }) {
                     "left": text.left + (getWidth(str.slice(0, index), text.span)),
                 };
                 choice++;
-                exception_state=0;
-                
+                exception_state = 0;
+
                 // Checks if 2 choices were in the same text
-                split = text.str.charAt(str.length - 1) === choices[choice] && texts[i+1].str.charAt(0) === endchar
+                split = text.str.charAt(str.length - 1) === choices[choice] && texts[i + 1].str.charAt(0) === endchar
                 if (str.includes(choices[choice] + endchar) || split) i--
 
-                if (choice === last) {choice = 0; question++;}
+                if (choice === last) { choice = 0; question++; }
 
             }
-            
+
         }
         return areas
     }
@@ -371,40 +370,25 @@ export default function TestTake({ test }) {
         }
     }
 
-    const endTest = (manual) => {
+    const endTest = async (manual) => {
         if (!manual) { alert("Time is up!") }
-        fetch(`http://${window.location.hostname}:5000/api/grade`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'type': type,
-                'keypath': test.path,
-                'answers': answers
-            })
+        const res = await Axios.post(`http://localhost:5000/api/grade`, {
+            type,
+            keypath: test.path,
+            answers
         })
-        .then(res => res.json())
-        .then(data => {
-            setGradeStates(data.gradeStates)
-            setScore(data.score)
-        })
-        .catch(err => {console.error(err)})
+        const { score, gradeStates } = res.data
+        setGradeStates(gradeStates)
+        setScore(score)
+        setDone(true)
     }
-
-    useEffect(() => {
-        if (score !== null) {
-            setDone(true)
-        }
-    }, [score])
-
 
     return (
         <>
-            {(!started || done || !ready) ? 
-            <button id="timer" className={"btn btn-primary" + (done ? " score-button" : "")} onClick={startTest} disabled={!(ready || started) || done}>
-                {done ? `Score: ${score}` : (!ready ? "Loading..." : "Start test")}
-            </button>
+            {(!started || done || !ready) ?
+                <button id="timer" className={"btn btn-primary" + (done ? " score-button" : "")} onClick={startTest} disabled={!(ready || started) || done}>
+                    {done ? `Score: ${score}` : (!ready ? "Loading..." : "Start test")}
+                </button>
                 : <Timer type={type} endTest={endTest}></Timer>}
 
             <Document
@@ -415,8 +399,8 @@ export default function TestTake({ test }) {
                 className="pdf">
                 {!started ? <Page className="pdf-page" pageNumber={1} scale={window.innerWidth / 600} loading="" /> : ""}
                 {/* Loads pages at start but only shows them once test starts */}
-                {pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} loading="" key={page} 
-                renderMode={started ? "canvas" : "none"} />)}
+                {pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} loading="" key={page}
+                    renderMode={started ? "canvas" : "none"} />)}
             </Document>
 
             <div id="inputs">
@@ -435,12 +419,12 @@ export default function TestTake({ test }) {
                     :
                     (!done ?
                         areas.map(area => {
-                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type}/>
+                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} />
                         })
 
                         : areas.map(area => {
                             return <MthSciInput data={area} key={area.id} type={type}
-                            gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} old={gradeStates[area.id].answer} />
+                                gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} old={gradeStates[area.id].answer} />
                         })
                     )
                 }

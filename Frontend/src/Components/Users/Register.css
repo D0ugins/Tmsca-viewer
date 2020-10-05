@@ -1,0 +1,27 @@
+.comps-container{
+    text-align: left;
+    font-size: 1.5rem;
+}
+
+.comp-select{
+    display: block;
+    width: 1em;
+    height: 1em;
+    margin-top: 1.25rem !important;
+}
+
+.comp-label{
+    display: block;
+}
+
+.comp-labels, .comp-boxes{
+    display: inline-block;
+}
+
+.comp-labels{
+    margin-right: 10%;
+}
+
+.comp-boxes{
+    margin-bottom: -1.5%;
+}
