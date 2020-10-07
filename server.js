@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true,
 app.use("/api/users", require("./routes/userRouter"));
 app.use("/api/results", require("./routes/resultsRouter"));
 
-const KEYFOLDER = path.resolve('Key Creation', 'AnswerKeys')
+const KEYFOLDER = path.resolve(__dirname, 'Key Creation', 'AnswerKeys')
 
 const checkNs = (ans, correct, num) => {
     // Deals with esimation problems and ones with mutiple correct answers
