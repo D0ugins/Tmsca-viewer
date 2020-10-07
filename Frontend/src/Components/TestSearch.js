@@ -28,16 +28,11 @@ export default function TestSearch() {
         setNums(getNums(year))
     }, [year])
 
-    const findTest = (e, action) => {
+    const findTest = (action) => {
 
-        e.preventDefault();
         // Check for invalid test name
         if (!nums.includes(num)) {
-            // Focus num input box and give it invalid style
-            document.getElementById("num").focus();
-            // Style gets reset on change
-            document.getElementById("num").className = "invalid"
-            return;
+            return "#";
         }
 
         // Map of human readable options to the codes used in the test names
@@ -58,13 +53,22 @@ export default function TestSearch() {
         const test_num = isNaN(parseInt(num)) ? map[num] : num
         const test_name = `MS${map[type]}${test_num} ${year}`
 
-        if (action === "view") window.location.pathname = `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`
-        else { window.location.pathname = `/take/${test_name.replace(" ", "_")}` }
+        if (action === "view") return `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`
+        return `/take/${test_name.split(" ").join("_")}`
     }
 
     const brokentest = () => {
         // Certain tests formatting are just broken beyond repair you cant take those tests
         return num === "Kickoff" && year === "18-19" && (type === "Science")
+    }
+
+    const checkInvalid = () => {
+        if (!nums.includes(num)) {
+            // Focus num input box and give it invalid style
+            document.getElementById("num").focus();
+            // Style gets reset on change
+            document.getElementById("num").className = "invalid"
+        }
     }
 
     useEffect(() => {
@@ -113,10 +117,10 @@ export default function TestSearch() {
 
                 </div>
 
-                <a href={"/view"} onClick={e => findTest(e, "view")}
+                <a href={findTest("view")} onClick={checkInvalid}
                     className="btn btn-success search-button">View test</a>
 
-                <a href={"/take"} onClick={e => findTest(e, "take")}
+                <a href={findTest("take") } onClick={checkInvalid}
                     className="btn btn-success search-button" hidden={type === "Calculator" || brokentest()}>Take test</a>
 
             </div>

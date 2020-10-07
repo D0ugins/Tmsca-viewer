@@ -11,10 +11,11 @@ export default function Navbar() {
         <nav className="navbar navbar-expand-lg navbar-ld bg-light">
             <Link className="navbar-brand" to="/">Search</Link>
             <Link className="nav-item nav-link nav" to="/resources">Resources</Link>
+            { (user && user.user) ? <Link className="nav-item nav-link nav" to="/results">Results</Link> : ""}
             <div style={{ "marginLeft": "auto" }}>
                 {
-                    user.user ? <button className="nav-item nav-link btn btn-link" onClick={() => {
-                        setUser({ token: "", data: undefined });
+                    (user && user.user) ? <button className="nav-item nav-link btn btn-link" onClick={() => {
+                        setUser({ token: "", data: undefined }); window.location.pathname = "/"
                     }}>Log Out</button>
                         : <><Link className="nav-item nav-link" to="/login">Log in</Link>
                             <Link className="nav-item nav-link" to="/register">Sign up</Link></>

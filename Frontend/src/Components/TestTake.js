@@ -8,6 +8,7 @@ import MthSciInput from './Inputs/MthSciInput'
 import UserContext from '../Context/UserContext'
 import Timer from './Timer'
 import './TestTake.css'
+import { Link } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -24,14 +25,13 @@ export default function TestTake() {
             'CA': 'Calculator'
         }
 
-        const name = window.location.pathname.split("/").slice(-1)[0].replace("_", " ")
+        const name = window.location.pathname.split("/").slice(-1)[0].split("_").join(" ")
         const type = typeMap[name.slice(2, 4)]
         setType(type)
         const path = `${type}/${type} ${name.slice(-5)}/${name}`
 
         setTest({ name, path })
     }, [])
-
 
     const [pages, setPages] = useState([]);
     const [data, setData] = useState();
@@ -45,7 +45,7 @@ export default function TestTake() {
             // Sets pages for Science
             let scpages = []
             let total = pdf.numPages
-            for (let i = 3; i <= total - 1; i++) { scpages.push(i) }
+            for (let i = 2; i <= total - 1; i++) { scpages.push(i) }
             setPages(scpages)
         }
 
@@ -60,8 +60,26 @@ export default function TestTake() {
     const [areas, setAreas] = useState([]);
 
     const [answers, setAnswers] = useState({})
+    const [times, setTimes] = useState({})
+    const [startedAt, setStartedAt] = useState(0)
     const updateAnswers = (id, value) => {
-        setAnswers(answers => { answers[id] = value; return answers })
+        let newAnswer = {}
+        newAnswer[id] = value
+        setAnswers(prevAnswers => { 
+            return {
+                ...prevAnswers,
+                ...newAnswer
+            }
+        })
+
+        let newTime = {}
+        newTime[id] = Date.now() - startedAt
+        setTimes(prevTimes => {
+            return {
+                ...prevTimes,
+                ...newTime
+            }
+        })
     };
     const [gradeStates, setGradeStates] = useState({})
     const [score, setScore] = useState(null);
@@ -84,7 +102,7 @@ export default function TestTake() {
             // Spaces are calculated as the wrong size in the other method so for science you need this
             let start = el.innerText.indexOf(string)
             let end = start + string.length
-            
+
             let range = new Range()
             range.setStart(el.firstChild, start)
             range.setEnd(el.firstChild, end)
@@ -390,6 +408,7 @@ export default function TestTake() {
             setStarted(true);
             await findInputs();
             setReady(true);
+            setStartedAt(Date.now())
         }
     }
 
@@ -416,8 +435,8 @@ export default function TestTake() {
                     type,
                     test_name: test.name,
                     score,
-                    gradeStates
-
+                    gradeStates,
+                    times
                 }, { headers: { "x-auth-token": user.token } }
                 )
             }
@@ -457,8 +476,9 @@ export default function TestTake() {
                         })
 
                         : areas.map(area => {
+                            const { state, correct, answer } = gradeStates[area.id]
                             return <NsInput data={area} key={area.id}
-                                gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} old={gradeStates[area.id].answer} />
+                                gradeState={state} correct={correct} old={answer} />
                         })
                     )
                     :
@@ -468,13 +488,16 @@ export default function TestTake() {
                         })
 
                         : areas.map(area => {
+                            const { state, correct, answer } = gradeStates[area.id]
                             return <MthSciInput data={area} key={area.id} type={type}
-                                gradeState={gradeStates[area.id].state} correct={gradeStates[area.id].correct} old={gradeStates[area.id].answer} />
+                                gradeState={state} correct={correct} old={answer} />
                         })
                     )
                 }
             </div>
-            <button onClick={endTest} id="grade-button" className="btn btn-success" hidden={(!started) || done}><p>Grade Test</p></button>
+            
+            <button onClick={endTest} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
+            <Link hidden={started && (!done)} id="exit-button" className="btn btn-danger corner-button" to="/"><p>Exit</p></Link>
         </>
     )
 }

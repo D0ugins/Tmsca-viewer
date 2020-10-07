@@ -8,6 +8,7 @@ import TestTake from './Components/TestTake';
 import Resources from './Components/Resources'
 import Login from './Components/Users/Login'
 import Register from './Components/Users/Register';
+import Results from './Components/Users/Results'
 
 import UserContext from './Context/UserContext'
 
@@ -34,14 +35,15 @@ function App() {
         localStorage.setItem("auth-token", token)
         setUser({ token, user: userRes.data })
       }
+      return;
     }
 
     checkLoggedIn()
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("auth-token", user.token)
-  }, [user.token])
+    if (user && user.token !== undefined) localStorage.setItem("auth-token", user.token)
+  }, [user])
   return (
     <>
       <UserContext.Provider value={{ user, setUser }}>
@@ -52,6 +54,7 @@ function App() {
             <Route path="/resources"> <Resources /> </Route>
             <Route path="/login"> <Login /> </Route>
             <Route path="/register"> <Register /> </Route>
+            <Route path="/results"> <Results /> </Route>
           </Switch>
         </Router>
       </UserContext.Provider>

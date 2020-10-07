@@ -7,10 +7,10 @@ const cors = require('cors');
 
 router.post("/", auth, async (req, res) => {
     try {
-        const { type, test_name, score, gradeStates, } = req.body
+        const { type, test_name, score, gradeStates, times } = req.body
         let user = await User.findById(req.user)
 
-        if (!type || !test_name || !score || !gradeStates) return res.status(401).json({ msg: "Not all data has been provided" })
+        if (!type || !test_name || !score || !gradeStates || !times) return res.status(401).json({ msg: "Not all data has been provided" })
 
         let data = {
             user: {
@@ -20,7 +20,8 @@ router.post("/", auth, async (req, res) => {
             type,
             test_name,
             score,
-            gradeStates
+            gradeStates,
+            times
         };
 
         if (type === "Number Sense") {
@@ -38,8 +39,7 @@ router.post("/", auth, async (req, res) => {
 router.get("/", cors(), async (req, res) => {
     try {
         let results = []
-        const { user_id, test_name, type } = req.body
-
+        const { user_id, test_name, type } = req.query
         /* Finds tests based on search query from body
         Further filtering can be handled client side */
         if (test_name) {

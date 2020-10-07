@@ -33,12 +33,11 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
         "top": data.top + percent(0.1),
         "width": data.width - percent(1.5),
         "height": percent(1.8) + "px",
-        "fontSize": ((window.innerWidth / 54.34).toFixed(1) - 2) + "px"
+        "fontSize": ((window.innerWidth / 54.34).toFixed(1) - 2)
     }
 
     // Fixes missalignments on mobile
     if (styles.width <= percent(5)) {
-        styles.width += percent(1)
         styles.width += percent(.9)
         styles["padding"] = "2px"
         styles.fontSize *= 0.8

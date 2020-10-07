@@ -14,6 +14,14 @@ const genGradeStates = (is_ns) => {
     return gradeStates
 }
 
+const genTimes = (is_ns) => {
+    var times = {}
+    for (i = 1; i <= (is_ns ? 80 : 50); i++) {
+        times[i.toString()] = { type: Number, default: null }
+    }
+    return times
+}
+
 
 const NsResultSchema = new mongoose.Schema({
     user: {
@@ -21,8 +29,10 @@ const NsResultSchema = new mongoose.Schema({
         fullName: { type: String, required: true }
     },
     test_name: { type: String, required: true },
+    type: { type: String, required: true, default: "Number Sense"},
     score: { type: Number, min: -320, max: 400 },
     gradeStates: genGradeStates(true),
+    times: genTimes(true),
     takenAt: { type: Date, default: Date.now }
 })
 
@@ -32,8 +42,10 @@ const MthSciResultSchema = new mongoose.Schema({
         fullName: { type: String, required: true }
     },
     test_name: { type: String, required: true },
+    type: { type: String, required: true },
     score: { type: Number, min: -100, max: 250 },
     gradeStates: genGradeStates(false),
+    times: genTimes(false),
     takenAt: { type: Date, default: Date.now }
 })
 

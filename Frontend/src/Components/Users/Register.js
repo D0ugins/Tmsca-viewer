@@ -32,15 +32,14 @@ export default function Register() {
     const [error, setError] = useState(undefined)
 
     const updateComps = (e) => {
-        let next = competitions
-        next[e.target.value] = !next[e.target.value]
-        // I have no idea why I have to do this but I cant get it to work any other way
-        setCompetitions({
-            "NS": competitions["NS"],
-            "MA": competitions["MA"],
-            "SC": competitions["SC"],
-            "CA": competitions["CA"]
-        })
+        var next = {}
+        next[e.target.value] = !competitions[e.target.value]
+        setCompetitions((prev => {
+            return {
+                ...prev,
+                ...next
+            }
+        }))
     }
 
     const register = async (e) => {
@@ -93,6 +92,7 @@ export default function Register() {
                     <input type="text" className="form-control" id="lastName-input" value={lastName} placeholder="Last Name"
                         onChange={(e) => setLastName(e.target.value)}></input>
                     <hr />
+                    <h3>What are your main competitions</h3>
                     <div className="comps-container">
                         <div className="comp-labels">
                             {

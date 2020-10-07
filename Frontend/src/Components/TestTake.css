@@ -19,7 +19,7 @@ span{
     user-select: none;
 }
 
-#grade-button {
+.corner-button {
     position: fixed;
     z-index: 100;
 
@@ -32,7 +32,7 @@ span{
     text-align: center;
 }
 
-#grade-button p {
+.corner-button p {
     font-size: 1vw;
     position: absolute;
     left: 50%;
