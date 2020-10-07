@@ -260,7 +260,9 @@ export default function TestTake() {
 
         // Tracks if current exception has been handled
         var exception_state = 0
-        for (let i = 0, question = 0, offset = 0, page = 0; i < texts.length - 1; i++) {
+        var page = type === "Science" ? 1 : 0
+        var offset = page * pageheight
+        for (let i = 0, question = 0; i < texts.length - 1; i++) {
             let text = texts[i]
             var str = text.str
 

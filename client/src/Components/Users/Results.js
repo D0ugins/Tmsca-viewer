@@ -180,7 +180,7 @@ export default function Results() {
                                         </tr>
                                     </tbody>
                                 </Table>
-                                {groups ? <h2>Sections</h2> : ""}
+                                {type !== "Science" ? <h2>Sections</h2> : ""}
                                 {groups ? <Table bordered hover className="group-times">
                                     <thead>
                                         <tr>
