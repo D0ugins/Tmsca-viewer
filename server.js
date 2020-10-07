@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const fs = require('fs');
 const path = require('path');
+const { allowedNodeEnvironmentFlags } = require('process');
 
 require('dotenv').config();
 
@@ -23,7 +24,6 @@ mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true,
 app.use("/api/users", require("./routes/userRouter"));
 app.use("/api/results", require("./routes/resultsRouter"));
 
-const KEYFOLDER = path.resolve(__dirname, 'Key Creation', 'AnswerKeys')
 
 const checkNs = (ans, correct, num) => {
     // Deals with esimation problems and ones with mutiple correct answers
@@ -95,7 +95,7 @@ app.post('/api/grade', cors(), (req, res) => {
         const { type, keypath, answers} = req.body
 
         // Load answer key from file
-        const key = JSON.parse(fs.readFileSync(path.join(KEYFOLDER, keypath + " Key.json"), 'utf-8'))
+        const key = JSON.parse(fs.readFileSync(path.resolve('AnswerKeys', (keypath + " Key.json")), 'utf-8'))
         
         res.json(gradeTest(key, answers, type))
     } catch (err) {
@@ -113,6 +113,14 @@ if (process.env.NODE_ENV === "production") {
         res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
     })
 }
+else if (process.env.NODE_ENV === "development") {
+    app.use(express.static('client/public'))
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'))
+    })
+}
+
 
 app.listen(port, () => {
     console.log(`Listening on port ` + port)

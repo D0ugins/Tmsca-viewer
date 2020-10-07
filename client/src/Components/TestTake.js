@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Document, Page, pdfjs } from "react-pdf";
 import Axios from "axios"
 
@@ -12,26 +12,23 @@ import { Link } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
+const typeMap = {
+    'NS': 'Number Sense',
+    'MA': 'Math',
+    'SC': 'Science',
+    'CA': 'Calculator'
+}
+
+const name = window.location.pathname.split("/").slice(-1)[0].split("_").join(" ")
+const type = typeMap[name.slice(2, 4)]
+
+const path = `${type}/${type} ${name.slice(-5)}/${name}`
+
+const test = { name, path }
+
+
 export default function TestTake() {
     const { user } = useContext(UserContext);
-    const [type, setType] = useState("")
-    const [test, setTest] = useState({})
-
-    useEffect(() => {
-        const typeMap = {
-            'NS': 'Number Sense',
-            'MA': 'Math',
-            'SC': 'Science',
-            'CA': 'Calculator'
-        }
-
-        const name = window.location.pathname.split("/").slice(-1)[0].split("_").join(" ")
-        const type = typeMap[name.slice(2, 4)]
-        setType(type)
-        const path = `${type}/${type} ${name.slice(-5)}/${name}`
-
-        setTest({ name, path })
-    }, [])
 
     const [pages, setPages] = useState([]);
     const [data, setData] = useState();
@@ -65,7 +62,7 @@ export default function TestTake() {
     const updateAnswers = (id, value) => {
         let newAnswer = {}
         newAnswer[id] = value
-        setAnswers(prevAnswers => { 
+        setAnswers(prevAnswers => {
             return {
                 ...prevAnswers,
                 ...newAnswer
@@ -447,6 +444,7 @@ export default function TestTake() {
         setDone(true)
     }
 
+
     return (
         <>
             {(!started || done || !ready) ?
@@ -495,7 +493,7 @@ export default function TestTake() {
                     )
                 }
             </div>
-            
+
             <button onClick={endTest} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
             <Link hidden={started && (!done)} id="exit-button" className="btn btn-danger corner-button" to="/"><p>Exit</p></Link>
         </>
