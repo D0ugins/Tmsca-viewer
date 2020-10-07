@@ -107,7 +107,7 @@ export default function Results() {
                 {
                     ["Number Sense", "Math", "Science", "All"].map(s => {
                         return <Form.Check inline className="result-filter" checked={filter === s} label={s}
-                            type="radio" value={s} name="type" key={s + "filter"} onClick={(e) => {
+                            type="radio" value={s} name="type" key={s + "filter"} onClick={() => {
                                 setFilter(s)
                             }} />
                     })

@@ -38,7 +38,7 @@ router.post("/register", async (req, res) => {
         }).save());
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 })
 
@@ -68,7 +68,7 @@ router.post("/login", async (req, res) => {
             }
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 })
 
@@ -97,7 +97,7 @@ router.post("/update", auth, async (req, res) => {
         })
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 
 })
@@ -105,18 +105,21 @@ router.post("/update", auth, async (req, res) => {
 router.post("/isTokenValid", async (req, res) => {
     try {
         const token = req.header("x-auth-token");
-        if (!token) return res.json(false)
+        res["val"] = false;
 
-        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-            if (err) return res.json(false)
-            const user = await User.findById(decoded.id)
-            if (!user) return res.json(false)
-        });
-
-        return res.json(true)
+        if (token) {
+            await jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+                if (err) return 
+                if (decoded) {
+                    const user = await User.findById(decoded.id);
+                    if (user) res["val"] = true;
+                }
+            });
+        }
+        return res.json(res["val"]);
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 
 
@@ -125,8 +128,14 @@ router.post("/isTokenValid", async (req, res) => {
 
 router.get("/", auth, async (req, res) => {
     const user = await User.findById(req.user)
-    delete user.password
-    res.json(user)
+    if (user) {
+        delete user.password
+        return res.json(user)
+    }
+    else {
+        return res.json({ err: "User no longer exists" })
+    }
+
 })
 
 module.exports = router;
