@@ -414,14 +414,14 @@ export default function TestTake() {
 
     const endTest = async (manual) => {
         try {
-            const valid = await Axios.post(`http://localhost:5000/api/users/isTokenValid`, null,
+            const valid = await Axios.post(`/api/users/isTokenValid`, null,
                 { headers: { "x-auth-token": user.token } }
             )
             let save = false
 
             if (valid) save = window.confirm(`${!manual ? "Time is up!\n" : ""} Would you like to save these results?`)
 
-            const res = await Axios.post(`http://localhost:5000/api/grade`, {
+            const res = await Axios.post(`/api/grade`, {
                 type,
                 keypath: test.path,
                 answers
@@ -431,7 +431,7 @@ export default function TestTake() {
             setScore(score)
 
             if (save) {
-                await Axios.post(`http://localhost:5000/api/results`, {
+                await Axios.post(`/api/results`, {
                     type,
                     test_name: test.name,
                     score,

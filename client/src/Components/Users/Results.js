@@ -86,7 +86,7 @@ export default function Results() {
         const getResults = async () => {
             if (user && user.user) {
                 let res = await Axios.get(
-                    'http://localhost:5000/api/results',
+                    '/api/results',
                     { params: { user_id: user.user._id } })
                 
                 // Sorts results by date taken

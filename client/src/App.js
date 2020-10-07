@@ -24,12 +24,12 @@ function App() {
       let token = localStorage.getItem("auth-token")
       if (token === undefined) { localStorage.setItem("auth-token", ""); token = "" }
 
-      const valid = await Axios.post(`http://localhost:5000/api/users/isTokenValid`, null,
+      const valid = await Axios.post(`/api/users/isTokenValid`, null,
         { headers: { "x-auth-token": token } }
       )
 
       if (valid.data) {
-        const userRes = await Axios.get(`http://localhost:5000/api/users`,
+        const userRes = await Axios.get(`/api/users`,
           { headers: { "x-auth-token": token } }
         )
         localStorage.setItem("auth-token", token)

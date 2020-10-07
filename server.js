@@ -19,11 +19,6 @@ mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true,
     console.log("Mongodb connection successful")
 })
 
-if (process.env.NODE_ENV === "development") {
-    app.use(cors({
-        origin: 'http://localhost:3000',
-    }));
-}
 
 app.use("/api/users", require("./routes/userRouter"));
 app.use("/api/results", require("./routes/resultsRouter"));
@@ -109,6 +104,15 @@ app.post('/api/grade', cors(), (req, res) => {
     }
 
 })
+
+// Load react stuff if not hitting api route
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static('client/build'))
+    
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+    })
+}
 
 app.listen(port, () => {
     console.log(`Listening on port ` + port)

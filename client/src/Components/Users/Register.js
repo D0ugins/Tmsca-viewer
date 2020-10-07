@@ -45,7 +45,7 @@ export default function Register() {
     const register = async (e) => {
         e.preventDefault()
         try {
-            var res = await Axios.post(`http://localhost:5000/api/users/register`, {
+            var res = await Axios.post(`/api/users/register`, {
                 email,
                 password,
                 passwordCheck,
@@ -54,7 +54,7 @@ export default function Register() {
                 competitions
             })
             if (res.status === 200) {
-                var user = await Axios.post(`http://localhost:5000/api/users/login`, {
+                var user = await Axios.post(`/api/users/login`, {
                     email,
                     password
                 })
