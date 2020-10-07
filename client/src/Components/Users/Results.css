@@ -27,6 +27,19 @@
     margin: auto;
     text-align: center;
     margin-bottom: 5%;
+    padding: 1%;
+}
+
+.result-stats{
+    margin: 5% auto
+}
+
+.group-times{
+    margin-bottom: 5%;
+}
+
+.group-times tbody{
+    background: #f2f2f2;
 }
 
 .result-questions{

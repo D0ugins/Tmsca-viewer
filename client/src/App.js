@@ -39,7 +39,6 @@ function App() {
         }
         return;
       } catch (err) {
-        localStorage.setItem("auth-token", "");
         console.error("Something went wrong with fetching user data: " + err)
       }
       

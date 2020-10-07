@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import Axios from 'axios'
-import { Collapse, Card, Button, Form } from 'react-bootstrap'
+import { Collapse, Card, Button, Form, Table } from 'react-bootstrap'
 
 import UserContext from '../../Context/UserContext'
 import './Results.css'
@@ -65,7 +65,7 @@ export default function Results() {
 
     const parseTimes = (t) => {
         let times = Object.entries(t);
-        
+
         // Sorts questions by the time they were answered at
         let sorted = times.sort((a, b) => {
             if (!a[1]) return 1
@@ -75,11 +75,29 @@ export default function Results() {
         // Calculates the time the question took based on the last time
         times = sorted.map((time, i) => {
             if (time[1] === null) return [time[0], ""]
-            if (i === 0) return [time[0], (time[1] / 1000).toFixed(1) + "s"]
-            return [time[0], ((time[1] - times[i-1][1]) / 1000).toFixed(1) + "s"]
+            if (i === 0) return [time[0], (time[1] / 1000).toFixed(1)]
+            return [time[0], ((time[1] - times[i - 1][1]) / 1000).toFixed(1)]
         })
 
         return Object.fromEntries(times)
+    }
+
+    const findGradeStates = (searches, gradeStates) => {
+        var total = 0
+        for (let search of searches) {
+            total += Object.entries(gradeStates).filter(gradeState => gradeState[1].state === search).length
+        }
+
+        return total
+    }
+
+    const getLast = (states) => {
+        if (!states) return []
+        let arr = Object.entries(states);
+        let last = arr.filter(state => {
+            return state[1].state !== "na"
+        }).pop()[0]
+        return parseInt(last)
     }
 
     useEffect(() => {
@@ -88,7 +106,7 @@ export default function Results() {
                 let res = await Axios.get(
                     '/api/results',
                     { params: { user_id: user.user._id } })
-                
+
                 // Sorts results by date taken
                 let data = res.data.sort((a, b) => {
                     return Date.parse(b.takenAt) - Date.parse(a.takenAt)
@@ -117,55 +135,123 @@ export default function Results() {
             { results ? results.filter((result) => {
                 return filter === "All" || result.type === filter
             }).map((result, i) => {
-                let { test_name, score, takenAt, gradeStates, times } = result
+                let { test_name, score, takenAt, gradeStates, times, type } = result
+
+                let groups = type === "Number Sense" ? [20, 40, 60, 80] : (type === "Math" ? [12, 25, 38, 50] : [])
+                let last = getLast(gradeStates)
+
+                groups = groups.filter(group => group <= last)
 
                 times = parseTimes(times)
+                let averageTime = (type === "Number Sense" ? 600 : 2400) / findGradeStates(["correct", "wrong"], gradeStates)
+
                 return (
                     <Card className="result-container" key={"container" + i}>
-                        <Card.Body>
-                            <h1>Score: {score}</h1>
-                            <div style={{ textAlign: "left" }}>
-                                <h2>{parseTestName(test_name)}</h2>
-                                <h4>{parseDate(takenAt)}</h4>
+                        <h1>Score: {score}</h1>
+                        <div style={{ textAlign: "left" }}>
+                            <h2>{parseTestName(test_name)}</h2>
+                            <h4>{parseDate(takenAt)}</h4>
+                        </div>
+                        <Button variant="primary" style={{marginTop: "2%"}} onClick={(e) => updateOpen(i, e)}>Questions</Button>
+                        <Collapse in={open[i]}>
+                            <div>
+                                <Table striped bordered hover className="result-stats">
+                                    <thead>
+                                        <tr>
+                                            {
+                                                type === "Number Sense" ? <>
+                                                <td><h3>Questions answered</h3></td>
+                                                <td><h3>Question reached</h3></td>
+                                                <td><h3>Skipped</h3></td></>
+                                                : <td><h3>Questions answered</h3></td>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            
+                                            {
+                                                type === "Number Sense" ? <>
+                                                    <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                                    <td><h5>{findGradeStates(["correct", "wrong", "skipped"], gradeStates)}</h5></td>
+                                                    <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td></> 
+                                                    : <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                            }
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                                {groups ? <h2>Sections</h2> : ""}
+                                {groups ? <Table bordered hover className="group-times">
+                                    <thead>
+                                        <tr>
+                                            {
+                                                groups.map((group, i) => {
+                                                    if (type === "Science" || group > getLast(gradeStates)) return ""
+                                                    if (i === 0) return <td key={group}><h3>1 - {group}</h3></td>
+                                                    return <td key={group}> <h3>{groups[i - 1]} - {group}</h3></td>
+
+                                                })
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            {
+                                                groups.map((group, i) => {
+
+                                                    let section = []
+                                                    if (i === 0) section = [0, group]
+                                                    else section = [groups[i - 1] - 1, groups[i] - 1]
+
+                                                    let sectionTimes = Object.entries(times).slice(section[0], section[1])
+                                                    let time = Math.floor(sectionTimes
+                                                        .map(x => parseFloat(x[1]) || 0)
+                                                        .reduce((total, time) => total + time))
+
+                                                    let timeString = Math.floor(time / 60) + ":" + (time % 60 || "00")
+
+                                                    return <td key={group}><h5>{timeString}</h5></td>
+
+                                                })
+                                            }
+                                        </tr>
+                                    </tbody>
+                                </Table> : ""}
+
+                                <hr />
+                                <table className="result-questions">
+                                    <thead>
+                                        <tr>
+                                            <td>Question</td>
+                                            <td>You Answered</td>
+                                            <td>Correct Answer</td>
+                                            <td>Time</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {Object.keys(gradeStates).map(i => {
+                                            let { answer, correct, state } = gradeStates[i]
+
+                                            if (Array.isArray(correct)) {
+                                                if (i % 10 === 0) correct = correct[0] + ' - ' + correct[1]
+                                                else correct = correct[0]
+                                            }
+
+                                            if (answer === "na") answer = ""
+
+                                            return (
+                                                <tr className={"result-question result-question-" + state} key={"result-question" + i}>
+                                                    <td>{i}</td>
+                                                    <td>{answer}</td>
+                                                    <td>{correct}</td>
+                                                    <td style={{color: times[i] > averageTime*2 ? "red" : "black" }}>{times[i]}{times[i] ? "s" : ""}</td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
-                            <Button variant="primary" onClick={(e) => updateOpen(i, e)}>Questions</Button>
-                            <Collapse in={open[i]}>
-                                <div>
-                                    <table className="result-questions">
-                                        <thead>
-                                            <tr>
-                                                <td>Question</td>
-                                                <td>You Answered</td>
-                                                <td>Correct Answer</td>
-                                                <td>Time</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            {Object.keys(gradeStates).map(i => {
-                                                let { answer, correct, state } = gradeStates[i]
-
-                                                if (Array.isArray(correct)) {
-                                                    if (i % 10 === 0) correct = correct[0] + ' - ' + correct[1]
-                                                    else correct = correct[0]
-                                                }
-
-                                                if (answer === "na") answer = ""
-
-                                                return (
-                                                    <tr className={"result-question result-question-" + state} key={"result-question" + i}>
-                                                        <td>{i}</td>
-                                                        <td>{answer}</td>
-                                                        <td>{correct}</td>
-                                                        <td>{times[i]}</td>
-                                                    </tr>
-                                                )
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Collapse>
-                        </Card.Body>
+                        </Collapse>
                     </Card>
                 )
             }) : <h1>Loading...</h1>}

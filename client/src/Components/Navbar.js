@@ -14,9 +14,9 @@ export default function Navbar() {
             { (user && user.user) ? <Link className="nav-item nav-link nav" to="/results">Results</Link> : ""}
             <div style={{ "marginLeft": "auto" }}>
                 {
-                    (user && user.user) ? <button className="nav-item nav-link btn btn-link" onClick={() => {
-                        setUser({ token: "", data: undefined }); window.location.pathname = "/"
-                    }}>Log Out</button>
+                    (user && user.user) ? <Link className="nav-item nav-link btn btn-link" to="/" onClick={() => {
+                        setUser({ token: "", data: undefined });
+                    }}>Log Out</Link>
                         : <><Link className="nav-item nav-link" to="/login">Log in</Link>
                             <Link className="nav-item nav-link" to="/register">Sign up</Link></>
                 }
