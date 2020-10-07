@@ -416,7 +416,7 @@ export default function TestTake() {
             )
             let save = false
 
-            if (valid) save = window.confirm(`${!manual ? "Time is up!\n" : ""} Would you like to save these results?`)
+            if (valid.data) save = window.confirm(`${!manual ? "Time is up!\n" : ""} Would you like to save these results?`)
 
             const res = await Axios.post(`/api/grade`, {
                 type,
