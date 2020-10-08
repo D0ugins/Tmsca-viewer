@@ -100,6 +100,17 @@ export default function Results() {
         return parseInt(last)
     }
 
+    const getTestPath = (name) => {
+        const typeMap = {
+            'NS': 'Number Sense',
+            'MA': 'Math',
+            'SC': 'Science',
+            'CA': 'Calculator'
+        }
+        const type = typeMap[name.slice(2, 4)]
+        return `${process.env.PUBLIC_URL}/tests/${type}/${type} ${name.slice(-5)}/${name}.pdf`
+    }   
+    
     useEffect(() => {
         const getResults = async () => {
             if (user && user.user) {
@@ -149,7 +160,8 @@ export default function Results() {
                     <Card className="result-container" key={"container" + i}>
                         <h1>Score: {score}</h1>
                         <div style={{ textAlign: "left" }}>
-                            <h2>{parseTestName(test_name)}</h2>
+                            <a target="_blank" rel="noopener noreferrer" href={getTestPath(test_name)}>
+                                <h2>{parseTestName(test_name)}</h2></a>
                             <h4>{parseDate(takenAt)}</h4>
                         </div>
                         <Button variant="primary" style={{marginTop: "2%"}} onClick={(e) => updateOpen(i, e)}>Questions</Button>
@@ -162,8 +174,11 @@ export default function Results() {
                                                 type === "Number Sense" ? <>
                                                 <td><h3>Questions answered</h3></td>
                                                 <td><h3>Question reached</h3></td>
-                                                <td><h3>Skipped</h3></td></>
-                                                : <td><h3>Questions answered</h3></td>
+                                                <td><h3>Skipped</h3></td>
+                                                <td><h3>Accuracy</h3></td></>
+
+                                                : <><td><h3>Questions answered</h3></td>
+                                                <td><h3>Accuracy</h3></td></>
                                             }
                                         </tr>
                                     </thead>
@@ -174,8 +189,17 @@ export default function Results() {
                                                 type === "Number Sense" ? <>
                                                     <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
                                                     <td><h5>{findGradeStates(["correct", "wrong", "skipped"], gradeStates)}</h5></td>
-                                                    <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td></> 
-                                                    : <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                                    <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td>
+                                                    <td><h5>{Math.floor((
+                                                        findGradeStates(["correct"], gradeStates) / 
+                                                        findGradeStates(["correct", "wrong", "skipped"], gradeStates)
+                                                    ) * 100)}%</h5></td></>
+                                                    
+                                                    : <><td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                                    <td><h5>{Math.floor((
+                                                        findGradeStates(["correct"], gradeStates) / 
+                                                        findGradeStates(["correct", "wrong"], gradeStates)
+                                                    ) * 100)}%</h5></td></>
                                             }
                                         </tr>
                                     </tbody>
