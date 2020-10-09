@@ -12,11 +12,10 @@
     margin-top: -.1%;
 }
 
-span{
+.pdf span{
     font-weight: 900;
-    font-family: 'Times New Roman', Times, serif;
-    pointer-events: none !important;
-    user-select: none;
+    /* pointer-events: none !important;
+    user-select: none; */
 }
 
 .corner-button {

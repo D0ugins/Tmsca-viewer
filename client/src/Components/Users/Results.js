@@ -14,14 +14,7 @@ export default function Results() {
     const [filter, setFilter] = useState("All")
 
     const updateOpen = (i) => {
-        setOpen(prev => {
-            let next = {}
-            next[i] = !prev[i]
-            return ({
-                ...prev,
-                ...next
-            })
-        })
+        setOpen(prev => { return { ...prev, [i]: !prev[i] } })
     }
 
     const parseTestName = (name) => {
@@ -41,6 +34,8 @@ export default function Results() {
 
         const year = "20" + name.slice(-5)
         let num = name.slice(4, -6)
+        /* If test code is number Change it to Test x 
+        if it isnt use the map to go from for example REG -> Regional*/
         num = isNaN(parseInt(num)) ? map[num] : 'Test ' + num
         let type = map[name.slice(2, 4)]
 
@@ -48,9 +43,12 @@ export default function Results() {
     }
 
     const parseDate = (s) => {
+        // Parses taken at date
         let date = new Date(s)
 
-        let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        let months = ["January", "February", "March", "April", "May", "June", "July", 
+        "August", "September", "October", "November", "December"]
+        
         let month = months[date.getMonth()]
 
         let day = date.getDate();
@@ -62,6 +60,7 @@ export default function Results() {
     }
 
     const parseTimes = (t) => {
+        // Calculates times for individual questions based on when they were answerd
         let times = Object.entries(t);
 
         // Sorts questions by the time they were answered at
@@ -70,7 +69,7 @@ export default function Results() {
             if (!b[1]) return -1
             return a[1] - b[1]
         })
-        // Calculates the time the question took based on the last time
+        // Calculates the time the question took based on the question that was answer before it
         times = sorted.map((time, i) => {
             if (time[1] === null) return [time[0], ""]
             if (i === 0) return [time[0], (time[1] / 1000).toFixed(1)]
@@ -81,6 +80,7 @@ export default function Results() {
     }
 
     const findGradeStates = (searches, gradeStates) => {
+        // Get count of certain grade state
         var total = 0
         for (let search of searches) {
             total += Object.entries(gradeStates).filter(gradeState => gradeState[1].state === search).length
@@ -92,6 +92,7 @@ export default function Results() {
     const getLast = (states) => {
         if (!states) return []
         let arr = Object.entries(states);
+        // Find last question that was answered
         let last = arr.filter(state => {
             return state[1].state !== "na"
         }).pop()[0]
@@ -99,6 +100,7 @@ export default function Results() {
     }
 
     const getTestPath = (name) => {
+        // Get path of test
         const typeMap = {
             'NS': 'Number Sense',
             'MA': 'Math',
@@ -111,6 +113,7 @@ export default function Results() {
     
     useEffect(() => {
         const getResults = async () => {
+            // Load results from backend
             if (user && user.user) {
                 let res = await Axios.get(
                     '/api/results',
@@ -162,7 +165,7 @@ export default function Results() {
                                 <h2>{parseTestName(test_name)}</h2></a>
                             <h4>{parseDate(takenAt)}</h4>
                         </div>
-                        <Button variant="primary" style={{marginTop: "2%"}} onClick={(e) => updateOpen(i, e)}>Questions</Button>
+                        <Button variant="primary" style={{ marginTop: "2%" }} onClick={(e) => updateOpen(i, e)}>Questions</Button>
                         <Collapse in={open[i]}>
                             <div>
                                 <Table striped bordered hover className="result-stats">
@@ -170,34 +173,36 @@ export default function Results() {
                                         <tr>
                                             {
                                                 type === "Number Sense" ? <>
-                                                <td><h3>Questions answered</h3></td>
-                                                <td><h3>Question reached</h3></td>
-                                                <td><h3>Skipped</h3></td>
-                                                <td><h3>Accuracy</h3></td></>
+                                                    <td><h3>Questions answered</h3></td>
+                                                    <td><h3>Question reached</h3></td>
+                                                    <td><h3>Skipped</h3></td>
+                                                    <td><h3>Accuracy</h3></td></>
 
-                                                : <><td><h3>Questions answered</h3></td>
-                                                <td><h3>Accuracy</h3></td></>
+                                                    : <><td><h3>Questions answered</h3></td>
+                                                        <td><h3>Accuracy</h3></td></>
                                             }
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            
+
                                             {
                                                 type === "Number Sense" ? <>
                                                     <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
                                                     <td><h5>{findGradeStates(["correct", "wrong", "skipped"], gradeStates)}</h5></td>
                                                     <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td>
                                                     <td><h5>{Math.floor((
-                                                        findGradeStates(["correct"], gradeStates) / 
+                                                        findGradeStates(["correct"], gradeStates) /
                                                         findGradeStates(["correct", "wrong", "skipped"], gradeStates)
                                                     ) * 100)}%</h5></td></>
-                                                    
+
                                                     : <><td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
-                                                    <td><h5>{Math.floor((
+                                                        <td><h5>{Math.floor((
+                                                            findGradeStates(["correct"], gradeStates) /
                                                         findGradeStates(["correct"], gradeStates) / 
-                                                        findGradeStates(["correct", "wrong"], gradeStates)
-                                                    ) * 100)}%</h5></td></>
+                                                            findGradeStates(["correct"], gradeStates) /
+                                                            findGradeStates(["correct", "wrong"], gradeStates)
+                                                        ) * 100)}%</h5></td></>
                                             }
                                         </tr>
                                     </tbody>
@@ -266,7 +271,7 @@ export default function Results() {
                                                     <td>{i}</td>
                                                     <td>{answer}</td>
                                                     <td>{correct}</td>
-                                                    <td style={{color: times[i] > averageTime*2 ? "red" : "black" }}>{times[i]}{times[i] ? "s" : ""}</td>
+                                                    <td style={{ color: times[i] > averageTime * 2 ? "red" : "black" }}>{times[i]}{times[i] ? "s" : ""}</td>
                                                 </tr>
                                             )
                                         })}

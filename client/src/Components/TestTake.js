@@ -60,31 +60,17 @@ export default function TestTake() {
     const [times, setTimes] = useState({})
     const [startedAt, setStartedAt] = useState(0)
     const updateAnswers = (id, value) => {
-        let newAnswer = {}
-        newAnswer[id] = value
-        setAnswers(prevAnswers => {
-            return {
-                ...prevAnswers,
-                ...newAnswer
-            }
-        })
+        setAnswers(prevAnswers => { return { ...prevAnswers, [id]: value } })
 
-        let newTime = {}
-        newTime[id] = Date.now() - startedAt
-        setTimes(prevTimes => {
-            return {
-                ...prevTimes,
-                ...newTime
-            }
-        })
+        setTimes(prevTimes => { return { ...prevTimes, [id]: Date.now() - startedAt } })
     };
     const [gradeStates, setGradeStates] = useState({})
     const [score, setScore] = useState(null);
 
     const getWidth = (string, el = "") => {
 
-        const fontsize = (window.innerWidth / 54.34).toFixed(1);
-        const fontweight = type === "Science" ? 500 : 900
+        const fontSize = (window.innerWidth / 54.34).toFixed(1);
+        const fontWeight = type === "Science" ? 500 : 900
         var width = 0;
         if (string.length === 0) return 0;
 
@@ -92,7 +78,7 @@ export default function TestTake() {
             // For getting width of string not in text
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
-            context.font = `normal normal ${fontweight} ${fontsize}px times new roman`
+            context.font = `normal normal ${fontWeight} ${fontSize}px times`
             width = context.measureText(string).width;
         }
         else {
@@ -114,8 +100,8 @@ export default function TestTake() {
 
             var rect = range.getBoundingClientRect();
             width = rect.width
-            // Deals with that font being slightly to small for some reason
-            if (el.style.fontFamily.includes("g_d0_f8")) width *= 1.05
+            // Deals with that font being squished for some reason
+            if (el.style.fontFamily.includes("g_d0")) {width *= 1.234}
 
         }
 
@@ -365,7 +351,7 @@ export default function TestTake() {
 
     const findInputs = async () => {
         // Loads a page to wait enough time for document to load its pages
-        var texts = await data.getPage(pages[0]);
+        var texts = await data.getPage(pages[1]);
         texts = await texts.getTextContent();
 
         texts = [];
@@ -399,6 +385,7 @@ export default function TestTake() {
                 break;
         }
         setReady(true)
+
     }
 
     const startTest = async () => {
@@ -413,6 +400,7 @@ export default function TestTake() {
 
     const endTest = async (manual) => {
         try {
+            // Check if there is a logged in user
             const valid = await Axios.post(`/api/users/isTokenValid`, null,
                 { headers: { "x-auth-token": user.token } }
             )
@@ -420,6 +408,7 @@ export default function TestTake() {
 
             if (valid.data) save = window.confirm(`${!manual ? "Time is up!\n" : ""} Would you like to save these results?`)
 
+            // Send results to backed for grading
             const res = await Axios.post(`/api/grade`, {
                 type,
                 keypath: test.path,
@@ -430,6 +419,7 @@ export default function TestTake() {
             setScore(score)
 
             if (save) {
+                // Save results to database
                 await Axios.post(`/api/results`, {
                     type,
                     test_name: test.name,
