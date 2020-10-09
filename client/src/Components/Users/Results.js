@@ -13,7 +13,7 @@ export default function Results() {
     const [open, setOpen] = useState({})
     const [filter, setFilter] = useState("All")
 
-    const updateOpen = (i, e) => {
+    const updateOpen = (i) => {
         setOpen(prev => {
             let next = {}
             next[i] = !prev[i]
@@ -57,8 +57,6 @@ export default function Results() {
         let year = date.getFullYear();
         let hour = date.getHours() % 12;
         let min = date.getMinutes();
-
-
 
         return `${month} ${day}, ${year} @ ${hour}:${min}`
     }
@@ -232,7 +230,7 @@ export default function Results() {
                                                         .map(x => parseFloat(x[1]) || 0)
                                                         .reduce((total, time) => total + time))
 
-                                                    let timeString = Math.floor(time / 60) + ":" + (time % 60 || "00")
+                                                    let timeString = Math.floor(time / 60) + ":" + (time % 60).toString().padStart(2, '0')
 
                                                     return <td key={group}><h5>{timeString}</h5></td>
 

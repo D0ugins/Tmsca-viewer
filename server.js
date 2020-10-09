@@ -59,7 +59,7 @@ const gradeTest = (key, answers, type) => {
         if (i <= last || !is_ns) {
             if (answered.includes(i.toString())) {
                 // If number sense test use checkNS function otherwise just compare answer to correct
-                let is_correct = is_ns ? checkNs(answers[i], correct, i) : answers[i] === correct;
+                let is_correct = is_ns ? checkNs(answers[i].trim(), correct, i) : answers[i] === correct;
 
                 if (is_correct) {
                     score += key.prize + key.penalty;
