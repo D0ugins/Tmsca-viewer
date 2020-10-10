@@ -39,9 +39,10 @@ const checkNs = (ans, correct, num) => {
 const gradeTest = (key, answers, type) => {
     var states = {};
     let is_ns = type === "Number Sense";
-
+    console.log(answers)
     let score = 0;
-    let answered = Object.keys(answers);
+    // Gets all the questions that were actually answered
+    let answered = Object.keys(answers).filter(q => answers[q]);
     // Sets score as if each question was wrong then adds back score for questions that were right
     if (is_ns) {
         var last = 0;

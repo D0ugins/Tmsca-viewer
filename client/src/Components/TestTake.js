@@ -61,8 +61,9 @@ export default function TestTake() {
     const [startedAt, setStartedAt] = useState(0)
     const updateAnswers = (id, value) => {
         setAnswers(prevAnswers => { return { ...prevAnswers, [id]: value } })
-
-        setTimes(prevTimes => { return { ...prevTimes, [id]: Date.now() - startedAt } })
+        setTimes(prevTimes => { return { ...prevTimes, 
+            [id]: (value ? Date.now() - startedAt : null) 
+        }})        
     };
     const [gradeStates, setGradeStates] = useState({})
     const [score, setScore] = useState(null);
