@@ -400,6 +400,7 @@ export default function TestTake() {
 
     const endTest = async (manual) => {
         try {
+            setReady(false)
             // Check if there is a logged in user
             const valid = await Axios.post(`/api/users/isTokenValid`, null,
                 { headers: { "x-auth-token": user.token } }
@@ -417,8 +418,7 @@ export default function TestTake() {
             const { score, gradeStates } = res.data
             setGradeStates(gradeStates)
             setScore(score)
-
-            if (save) {
+            if (save && !done) {
                 // Save results to database
                 await Axios.post(`/api/results`, {
                     type,
@@ -429,11 +429,12 @@ export default function TestTake() {
                 }, { headers: { "x-auth-token": user.token } }
                 )
             }
+            setReady(true)
+            setDone(true)
         } catch (err) {
             console.error("Something went wrong with saving or grading your test results")
         }
 
-        setDone(true)
     }
 
 
@@ -487,7 +488,7 @@ export default function TestTake() {
             </div>
             : ""}
 
-            <button onClick={endTest} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
+            <button onClick={endTest} disabled={!ready} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
             <Link hidden={started && (!done)} id="exit-button" className="btn btn-danger corner-button" to="/"><p>Exit</p></Link>
         </>
     )

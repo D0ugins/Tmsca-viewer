@@ -24,12 +24,16 @@ router.post("/", auth, async (req, res) => {
             times
         };
 
-        if (type === "Number Sense") {
-            res.json(await new NsResult(data).save())
+        let Result = type === "Number Sense" ? NsResult : MthSciResult
+        // Checks if test has been saved from less than a few seconds ago and if so cancels
+        let results = await Result.find({ 'user._id': req.user })
+        for (result of results) {
+            if (Date.now() - Date.parse(result.takenAt) < 30000) return res.status(401).json({ msg: "Test seems to have been saved twice" })
         }
-        else {
-            res.json(await new MthSciResult(data).save())
-        }
+
+        res.json(await new Result(data).save())
+
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
