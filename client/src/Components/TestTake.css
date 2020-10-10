@@ -18,6 +18,10 @@
     user-select: none; */
 }
 
+.hidden-page{
+    display: none;
+}
+
 .corner-button {
     position: fixed;
     z-index: 100;

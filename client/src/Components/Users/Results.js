@@ -199,8 +199,6 @@ export default function Results() {
                                                     : <><td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
                                                         <td><h5>{Math.floor((
                                                             findGradeStates(["correct"], gradeStates) /
-                                                        findGradeStates(["correct"], gradeStates) / 
-                                                            findGradeStates(["correct"], gradeStates) /
                                                             findGradeStates(["correct", "wrong"], gradeStates)
                                                         ) * 100)}%</h5></td></>
                                             }
