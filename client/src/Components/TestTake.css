@@ -14,8 +14,8 @@
 
 .pdf span{
     font-weight: 900;
-    /* pointer-events: none !important;
-    user-select: none; */
+    pointer-events: none !important;
+    user-select: none;
 }
 
 .hidden-page{
