@@ -102,7 +102,7 @@ export default function TestTake() {
             var rect = range.getBoundingClientRect();
             width = rect.width
             // Deals with that font being squished for some reason
-            if (el.style.fontFamily.includes("g_d0")) {width *= 1.234}
+            if (el.style.fontFamily.includes("g_d0") && type === "Science") {width *= 1.234}
 
         }
 
@@ -352,11 +352,10 @@ export default function TestTake() {
 
     const findInputs = async () => {
         // Loads a page to wait enough time for document to load its pages
-        var texts = await data.getPage(pages[1]);
-        texts = await texts.getTextContent();
+        await (await data.getPage(pages[1])).getTextContent();
 
-        texts = [];
         // Returns all spans in document
+        let texts = []
         var spans = document.querySelectorAll("span")
         var weight = type === "Science" ? 500 : 900
         for (var i = 0; i < spans.length; i++) {
