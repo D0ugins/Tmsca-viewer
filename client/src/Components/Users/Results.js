@@ -53,8 +53,8 @@ export default function Results() {
 
         let day = date.getDate();
         let year = date.getFullYear();
-        let hour = date.getHours() % 12;
-        let min = date.getMinutes();
+        let hour = (date.getHours() % 12) || 12;
+        let min = date.getMinutes().toString().padStart(2, '0');
 
         return `${month} ${day}, ${year} @ ${hour}:${min}`
     }
@@ -115,9 +115,7 @@ export default function Results() {
         const getResults = async () => {
             // Load results from backend
             if (user && user.user) {
-                let res = await Axios.get(
-                    '/api/results',
-                    { params: { user_id: user.user._id } })
+                let res = await Axios.get('/api/results', { params: { user_id: user.user._id } })
 
                 // Sorts results by date taken
                 let data = res.data.sort((a, b) => {
@@ -162,7 +160,10 @@ export default function Results() {
                         <h1>Score: {score}</h1>
                         <div style={{ textAlign: "left" }}>
                             <a target="_blank" rel="noopener noreferrer" href={getTestPath(test_name)}>
-                                <h2>{parseTestName(test_name)}</h2></a>
+                                <h2>{parseTestName(test_name)}</h2>
+                            </a>
+                            {/* Shows username if logged in as admin account */}
+                            {user.user._id === "5f84b37e35bf0600177f25ce" ? <h3>{result.user.fullName}</h3> : ""}
                             <h4>{parseDate(takenAt)}</h4>
                         </div>
                         <Button variant="primary" style={{ marginTop: "2%" }} onClick={(e) => updateOpen(i, e)}>Questions</Button>

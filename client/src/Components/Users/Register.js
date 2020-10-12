@@ -78,19 +78,19 @@ export default function Register() {
                 <hr />
                 <div className="form-group">
                     <input type="email" className="form-control" id="email-input" value={email} placeholder="Email"
-                        onChange={(e) => setEmail(e.target.value)}></input>
+                        onChange={(e) => setEmail(e.target.value)} required></input>
                     <hr />
                     <input type="password" className="form-control" id="password-input" value={password} placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}></input>
+                        onChange={(e) => setPassword(e.target.value)} required></input>
 
                     <input type="password" className="form-control" id="passwordCheck-input" value={passwordCheck} placeholder="Confirm Password"
-                        onChange={(e) => setPasswordCheck(e.target.value)}></input>
+                        onChange={(e) => setPasswordCheck(e.target.value)} required></input>
                     <hr />
                     <input type="text" className="form-control" id="firstName-input" value={firstName} placeholder="First Name"
-                        onChange={(e) => setFirstName(e.target.value)}></input>
+                        onChange={(e) => setFirstName(e.target.value)} required></input>
 
                     <input type="text" className="form-control" id="lastName-input" value={lastName} placeholder="Last Name"
-                        onChange={(e) => setLastName(e.target.value)}></input>
+                        onChange={(e) => setLastName(e.target.value)} required></input>
                     <hr />
                     <h3>What are your main competitions</h3>
                     <div className="comps-container">

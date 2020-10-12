@@ -50,7 +50,8 @@ router.get("/", cors(), async (req, res) => {
             if (test_name.slice(2, 4) === "NS") results = await NsResult.find({ test_name })
             else results = await MthSciResult.find({ test_name })
         }
-        else if (user_id) {
+        // If admin account skip and return all results
+        else if (user_id && user_id !== "5f84b37e35bf0600177f25ce") {
             let ns = await NsResult.find({ 'user._id': user_id })
             let mthsci = await MthSciResult.find({ 'user._id': user_id })
             results = ns.concat(mthsci)
