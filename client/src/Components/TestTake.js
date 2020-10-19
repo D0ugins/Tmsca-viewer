@@ -19,7 +19,7 @@ const typeMap = {
     'CA': 'Calculator'
 }
 
-const name = window.location.pathname.split("/").slice(-1)[0].split("_").join(" ")
+const name = window.location.pathname.split("/").slice(-1)[0].replaceAll("_", " ")
 const type = typeMap[name.slice(2, 4)]
 
 const path = `${type}/${type} ${name.slice(-5)}/${name}`
@@ -61,9 +61,12 @@ export default function TestTake() {
     const [startedAt, setStartedAt] = useState(0)
     const updateAnswers = (id, value) => {
         setAnswers(prevAnswers => { return { ...prevAnswers, [id]: value } })
-        setTimes(prevTimes => { return { ...prevTimes, 
-            [id]: (value ? Date.now() - startedAt : null) 
-        }})        
+        setTimes(prevTimes => {
+            return {
+                ...prevTimes,
+                [id]: (value ? Date.now() - startedAt : null)
+            }
+        })
     };
     const [gradeStates, setGradeStates] = useState({})
     const [score, setScore] = useState(null);
@@ -102,7 +105,7 @@ export default function TestTake() {
             var rect = range.getBoundingClientRect();
             width = rect.width
             // Deals with that font being squished for some reason
-            if (el.style.fontFamily.includes("g_d0") && type === "Science") {width *= 1.234}
+            if (el.style.fontFamily.includes("g_d0") && type === "Science") { width *= 1.234 }
 
         }
 
@@ -242,7 +245,6 @@ export default function TestTake() {
             "1, 50, MSMA7 17-18": ["repeat", 1],
             "3, 5, MSMA11 17-18": ["missing"],
             "3, 25, MSMA11 17-18": ["missing"]
-
         }
 
         // Tracks if current exception has been handled
@@ -407,7 +409,8 @@ export default function TestTake() {
             )
             let save = false
 
-            if (valid.data) save = window.confirm(`${!manual ? "Time is up!\n" : ""} Would you like to save these results?`)
+            // Ask if user wants to save results
+            if (valid.data) save = window.confirm((!manual ? "Time is up!\n" : "") + "Would you like to save these results?")
 
             // Send results to backed for grading
             const res = await Axios.post(`/api/grade`, {
@@ -457,36 +460,36 @@ export default function TestTake() {
                 {pages.map(page => <Page className="pdf-page" pageNumber={page} scale={window.innerWidth / 600} loading="" key={page}
                     renderMode={started ? "canvas" : "none"} />)}
             </Document>
-            {started ? 
-            <div id="inputs">
-                {type === "Number Sense"
-                    ?
-                    (!done ?
-                        areas.map(area => {
-                            return <NsInput data={area} setAnswer={updateAnswers} key={area.id} />
-                        })
+            {started ?
+                <div id="inputs">
+                    {type === "Number Sense"
+                        ?
+                        (!done ?
+                            areas.map(area => {
+                                return <NsInput data={area} setAnswer={updateAnswers} key={area.id} />
+                            })
 
-                        : areas.map(area => {
-                            const { state, correct, answer } = gradeStates[area.id]
-                            return <NsInput data={area} key={area.id}
-                                gradeState={state} correct={correct} old={answer} />
-                        })
-                    )
-                    :
-                    (!done ?
-                        areas.map(area => {
-                            return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} />
-                        })
+                            : areas.map(area => {
+                                const { state, correct, answer } = gradeStates[area.id]
+                                return <NsInput data={area} key={area.id}
+                                    gradeState={state} correct={correct} old={answer} />
+                            })
+                        )
+                        :
+                        (!done ?
+                            areas.map(area => {
+                                return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} />
+                            })
 
-                        : areas.map(area => {
-                            const { state, correct, answer } = gradeStates[area.id]
-                            return <MthSciInput data={area} key={area.id} type={type}
-                                gradeState={state} correct={correct} old={answer} />
-                        })
-                    )
-                }
-            </div>
-            : ""}
+                            : areas.map(area => {
+                                const { state, correct, answer } = gradeStates[area.id]
+                                return <MthSciInput data={area} key={area.id} type={type}
+                                    gradeState={state} correct={correct} old={answer} />
+                            })
+                        )
+                    }
+                </div>
+                : ""}
 
             <button onClick={endTest} disabled={!ready} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
             <Link hidden={started && (!done)} id="exit-button" className="btn btn-danger corner-button" to="/"><p>Exit</p></Link>

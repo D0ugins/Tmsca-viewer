@@ -142,7 +142,7 @@ export default function Results() {
                 }
             </div>
 
-            { results ? results.filter((result) => {
+            { results.filter((result) => {
                 return filter === "All" || result.type === filter
             }).map((result, i) => {
                 let { test_name, score, takenAt, gradeStates, times, type } = result
@@ -280,7 +280,7 @@ export default function Results() {
                         </Collapse>
                     </Card>
                 )
-            }) : <h1>Loading...</h1>}
+            }) }
         </div>
     )
 }

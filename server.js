@@ -24,6 +24,7 @@ app.use("/api/users", require("./routes/userRouter"));
 app.use("/api/results", require("./routes/resultsRouter"));
 
 
+// Test grading stuff
 const checkNs = (ans, correct, num) => {
     // Deals with esimation problems and ones with mutiple correct answers
     if (typeof correct === "object") {
@@ -39,11 +40,12 @@ const checkNs = (ans, correct, num) => {
 const gradeTest = (key, answers, type) => {
     var states = {};
     let is_ns = type === "Number Sense";
-    console.log(answers)
+
     let score = 0;
     // Gets all the questions that were actually answered
     let answered = Object.keys(answers).filter(q => answers[q]);
-    // Sets score as if each question was wrong then adds back score for questions that were right
+    
+    // Sets score as if every question was wrong then adds back score for questions that were right
     if (is_ns) {
         var last = 0;
         // Gets last question that was answered
@@ -105,21 +107,15 @@ app.post('/api/grade', cors(), (req, res) => {
 
 })
 
-// Load react stuff if not hitting api route
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static('client/build'))
-    
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
-    })
-}
-else if (process.env.NODE_ENV === "development") {
-    app.use(express.static('client/public'))
 
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'))
-    })
-}
+// Load react stuff if not hitting api route
+staticFolder = process.env.NODE_ENV === "development" ? "public" : "build"
+
+app.use(express.static('client/' + staticFolder))
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', staticFolder, 'index.html'))
+})
 
 
 app.listen(port, () => {

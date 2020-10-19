@@ -9,6 +9,7 @@ import Resources from './Components/Resources'
 import Login from './Components/Users/Login'
 import Register from './Components/Users/Register';
 import Results from './Components/Users/Results'
+import Trainer from './Components/Trainer/Trainer'
 
 import UserContext from './Context/UserContext'
 
@@ -29,11 +30,11 @@ function App() {
           { headers: { "x-auth-token": token } }
         )
 
-        if (valid.data) {
+        if (valid?.data) {
           const userRes = await Axios.get(`/api/users`,
             { headers: { "x-auth-token": token } }
           )
-          
+
           localStorage.setItem("auth-token", token);
           setUser({ token, user: userRes.data });
         }
@@ -41,14 +42,14 @@ function App() {
       } catch (err) {
         console.error("Something went wrong with fetching user data: " + err)
       }
-      
+
     }
 
     checkLoggedIn()
   }, [])
 
   useEffect(() => {
-    if (user && user.token !== undefined) localStorage.setItem("auth-token", user.token)
+    if (user?.token !== undefined) localStorage.setItem("auth-token", user.token)
   }, [user])
   return (
     <>
@@ -61,6 +62,7 @@ function App() {
             <Route path="/login"> <Login /> </Route>
             <Route path="/register"> <Register /> </Route>
             <Route path="/results"> <Results /> </Route>
+            <Route path="/trainer"> <Trainer /> </Route>
           </Switch>
         </Router>
       </UserContext.Provider>

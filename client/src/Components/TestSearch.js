@@ -54,7 +54,7 @@ export default function TestSearch() {
         const test_name = `MS${map[type]}${test_num} ${year}`
 
         if (action === "view") return `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`
-        return `/take/${test_name.split(" ").join("_")}`
+        return `/take/${test_name.replaceAll(" ", "_")}`
     }
 
     const brokentest = () => {
@@ -120,7 +120,7 @@ export default function TestSearch() {
                 <a href={findTest("view")} onClick={checkInvalid}
                     className="btn btn-success search-button">View test</a>
 
-                <a href={findTest("take") } onClick={checkInvalid}
+                <a href={findTest("take")} onClick={checkInvalid}
                     className="btn btn-success search-button" hidden={type === "Calculator" || brokentest()}>Take test</a>
 
             </div>
