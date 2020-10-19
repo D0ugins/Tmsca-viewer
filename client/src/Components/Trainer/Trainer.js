@@ -1,6 +1,7 @@
 import React from 'react'
 import Generators from './Generators'
-import { MathComponent as Math } from 'mathjax-react'
+import Question from './Question'
+import Navbar from '../Navbar'
 
 export default function Trainer() {
 
@@ -19,16 +20,11 @@ export default function Trainer() {
 
     return (
         <div>
+            <Navbar />
             {parseTrainers(Generators).map(gen => {
-                let styles = {
-                    "width": "10%"
-                }
-                return <div key={gen.name}>
+                return <div style={{ textAlign: "center", marginBottom: "10%" }} key={gen.name}>
                     <h1>{gen.name}</h1>
-                    <ul style={{ width: "10%" }}>
-                        <li><Math style={styles} tex={gen.generate(gen.preset ?? []).question}></Math></li>
-                        <li><Math style={styles} tex={gen.generate(gen.preset ?? []).question}></Math></li>
-                    </ul>
+                    <Question generator={gen} preset={gen.preset} />
                 </div>
             })}
         </div>

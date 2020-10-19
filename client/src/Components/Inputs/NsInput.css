@@ -15,3 +15,7 @@
 .ns-skipped {
     background-color: rgba(128, 64, 0, 0.33);
 }
+
+.ns-correct:disabled, .ns-wrong:disabled, .ns-skipped:disabled{
+    color: black
+}

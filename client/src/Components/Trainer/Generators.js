@@ -38,6 +38,9 @@ const randInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min 
 // Formats 2 nums as LaTeX fraction
 const frac = nums => `\\frac{${nums[0]}}{${nums[1]}}`
 
+// Fromats 2 nums as typed fraction
+const typedFrac = nums => nums[0] + "/" + nums[1]
+
 // Adapted from https://stackoverflow.com/a/17445304
 const gcd = (a, b) => b ? gcd(b, a % b) : a
 
@@ -352,8 +355,8 @@ const Generators = {
             else question = frac([a, b]) + ' + ' + frac([b, a])
 
             let absqr = (a - b) * (a - b)
-            if (absqr > a * b) answer = "3 " + frac(reduce([absqr - (a * b), a * b]))
-            else answer = "2 " + frac(reduce([absqr, a * b]))
+            if (absqr > a * b) answer = "3 " + typedFrac(reduce([absqr - (a * b), a * b]))
+            else answer = "2 " + typedFrac(reduce([absqr, a * b]))
 
             return {
                 question,
