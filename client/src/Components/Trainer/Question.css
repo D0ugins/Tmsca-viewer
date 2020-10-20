@@ -1,0 +1,9 @@
+.question-container .math-container {
+    display: inline-block;
+    margin-right: 5%;
+}
+
+.question-input {
+    display: inline-block;
+    margin-right: 10%;
+}

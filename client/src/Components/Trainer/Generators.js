@@ -66,9 +66,8 @@ function reduce(nums) {
     }
 */
 
-const Generators = {
-
-    "multpTric": {
+const Generators = [
+    {
         name: "Multiply by ",
         types: ["Multplication tricks"],
 
@@ -100,8 +99,8 @@ const Generators = {
         }
     },
 
-    "factrTrick": {
-        name: "Muliply by ",
+    {
+        name: "Multiply by ",
         types: ["Multiplicaition Tricks"],
 
         presets: {
@@ -125,7 +124,7 @@ const Generators = {
         }
     },
 
-    "arith": {
+    {
         name: "Arithmetic ",
         types: ["Arithmetic"],
 
@@ -178,7 +177,7 @@ const Generators = {
         }
     },
 
-    "remain": {
+    {
         name: "Remainder of number divided by ",
         types: ["Remainders"],
         presets: {
@@ -201,7 +200,7 @@ const Generators = {
 
     },
 
-    "ew5": {
+    {
         name: "Multiply numbers ending in 5",
         types: ["Multiplication tricks"],
         generate() {
@@ -213,7 +212,7 @@ const Generators = {
         }
     },
 
-    "abvBlwPow10": {
+    {
         name: "Multiply numbers slgihtly below or above Power of 10",
         types: ["Multiplication tricks"],
         generate([pow = 2, mode = "random"]) {
@@ -245,7 +244,7 @@ const Generators = {
         }
     },
 
-    "XabvXbelow": {
+    {
         name: "Multiply X below and X above multiple of 5",
         type: ["Multiplication Tricks"],
         generate() {
@@ -259,7 +258,7 @@ const Generators = {
         }
     },
 
-    "sqrt": {
+    {
         name: "Square roots",
         type: ["Square roots"],
         generate([min = 11, max = 59]) {
@@ -271,7 +270,7 @@ const Generators = {
         }
     },
 
-    "sqr": {
+    {
         name: "Squares",
         type: ["Sqaures"],
         generate([min = 11, max = 59]) {
@@ -283,7 +282,7 @@ const Generators = {
         }
     },
 
-    "Xsqr3Xsqr": {
+    {
         name: "X squared + 3X squared",
         type: ["Sqaures", "Squares tricks"],
         generate([min = 11, max = 25]) {
@@ -295,7 +294,7 @@ const Generators = {
         }
     },
 
-    "difSqrs": {
+    {
         name: "Difference of squares",
         type: ["Sqaures", "Squares tricks"],
         generate() {
@@ -338,7 +337,7 @@ const Generators = {
         }
     },
 
-    "num+recip": {
+    {
         name: "Number + reciprocal",
         types: ["Fraction tricks", "Addition tricks"],
         generate() {
@@ -365,6 +364,6 @@ const Generators = {
         }
     },
 
-}
+]
 
 module.exports = Generators
