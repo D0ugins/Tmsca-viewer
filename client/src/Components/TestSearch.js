@@ -128,7 +128,7 @@ export default function TestSearch() {
                     className="btn btn-success search-button">View test</a>
 
                 <a href={findTest("take")} onClick={checkInvalid}
-                    className="btn btn-success search-button" hidden={type === "Calculator" || brokentest() || year === "20-21"}>Take test</a>
+                    className="btn btn-success search-button" hidden={type === "Calculator" || brokentest()}>Take test</a>
 
             </div>
         </>
