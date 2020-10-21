@@ -3,12 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Axios from "axios"
 
-import TestSearch from './Components/TestSearch'
+import TestSearch from './Components/TestSearch';
 import TestTake from './Components/TestTake';
-import Resources from './Components/Resources'
-import Login from './Components/Users/Login'
+import Resources from './Components/Resources';
+import Login from './Components/Users/Login';
 import Register from './Components/Users/Register';
-import Results from './Components/Users/Results'
+import Results from './Components/Users/Results';
+import Guides from './Components/Guides';
 
 import UserContext from './Context/UserContext'
 
@@ -16,7 +17,7 @@ function App() {
   const [user, setUser] = useState({
     token: undefined,
     user: undefined
-  })
+  });
 
   // Loads user data based on token from localstorage
   useEffect(() => {
@@ -27,28 +28,28 @@ function App() {
 
         const valid = await Axios.post(`/api/users/isTokenValid`, null,
           { headers: { "x-auth-token": token } }
-        )
+        );
 
         if (valid.data) {
           const userRes = await Axios.get(`/api/users`,
             { headers: { "x-auth-token": token } }
-          )
-          
+          );
+
           localStorage.setItem("auth-token", token);
           setUser({ token, user: userRes.data });
         }
         return;
       } catch (err) {
-        console.error("Something went wrong with fetching user data: " + err)
+        console.error("Something went wrong with fetching user data: " + err);
       }
-      
+
     }
 
-    checkLoggedIn()
+    checkLoggedIn();
   }, [])
 
   useEffect(() => {
-    if (user && user.token !== undefined) localStorage.setItem("auth-token", user.token)
+    if (user && user.token !== undefined) localStorage.setItem("auth-token", user.token);
   }, [user])
   return (
     <>
@@ -61,6 +62,7 @@ function App() {
             <Route path="/login"> <Login /> </Route>
             <Route path="/register"> <Register /> </Route>
             <Route path="/results"> <Results /> </Route>
+            <Route path="/guides"> <Guides /> </Route>
           </Switch>
         </Router>
       </UserContext.Provider>
