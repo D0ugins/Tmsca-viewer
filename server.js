@@ -44,7 +44,7 @@ const gradeTest = (key, answers, type) => {
     let score = 0;
     // Gets all the questions that were actually answered
     let answered = Object.keys(answers).filter(q => answers[q]);
-    
+
     // Sets score as if every question was wrong then adds back score for questions that were right
     if (is_ns) {
         var last = 0;
@@ -94,11 +94,11 @@ const gradeTest = (key, answers, type) => {
 
 app.post('/api/grade', cors(), (req, res) => {
     try {
-        const { type, keypath, answers} = req.body
+        const { type, keypath, answers } = req.body
 
         // Load answer key from file
         const key = JSON.parse(fs.readFileSync(path.resolve('AnswerKeys', (keypath + " Key.json")), 'utf-8'))
-        
+
         res.json(gradeTest(key, answers, type))
     } catch (err) {
         res.status(500).json({ "err": err.message })

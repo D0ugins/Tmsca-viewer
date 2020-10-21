@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import './Navbar.css'
 
 import UserContext from '../Context/UserContext'
@@ -9,17 +9,17 @@ export default function Navbar() {
 
     return (
         <nav className="navbar navbar-expand-lg navbar-ld bg-light">
-            <Link className="navbar-brand" to="/">Search</Link>
-            <Link className="nav-item nav-link nav" to="/trainer">Trainer</Link>
-            { (user && user.user) ? <Link className="nav-item nav-link nav" to="/results">Results</Link> : ""}
-            <Link className="nav-item nav-link nav" to="/resources">Resources</Link>
+            <NavLink className="navbar-brand" to="/">Search</NavLink>
+            <NavLink className="nav-item nav-link nav" to="/resources">Resources</NavLink>
+            <NavLink className="nav-item nav-link nav" to="/guides">Guides</NavLink>
+            { (user && user.user) ? <NavLink className="nav-item nav-link nav" to="/results">Results</NavLink> : ""}
             <div style={{ "marginLeft": "auto" }}>
                 {
-                    (user?.user) ? <Link className="nav-item nav-link btn btn-link" to="/" onClick={() => {
+                    (user && user.user) ? <NavLink className="nav-item nav-link btn btn-link" to="/" onClick={() => {
                         setUser({ token: "", data: undefined });
-                    }}>Log Out</Link>
-                        : <><Link className="nav-item nav-link" to="/login">Log in</Link>
-                            <Link className="nav-item nav-link" to="/register">Sign up</Link></>
+                    }}>Log Out</NavLink>
+                        : <><NavLink className="nav-item nav-link" to="/login">Log in</NavLink>
+                            <NavLink className="nav-item nav-link" to="/register">Sign up</NavLink></>
                 }
 
             </div>

@@ -14,7 +14,13 @@ const getNums = (year) => {
         "17-18": ['Regional', 'State']
     };
 
-    return base.concat(extras[year]);
+    if (year === "20-21") {
+        return ['Kickoff'];
+    }
+    else {
+        return base.concat(extras[year]);
+    }
+
 }
 
 export default function TestSearch() {
@@ -97,6 +103,7 @@ export default function TestSearch() {
                     <div className="arg">
                         <label htmlFor="year">Choose test year: </label>
                         <select name="year" value={year} onChange={e => setYear(e.target.value)}>
+                            <option value="20-21">2020-21</option>
                             <option value="19-20">2019-20</option>
                             <option value="18-19">2018-19</option>
                             <option value="17-18">2017-18</option>
