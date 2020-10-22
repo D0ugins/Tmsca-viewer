@@ -10,7 +10,6 @@ import Login from './Components/Users/Login';
 import Register from './Components/Users/Register';
 import Results from './Components/Users/Results'
 import Trainer from './Components/Trainer/Trainer'
-import Results from './Components/Users/Results';
 import Guides from './Components/Guides';
 
 import UserContext from './Context/UserContext'

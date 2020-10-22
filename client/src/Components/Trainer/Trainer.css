@@ -1,0 +1,31 @@
+.trainer-select {
+    text-align: center;
+    margin-top: 5%;
+}
+
+.trainer-select a {
+    display: inline-block;
+    font-size: 2vw;
+    width: 21%;
+    margin: 2%;
+}
+
+.trainer-search {
+    width: 50%;
+    margin: 5% auto 3% auto;
+}
+
+.question-container {
+    text-align: center;
+    margin-top: 3%;
+    font-size: 4vw;
+}
+
+.question-container input {
+    font-size: 3vw;
+}
+
+.trainer-stats span {
+    font-size: 2vw;
+    margin: 5%;
+}

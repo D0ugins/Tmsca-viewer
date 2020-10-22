@@ -81,7 +81,7 @@ const Generators = [
             "15": [2, 15, []],
             "25": [2, 25, ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
             "50": [2, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
-            "75": [2, 75, ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
+
         },
 
         generate([length, constNum]) {
@@ -108,7 +108,8 @@ const Generators = [
             "16.6": [2, 6, 100, "16 " + frac([2, 3]), ["Multiply by factors of 1s and 0s"]],
             "12.5": [2, 8, 100, "12 " + frac([1, 2]), ["Multiply by factors of 1s and 0s"]],
             "37": [2, 3, 111, "37", ["Multiply by factors of 1s and 0s"]],
-            "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"]]
+            "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"]],
+            "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
         },
 
         generate([length, factor, base, string]) {
@@ -273,7 +274,7 @@ const Generators = [
     {
         name: "Squares",
         type: ["Sqaures"],
-        generate([min = 11, max = 59]) {
+        generate([min = 11, max = 30]) {
             let a = randInRange(min, max);
             return {
                 question: a + "^2",
