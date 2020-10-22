@@ -367,4 +367,4 @@ const Generators = [
 
 ]
 
-module.exports = Generators
+export default Generators
