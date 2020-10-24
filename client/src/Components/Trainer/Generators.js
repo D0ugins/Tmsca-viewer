@@ -57,7 +57,7 @@ function reduce(nums) {
         name: Human readable name,
         types: Categories the trick falls under,
         presets (optional): {
-            name: [...params, [types]]
+            name: [...params, [types], explanationFile]
         }
         generate([params]): function to generate random quesiton returns {
             question: String that represents question (formmated with LaTeX),
@@ -66,22 +66,21 @@ function reduce(nums) {
     }
 */
 
-const Generators = [
+let Generators = [
     {
         name: "Multiply by ",
         types: ["Multplication tricks"],
 
         presets: {
-            "11": [2, 11, ["Multiply by 1s and 0s"]],
-            "101": [3, 101, ["Multiply by 1s and 0s"]],
+            "11": [2, 11, ["Multiply by 1s and 0s"], "x11.md"],
+            "101": [3, 101, ["Multiply by 1s and 0s"], "x101.md"],
             "111": [3, 111, ["Multiply by 1s and 0s"]],
             "1001": [4, 1001, ["Multiply by 1s and 0s"]],
             "12": [3, 12, ["Multiply by Teens"]],
             "5": [3, 5, []],
             "15": [2, 15, []],
-            "25": [2, 25, ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
-            "50": [2, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
-
+            "25": [2, 25, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x25.md"],
+            "50": [2, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x50.md"],
         },
 
         generate([length, constNum]) {
@@ -133,8 +132,8 @@ const Generators = [
             "addition": [3, 3, "+", []],
             "subtraction": [3, 3, "-", []],
             "foil": [2, 2, "*", []],
-            "division1": [4, 1, "/", []],
-            "division2": [5, 2, "/", []]
+            "division 1": [4, 1, "/", []],
+            "division 2": [5, 2, "/", []]
         },
 
         generate([aLen, bLen, op]) {
@@ -210,7 +209,8 @@ const Generators = [
                 question: a + "5 \\times " + b + '5',
                 answer: ((a * 10) + 5) * ((b * 10) + 5)
             }
-        }
+        },
+        explanationFile: "endIn5.md"
     },
 
     {
@@ -273,7 +273,7 @@ const Generators = [
 
     {
         name: "Squares",
-        type: ["Sqaures"],
+        type: ["Sqaures", "Shape numbers"],
         generate([min = 11, max = 30]) {
             let a = randInRange(min, max);
             return {
@@ -284,7 +284,7 @@ const Generators = [
     },
 
     {
-        name: "X squared + 3X squared",
+        name: "X² + 3X²",
         type: ["Sqaures", "Squares tricks"],
         generate([min = 11, max = 25]) {
             let a = randInRange(min, max);
@@ -364,7 +364,23 @@ const Generators = [
             }
         }
     },
-
 ]
 
-export default Generators
+let generators = [];
+Generators.map(gen => {
+    if (gen.presets) return Object.keys(gen.presets).map(preset => {
+
+        let explanationFile = gen.presets[preset].slice(-1)[0]
+        if (typeof explanationFile !== "string") explanationFile = null
+
+        return generators.push({
+            ...gen,
+            name: gen.name + preset,
+            explanationFile,
+            preset: gen.presets[preset]
+        });
+    })
+    else return generators.push(gen);
+})
+
+export default Generators = generators

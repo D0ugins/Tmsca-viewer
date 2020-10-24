@@ -8,27 +8,30 @@ import MthSciInput from './Inputs/MthSciInput'
 import UserContext from '../Context/UserContext'
 import Timer from './Timer'
 import './TestTake.css'
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const typeMap = {
-    'NS': 'Number Sense',
-    'MA': 'Math',
-    'SC': 'Science',
-    'CA': 'Calculator'
-}
 
-const name = window.location.pathname.split("/").slice(-1)[0].replaceAll("_", " ")
-const type = typeMap[name.slice(2, 4)]
-
-const path = `${type}/${type} ${name.slice(-5)}/${name}`
-
-const test = { name, path }
 
 
 export default function TestTake() {
     const { user } = useContext(UserContext);
+    const { testName } = useParams()
+
+    const typeMap = {
+        'NS': 'Number Sense',
+        'MA': 'Math',
+        'SC': 'Science',
+        'CA': 'Calculator'
+    }
+
+    const name = testName.replaceAll("_", " ")
+    const type = typeMap[name.slice(2, 4)]
+
+    const path = `${type}/${type} ${name.slice(-5)}/${name}`
+
+    const test = { name, path }
 
     const [pages, setPages] = useState([]);
     const [data, setData] = useState();

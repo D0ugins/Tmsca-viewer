@@ -1,0 +1,15 @@
+.explanation-container {
+    text-align: center;
+    margin-top: 2%;
+    font-size: 1.5em;
+}
+
+.explanation-container td {
+    line-height: 2em;
+    font-size: .75em !important;
+}
+
+/* math containers */
+mjx-container {
+    margin: .5em auto !important;
+}

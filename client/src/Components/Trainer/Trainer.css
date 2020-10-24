@@ -1,13 +1,9 @@
 .trainer-select {
     text-align: center;
-    margin-top: 5%;
 }
 
-.trainer-select a {
-    display: inline-block;
-    font-size: 2vw;
-    width: 21%;
-    margin: 2%;
+.trainer-select td {
+    font-size: 1.5vw;
 }
 
 .trainer-search {

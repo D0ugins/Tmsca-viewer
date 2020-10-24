@@ -10,9 +10,12 @@
     "react": "^16.13.1",
     "react-bootstrap": "^1.3.0",
     "react-dom": "^16.13.1",
+    "react-katex": "^2.0.2",
+    "react-markdown": "^5.0.2",
     "react-pdf": "^5.0.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4"
+    "react-scripts": "^3.4.4",
+    "remark-math": "^4.0.0"
   },
   "scripts": {
     "predeploy": "npm run build",
