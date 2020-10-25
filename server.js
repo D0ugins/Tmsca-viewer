@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true,
 
 app.use("/api/users", require("./routes/userRouter"));
 app.use("/api/results", require("./routes/resultsRouter"));
-
+app.use("/api/trainer", require("./routes/trainerRouter"))
 
 // Test grading stuff
 const checkNs = (ans, correct, num) => {

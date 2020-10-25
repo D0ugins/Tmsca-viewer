@@ -367,6 +367,7 @@ let Generators = [
 ]
 
 let generators = [];
+let i = 0
 Generators.map(gen => {
     if (gen.presets) return Object.keys(gen.presets).map(preset => {
 
@@ -377,10 +378,11 @@ Generators.map(gen => {
             ...gen,
             name: gen.name + preset,
             explanationFile,
-            preset: gen.presets[preset]
+            preset: gen.presets[preset],
+            id: i++
         });
     })
-    else return generators.push(gen);
+    else return generators.push({ ...gen, id: i++ });
 })
 
 export default Generators = generators

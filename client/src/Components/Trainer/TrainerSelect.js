@@ -1,15 +1,31 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Generators from './Generators'
-
+import UserContext from '../../Context/UserContext'
 import './Trainer.css'
 import Navbar from '../Navbar'
 
 import { Table } from 'react-bootstrap'
+import Axios from 'axios'
 
 export default function TrainerSelect() {
 
     const [search, setSearch] = useState("");
     const [infinite, setInfinite] = useState(true)
+    const [bests, setBests] = useState({})
+    const { user } = useContext(UserContext)
+
+    useEffect(() => {
+        const getBests = async () => {
+            if (user?.user) {
+                setBests((await Axios.get("/api/trainer/bestTimes", {
+                    headers: { "x-auth-token": user.token }
+                }
+                )).data)
+            }
+        }
+        getBests()
+    }, [user.token, user.user])
+
     return (
         <div>
             <Navbar />
@@ -27,7 +43,7 @@ export default function TrainerSelect() {
                     <thead>
                         <tr>
                             <td> <h1>Trick</h1> </td>
-                            <td> <h1>Best time</h1> </td>
+                            {user?.user ? <td> <h1>Best time</h1> </td> : ""}
                             <td> <h1>Explanation</h1> </td>
                         </tr>
                     </thead>
@@ -41,7 +57,7 @@ export default function TrainerSelect() {
                                     return (
                                         <tr key={i}>
                                             <td><a href={"/trainer/" + i + "?mode=" + (infinite ? "infinite" : "timed")} key={i}>{gen.name}</a></td>
-                                            <td>None</td>
+                                            {user?.user ? <td>{bests[i] || "None"}</td> : ""}
                                             {/* If there is an explanation checkmark else X */}
                                             <td>{gen.explanationFile
                                                 ? <a href={"/explanations/" + i}>

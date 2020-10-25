@@ -54,6 +54,7 @@ function App() {
   useEffect(() => {
     if (user?.token !== undefined) localStorage.setItem("auth-token", user.token)
   }, [user])
+
   return (
     <>
       <UserContext.Provider value={{ user, setUser }}>

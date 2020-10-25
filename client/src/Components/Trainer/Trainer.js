@@ -1,19 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
+
 import Generators from './Generators'
 import Navbar from '../Navbar'
 import './Trainer.css'
-
-import { useParams } from 'react-router-dom'
-import { Button } from 'react-bootstrap'
-
-import { MathComponent as Math } from 'mathjax-react'
-import './Question.css'
 import './Qtimer'
 import Qtimer from './Qtimer'
+import './Question.css'
+import UserContext from '../../Context/UserContext'
+
+import { useParams } from 'react-router-dom'
+import { Button, Alert } from 'react-bootstrap'
+import { MathComponent as Math } from 'mathjax-react'
+import Axios from 'axios'
+
+
 
 export default function Trainer() {
 
     const { trainerId } = useParams()
+    const { user } = useContext(UserContext)
+
     const [trainer] = useState(() => {
         let id = parseInt(trainerId)
         if (!isNaN(id)) {
@@ -29,6 +35,8 @@ export default function Trainer() {
     const [question, setQuestion] = useState(trainer.generate(preset))
     const [answers, setAnswers] = useState([])
     const [score, setScore] = useState(0)
+
+    const [best, setBest] = useState(0)
 
     // Ref for box where you put wheter or not last question was correct
     const prevRef = useRef(null)
@@ -95,9 +103,40 @@ export default function Trainer() {
         return time.toFixed(2)
     }
 
+    const endTest = () => {
+        if (user?.user) {
+            const time = getTime()
+            if (time < best || !best) {
+                setBest(time)
+                Axios.post('/api/trainer/bestTimes', {
+                    trickId: trainer.id,
+                    time
+                }, { headers: { "x-auth-token": user.token } })
+            }
+        }
+        setDone(true)
+        setStarted(false)
+    }
+
     useEffect(() => {
-        if (score >= 10 && mode === "timed") { setDone(true); setStarted(false) }
-    }, [score])
+        if (score >= 10 && mode === "timed") {
+            endTest()
+        }
+        // eslint-disable-next-line
+    }, [score, mode])
+
+    useEffect(() => {
+        const loadBest = async () => {
+            setBest((await Axios.get('/api/trainer/bestTimes', {
+                params: { trickId: trainer.id },
+                headers: { "x-auth-token": user.token }
+            })).data.time)
+        }
+
+        if (mode === "timed" && user?.user) {
+            loadBest()
+        }
+    }, [mode, trainer.id, user.token, user.user])
 
     return (
         <div>
@@ -122,10 +161,18 @@ export default function Trainer() {
                         ? !started
                             ? !done ? <div>
                                 <h1>Complete 10 questions as quickly as possible</h1>
-                                <h2>Current best: None</h2>
+                                <br />
+                                <h2>Current best: {best || "None"}</h2>
                                 <Button style={{ fontSize: ".5em", width: "10%" }} onClick={startTimed}>Start</Button>
+
                             </div> : <div>
+                                    {getTime < best || !best ?
+                                        <Alert variant="success"
+                                            style={{ width: "80%", fontSize: "1.5rem", margin: "2% auto" }}>
+                                            New best time!
+                                        </Alert> : ""}
                                     <p>Your time: {getTime()}</p>
+                                    <p>Best time: {best || "None"}</p>
                                     <Button style={{ fontSize: ".5em", width: "10%" }} onClick={startTimed}>Start Again</Button>
                                 </div>
 

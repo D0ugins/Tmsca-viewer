@@ -46,9 +46,9 @@ export default function Results() {
         // Parses taken at date
         let date = new Date(s)
 
-        let months = ["January", "February", "March", "April", "May", "June", "July", 
-        "August", "September", "October", "November", "December"]
-        
+        let months = ["January", "February", "March", "April", "May", "June", "July",
+            "August", "September", "October", "November", "December"]
+
         let month = months[date.getMonth()]
 
         let day = date.getDate();
@@ -109,12 +109,12 @@ export default function Results() {
         }
         const type = typeMap[name.slice(2, 4)]
         return `${process.env.PUBLIC_URL}/tests/${type}/${type} ${name.slice(-5)}/${name}.pdf`
-    }   
-    
+    }
+
     useEffect(() => {
         const getResults = async () => {
             // Load results from backend
-            if (user && user.user) {
+            if (user?.user) {
                 let res = await Axios.get('/api/results', { params: { user_id: user.user._id } })
 
                 // Sorts results by date taken
@@ -280,7 +280,7 @@ export default function Results() {
                         </Collapse>
                     </Card>
                 )
-            }) }
+            })}
         </div>
     )
 }
