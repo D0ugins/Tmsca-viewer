@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Generators from './Generators'
 import Navbar from '../Navbar'
 import './Trainer.css'
 
 import { useParams } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
 
 import { MathComponent as Math } from 'mathjax-react'
 import './Question.css'
@@ -27,8 +28,16 @@ export default function Trainer() {
     const [prev, setPrev] = useState("")
     const [question, setQuestion] = useState(trainer.generate(preset))
     const [answers, setAnswers] = useState([])
+    const [score, setScore] = useState(0)
 
+    // Ref for box where you put wheter or not last question was correct
     const prevRef = useRef(null)
+
+    const mode = window.location.search.split("=")[1] === "timed" ? "timed" : "infinite"
+
+    // In infinite mode default started to true
+    const [started, setStarted] = useState(mode === "infinite")
+    const [done, setDone] = useState(false)
 
     const validate = (val) => {
         let reg = new RegExp('^[-]?[0-9/. ]*$');
@@ -50,10 +59,12 @@ export default function Trainer() {
         if (answer.trim() === question.answer.toString()) {
             prevRef.current.style.color = "green"
             setPrev("Answered in: " + ((Date.now() - startedTime) / 1000).toFixed(2) + " seconds")
+            if (mode === "timed") setScore(score => score + 1)
         }
         else {
             prevRef.current.style.color = "red"
             setPrev(answer + " CORRECT: " + question.answer)
+            if (mode === "timed") setScore(score => score - 1)
         }
         setAnswers(prev => {
             return [
@@ -66,10 +77,27 @@ export default function Trainer() {
                 }
             ]
         })
+
         reset()
     }
 
-    // const [answers, setAnswers] = useState({})
+    const startTimed = () => {
+        reset()
+        setAnswers([])
+        setPrev("")
+        setScore(0)
+        setDone(false)
+        setStarted(true)
+    }
+
+    const getTime = () => {
+        let time = answers.reduce((acc, cur) => { return acc + cur.time }, 0)
+        return time.toFixed(2)
+    }
+
+    useEffect(() => {
+        if (score >= 10 && mode === "timed") { setDone(true); setStarted(false) }
+    }, [score])
 
     return (
         <div>
@@ -78,13 +106,34 @@ export default function Trainer() {
                 {trainer.name} <a style={{ fontSize: "2vw" }} href={"/explanations/" + trainerId}>Learn</a>
                 <hr />
                 <form onSubmit={e => checkAnswer(e)} className="question-container">
-                    <h3 ref={prevRef}>{prev}</h3>
-                    <div className="math-container"><Math tex={question.question}></Math></div>
-                    <input value={answer} onChange={e => updateAnswer(e.target.value)}
-                        name="answer" autoComplete="off" className="question-input"></input>
-                    <Qtimer startedTime={startedTime} />
+
                     {
-                        answers === undefined || answers.filter(ans => ans.correct).length === 0 ? ""
+                        started ? <>
+                            <h3 ref={prevRef}>{prev}</h3>
+                            <div className="math-container"><Math tex={question.question}></Math></div>
+                            <input value={answer} onChange={e => updateAnswer(e.target.value)}
+                                name="answer" autoComplete="off" className="question-input"></input>
+                            <Qtimer startedTime={startedTime} />
+                        </> : ""
+                    }
+                </form>
+                {
+                    mode === "timed"
+                        ? !started
+                            ? !done ? <div>
+                                <h1>Complete 10 questions as quickly as possible</h1>
+                                <h2>Current best: None</h2>
+                                <Button style={{ fontSize: ".5em", width: "10%" }} onClick={startTimed}>Start</Button>
+                            </div> : <div>
+                                    <p>Your time: {getTime()}</p>
+                                    <Button style={{ fontSize: ".5em", width: "10%" }} onClick={startTimed}>Start Again</Button>
+                                </div>
+
+                            : <div>
+                                Score: {score} / 10
+                            </div>
+
+                        : answers === undefined || answers.filter(ans => ans.correct).length === 0 ? ""
                             : <div className="trainer-stats">
                                 <span>
                                     Average time: {(answers
@@ -99,8 +148,8 @@ export default function Trainer() {
                                     )}%
                                     </span>
                             </div>
-                    }
-                </form>
+                }
+
             </div>
         </div>
     )

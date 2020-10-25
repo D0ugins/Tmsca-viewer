@@ -10,7 +10,6 @@ export default function TrainerSelect() {
 
     const [search, setSearch] = useState("");
     const [infinite, setInfinite] = useState(true)
-
     return (
         <div>
             <Navbar />
@@ -41,11 +40,13 @@ export default function TrainerSelect() {
                                 .map((gen, i) => {
                                     return (
                                         <tr key={i}>
-                                            <td><a href={"/trainer/" + i} key={i}>{gen.name}</a></td>
+                                            <td><a href={"/trainer/" + i + "?mode=" + (infinite ? "infinite" : "timed")} key={i}>{gen.name}</a></td>
                                             <td>None</td>
                                             {/* If there is an explanation checkmark else X */}
                                             <td>{gen.explanationFile
-                                                ? <a href={"/explanations/" + i}><span role="img" aria-label="checkmark">&#9989;</span></a>
+                                                ? <a href={"/explanations/" + i}>
+                                                    <span role="img" aria-label="checkmark">&#9989;</span>
+                                                </a>
                                                 : "\u274C"}
                                             </td>
                                         </tr>
