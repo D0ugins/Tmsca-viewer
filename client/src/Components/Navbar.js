@@ -11,7 +11,7 @@ export default function Navbar() {
         <nav className="navbar navbar-expand-lg navbar-ld bg-light">
             <NavLink className="navbar-brand" to="/">Search</NavLink>
             <NavLink className="nav-item nav-link nav" to="/resources">Resources</NavLink>
-            <NavLink className="nav-item nav-link nav" to="/trainer">Trainer</NavLink>
+            <NavLink className="nav-item nav-link nav" to="/trainer/select">Trainer</NavLink>
             <NavLink className="nav-item nav-link nav" to="/guides">Guides</NavLink>
             { (user && user.user) ? <NavLink className="nav-item nav-link nav" to="/results">Results</NavLink> : ""}
             <div style={{ "marginLeft": "auto" }}>

@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Generators from './Generators'
-import Question from './Question'
 import Navbar from '../Navbar'
 import './Trainer.css'
 
-import { Table } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
+
+import { MathComponent as Math } from 'mathjax-react'
+import './Question.css'
+import './Qtimer'
+import Qtimer from './Qtimer'
 
 export default function Trainer() {
 
@@ -15,54 +18,90 @@ export default function Trainer() {
         if (!isNaN(id)) {
             return Generators[id]
         }
-        else return null
+        else return window.location.pathname = "/trainer"
     })
-    const [search, setSearch] = useState("");
+
+    const preset = trainer.preset || []
+    const [answer, setAnswer] = useState("")
+    const [startedTime, setStartedTime] = useState(Date.now())
+    const [prev, setPrev] = useState("")
+    const [question, setQuestion] = useState(trainer.generate(preset))
+    const [answers, setAnswers] = useState([])
+
+    const prevRef = useRef(null)
+
+    const validate = (val) => {
+        let reg = new RegExp('^[-]?[0-9/. ]*$');
+        return (reg.test(val))
+    }
+
+    const updateAnswer = (val) => {
+        if (validate(val)) setAnswer(val)
+    }
+
+    const reset = () => {
+        setAnswer("");
+        setQuestion(trainer.generate(preset));
+        setStartedTime(Date.now())
+    }
+
+    const checkAnswer = (e) => {
+        e.preventDefault();
+        if (answer.trim() === question.answer.toString()) {
+            prevRef.current.style.color = "green"
+            setPrev("Answered in: " + ((Date.now() - startedTime) / 1000).toFixed(2) + " seconds")
+        }
+        else {
+            prevRef.current.style.color = "red"
+            setPrev(answer + " CORRECT: " + question.answer)
+        }
+        setAnswers(prev => {
+            return [
+                ...prev, {
+                    question: question.question,
+                    correctAnswer: question.answer,
+                    correct: answer.trim() === question.answer.toString(),
+                    answer: answer.trim(),
+                    time: (Date.now() - startedTime) / 1000.0
+                }
+            ]
+        })
+        reset()
+    }
+
+    // const [answers, setAnswers] = useState({})
 
     return (
         <div>
             <Navbar />
-            {!trainer
-                ? <div className="trainer-select">
-                    <h1>Select a trainer (BETA)</h1>
-                    <input type="text" className="form-control trainer-search" placeholder="Search"
-                        value={search} onChange={e => setSearch(e.target.value)} />
-                    <Table striped bordered hover style={{ width: "90%", margin: "0 auto" }}>
-                        <thead>
-                            <tr>
-                                <td> <h1>Trick</h1> </td>
-                                <td> <h1>Best time</h1> </td>
-                                <td> <h1>Rank</h1> </td>
-                                <td> <h1>Explanation</h1></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                Generators
-                                    .filter(gen =>
-                                        gen.name.toLowerCase().includes(search.toLowerCase()) || !search)
-                                    .map((gen, i) => {
-                                        return (
-                                            <tr key={i}>
-                                                <td><a href={"/trainer/" + i} key={i}>{gen.name}</a></td>
-                                                <td>None</td>
-                                                <td>None</td>
-                                                {/* If there is an explanation checkmark else X */}
-                                                <td>{gen.explanationFile ? <a href={"/explanations/" + i}>&#9989;</a> : "\u274C"}</td>
-                                            </tr>
-                                        )
-                                    })
-                            }
-                        </tbody>
-                    </Table>
-
-                </div>
-                : <div className="question-container">
-                    {trainer.name} <a style={{ fontSize: "2vw" }} href={"/explanations/" + trainerId}>Learn</a>
-                    <hr />
-                    <Question generator={trainer} />
-                </div>
-            }
+            <div className="question-container">
+                {trainer.name} <a style={{ fontSize: "2vw" }} href={"/explanations/" + trainerId}>Learn</a>
+                <hr />
+                <form onSubmit={e => checkAnswer(e)} className="question-container">
+                    <h3 ref={prevRef}>{prev}</h3>
+                    <div className="math-container"><Math tex={question.question}></Math></div>
+                    <input value={answer} onChange={e => updateAnswer(e.target.value)}
+                        name="answer" autoComplete="off" className="question-input"></input>
+                    <Qtimer startedTime={startedTime} />
+                    {
+                        answers === undefined || answers.filter(ans => ans.correct).length === 0 ? ""
+                            : <div className="trainer-stats">
+                                <span>
+                                    Average time: {(answers
+                                        .filter(ans => ans.correct)
+                                        .reduce((acc, cur) => {
+                                            return acc += cur.time
+                                        }, 0) / answers.filter(ans => ans.correct).length).toFixed(2)}
+                                </span>
+                                <span>
+                                    Accuracy: {(
+                                        ((answers.filter(ans => ans.correct).length * 1.0 / answers.length) * 100).toFixed(1)
+                                    )}%
+                                    </span>
+                            </div>
+                    }
+                </form>
+            </div>
         </div>
     )
 }

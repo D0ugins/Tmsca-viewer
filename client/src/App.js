@@ -10,6 +10,7 @@ import Login from './Components/Users/Login';
 import Register from './Components/Users/Register';
 import Results from './Components/Users/Results'
 import Trainer from './Components/Trainer/Trainer'
+import TrainerSelect from './Components/Trainer/TrainerSelect'
 import Exaplanation from './Components/Trainer/Explanation'
 import Guides from './Components/Guides';
 
@@ -60,14 +61,20 @@ function App() {
           <Switch>
             <Route path="/" exact> <TestSearch /> </Route>
             <Route path="/take/:testName"> <TestTake /> </Route>
-            <Route path="/resources"> <Resources /> </Route>
+
+
             <Route path="/login"> <Login /> </Route>
             <Route path="/register"> <Register /> </Route>
+
             <Route path="/results"> <Results /> </Route>
+
+            <Route path="/trainer/select"> <TrainerSelect /> </Route>
             <Route path="/trainer/:trainerId"> <Trainer /> </Route>
-            <Route path="/trainer"> <Trainer /> </Route>
             <Route path="/explanations/:trickId"> <Exaplanation /></Route>
+
             <Route path="/guides"> <Guides /> </Route>
+            <Route path="/resources"> <Resources /> </Route>
+
           </Switch>
         </Router>
       </UserContext.Provider>

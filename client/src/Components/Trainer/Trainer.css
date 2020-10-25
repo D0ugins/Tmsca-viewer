@@ -8,7 +8,7 @@
 
 .trainer-search {
     width: 50%;
-    margin: 5% auto 3% auto;
+    margin: 2% auto 3% auto;
 }
 
 .question-container {
@@ -24,4 +24,10 @@
 .trainer-stats span {
     font-size: 2vw;
     margin: 5%;
+}
+
+.infinite-toggle{
+    display: inline-block;
+    vertical-align: middle;
+    margin: .5%;
 }

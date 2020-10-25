@@ -28,7 +28,7 @@ export default function Explanation() {
             .then(res => res.text())
             .then(data => setExplanation(data))
 
-    }, [trickId])
+    }, [trick])
 
     const renderers = {
         inlineMath: ({ value }) => <Math tex={value} />,
