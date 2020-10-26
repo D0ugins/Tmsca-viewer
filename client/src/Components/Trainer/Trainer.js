@@ -14,7 +14,6 @@ import { MathComponent as Math } from 'mathjax-react'
 import Axios from 'axios'
 
 
-
 export default function Trainer() {
 
     const { trainerId } = useParams()
