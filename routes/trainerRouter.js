@@ -6,7 +6,7 @@ const router = require("express").Router();
 router.post("/bestTimes", auth, async (req, res) => {
     try {
         const { trickId, time } = req.body;
-        if (!time || !trickId) return res.status(401).json({ msg: "No trick and/or time provided" })
+        if (!time || trickId == null) return res.status(401).json({ msg: "No trick and/or time provided" })
 
         let user = await User.findById(req.user);
         if (!user) return res.status(401).json({ msg: "User does not exist" })
@@ -29,6 +29,7 @@ router.post("/bestTimes", auth, async (req, res) => {
             return (await old.save())
         }
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ err: err.message })
     }
 })
@@ -38,7 +39,7 @@ router.get("/bestTimes", auth, async (req, res) => {
 
         const { trickId } = req.query
 
-        if (trickId) {
+        if (trickId == null) {
             // If requestion specific trick return that
             let time = await BestTime.findOne({ 'user._id': req.user, trickId })
             return res.json({ time: time.time })
@@ -55,6 +56,7 @@ router.get("/bestTimes", auth, async (req, res) => {
         }
 
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ err: err.message })
     }
 })

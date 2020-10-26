@@ -24,7 +24,7 @@ export default function Trainer() {
         if (!isNaN(id)) {
             return Generators[id]
         }
-        else return window.location.pathname = "/trainer"
+        else return window.location.pathname = "/trainer/select"
     })
 
     const preset = trainer.preset || []
