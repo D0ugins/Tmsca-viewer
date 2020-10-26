@@ -14,6 +14,7 @@ router.post("/bestTimes", auth, async (req, res) => {
         let old = await BestTime.findOne({ 'user._id': req.user, trickId })
 
         if (!old) {
+            // If no best time yet craete a new one and save it
             return res.json(await new BestTime({
                 user: {
                     _id: req.user,
@@ -23,7 +24,8 @@ router.post("/bestTimes", auth, async (req, res) => {
                 time
             }).save())
         } else {
-            old.time = time
+            // If there was one check to make sure it is faster then update it
+            if (old.time >= time) old.time = time
             return (await old.save())
         }
     } catch (err) {
@@ -37,9 +39,11 @@ router.get("/bestTimes", auth, async (req, res) => {
         const { trickId } = req.query
 
         if (trickId) {
+            // If requestion specific trick return that
             let time = await BestTime.findOne({ 'user._id': req.user, trickId })
             return res.json({ time: time.time })
         } else {
+            // If no trick specified return all tricks that have times
             let times = await BestTime.find({ 'user._id': req.user })
 
             let obj = {}
@@ -49,7 +53,6 @@ router.get("/bestTimes", auth, async (req, res) => {
 
             return res.json(obj)
         }
-
 
     } catch (err) {
         return res.status(500).json({ err: err.message })

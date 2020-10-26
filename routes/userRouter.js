@@ -20,8 +20,8 @@ router.post("/register", async (req, res) => {
 
         if (firstName.length > 32 || firstName.length < 2)
             return res.status(400).json({ msg: `First name is too ${firstName.length > 2 ? 'long' : 'short'}` })
-        if (firstName.length > 32 || firstName.length < 2)
-            return res.status(400).json({ msg: `Last name is too ${firstName.length > 2 ? 'long' : 'short'}` })
+        if (lastName.length > 32 || lastName.length < 2)
+            return res.status(400).json({ msg: `Last name is too ${lastName.length > 2 ? 'long' : 'short'}` })
 
         if (await User.findOne({ email: email }))
             return res.status(400).json({ msg: "Account with this email already exists" });
@@ -109,7 +109,7 @@ router.post("/isTokenValid", async (req, res) => {
 
         if (token) {
             await jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-                if (err) return 
+                if (err) return
                 if (decoded) {
                     const user = await User.findById(decoded.id);
                     if (user) res["val"] = true;

@@ -42,29 +42,36 @@ router.post("/", auth, async (req, res) => {
 
 router.get("/", cors(), async (req, res) => {
     try {
+
         let results = []
         const { user_id, test_name, type } = req.query
+
         /* Finds tests based on search query from body
         Further filtering can be handled client side */
         if (test_name) {
             if (test_name.slice(2, 4) === "NS") results = await NsResult.find({ test_name })
             else results = await MthSciResult.find({ test_name })
         }
+
         // If admin account skip and return all results
         else if (user_id && user_id !== "5f84b37e35bf0600177f25ce") {
             let ns = await NsResult.find({ 'user._id': user_id })
             let mthsci = await MthSciResult.find({ 'user._id': user_id })
             results = ns.concat(mthsci)
         }
+
+
         else if (type) {
             if (type === "Number Sense") results = await NsResult.find()
             else results = await MthSciResult.find()
         }
+
+        // If nothing specified return all results
         else results = (await NsResult.find()).concat(await MthSciResult.find())
 
-        res.json(results)
+        return res.json(results)
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 
 })

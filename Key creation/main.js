@@ -21,9 +21,8 @@ async function parseKey(text_path) {
         const type = path_array[1]
         const name = path.parse(text_path).name.slice(0, -4)
 
-        const key = data.split('\n').map(str => str.trim())
-        // If '' at end of array remove it
-        if (key[key.length - 1] === '') key.pop()
+        const key = data.trim().split('\n').map(str => str.trim())
+
         // If key dosent have the proper number of questions print error and return
         if (key.length !== 50 && key.length !== 80) { console.error("Incorrect number of questions for test: " + name); return; }
 
@@ -44,7 +43,7 @@ async function parseKey(text_path) {
         Number Sense:
             normal: (num) ans
             multiple acceptable: (num) ans1 or ans2 or ans3
-            estimation: (num) min-max
+            estimation: *(num) min-max
         Mth/Sci:
             normal: num. ans
         */

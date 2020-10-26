@@ -114,7 +114,7 @@ export default function Results() {
     useEffect(() => {
         const getResults = async () => {
             // Load results from backend
-            if (user?.user) {
+            if (user && user.user) {
                 let res = await Axios.get('/api/results', { params: { user_id: user.user._id } })
 
                 // Sorts results by date taken

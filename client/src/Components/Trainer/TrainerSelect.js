@@ -16,6 +16,7 @@ export default function TrainerSelect() {
 
     useEffect(() => {
         const getBests = async () => {
+            // Load best times
             if (user?.user) {
                 setBests((await Axios.get("/api/trainer/bestTimes", {
                     headers: { "x-auth-token": user.token }

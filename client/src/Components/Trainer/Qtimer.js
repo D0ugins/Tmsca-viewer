@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
+// Simple timer component that shows the time elapsed since a started time give in props
 export default function Qtimer({ startedTime }) {
 
     const [time, setTime] = useState(0)

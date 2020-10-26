@@ -23,13 +23,14 @@ export default function Explanation() {
         if (!explanationFile) return setExplanation("# No explanation for this trick has been created")
 
         let path = process.env.PUBLIC_URL + "/explanations/NsTricks/" + explanationFile
-
+        // Loads trick markdown file
         fetch(path)
             .then(res => res.text())
             .then(data => setExplanation(data))
 
     }, [trick])
 
+    // Renderers for math/tables
     const renderers = {
         inlineMath: ({ value }) => <Math tex={value} />,
         math: ({ value }) => <Math tex={value} />,

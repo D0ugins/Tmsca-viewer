@@ -48,6 +48,7 @@ export default function Trainer() {
     const [done, setDone] = useState(false)
 
     const validate = (val) => {
+        // Make sure answer is only valid characters
         let reg = new RegExp('^[-]?[0-9/. ]*$');
         return (reg.test(val))
     }
@@ -65,15 +66,23 @@ export default function Trainer() {
     const checkAnswer = (e) => {
         e.preventDefault();
         if (answer.trim() === question.answer.toString()) {
+            // If answer was correct update the previous box to show the time
             prevRef.current.style.color = "green"
             setPrev("Answered in: " + ((Date.now() - startedTime) / 1000).toFixed(2) + " seconds")
+
+            // If in timed mode add one to the score
             if (mode === "timed") setScore(score => score + 1)
         }
         else {
+            // If wrong set prev box to what the correct answer was
             prevRef.current.style.color = "red"
             setPrev(answer + " CORRECT: " + question.answer)
+
+            // If in timed mode decrease score
             if (mode === "timed") setScore(score => score - 1)
         }
+
+        // Update answers array to show averages and stuff
         setAnswers(prev => {
             return [
                 ...prev, {
@@ -86,10 +95,12 @@ export default function Trainer() {
             ]
         })
 
+        // Reset input box and stuff
         reset()
     }
 
     const startTimed = () => {
+        // Reset all the stuff to start timed mode
         reset()
         setAnswers([])
         setPrev("")
@@ -99,12 +110,14 @@ export default function Trainer() {
     }
 
     const getTime = () => {
+        // Returns the total time spent
         let time = answers.reduce((acc, cur) => { return acc + cur.time }, 0)
         return time.toFixed(2)
     }
 
     const endTest = () => {
         if (user?.user) {
+            // If user is logged in and time is less than their best, save it
             const time = getTime()
             if (time < best || !best) {
                 setBest(time)
@@ -119,6 +132,7 @@ export default function Trainer() {
     }
 
     useEffect(() => {
+        // Once score is greater than 10 end the test
         if (score >= 10 && mode === "timed") {
             endTest()
         }
@@ -126,6 +140,7 @@ export default function Trainer() {
     }, [score, mode])
 
     useEffect(() => {
+        // Load the best time from the database
         const loadBest = async () => {
             setBest((await Axios.get('/api/trainer/bestTimes', {
                 params: { trickId: trainer.id },
