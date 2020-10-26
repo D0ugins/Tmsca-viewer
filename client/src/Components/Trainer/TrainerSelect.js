@@ -32,10 +32,15 @@ export default function TrainerSelect() {
             <Navbar />
             <div className="trainer-select">
                 <h1>Select a trainer (BETA)</h1>
-                <input type="checkbox" className="form-control infinite-toggle" id="infinite-toggle"
+                <input type="radio" className="form-control infinite-toggle" id="infinite-toggle" name="mode"
                     style={{ width: "1.5rem", height: "1.5rem" }}
                     checked={infinite} onChange={() => setInfinite(prev => !prev)} />
                 <label htmlFor="infinite-toggle" className="infinite-toggle" style={{ fontSize: "1.5rem" }}>Infinite mode</label>
+
+                <input type="radio" className="form-control infinite-toggle" id="timed-toggle" name="mode"
+                    style={{ width: "1.5rem", height: "1.5rem" }}
+                    checked={!infinite} onChange={() => setInfinite(prev => !prev)} />
+                <label htmlFor="timed-toggle" className="infinite-toggle" style={{ fontSize: "1.5rem" }}>Timed mode</label>
 
                 <input type="text" className="form-control trainer-search" placeholder="Search"
                     value={search} onChange={e => setSearch(e.target.value)} />

@@ -45,7 +45,7 @@ router.get("/bestTimes", auth, async (req, res) => {
             let time = await BestTime.findOne({ 'user._id': req.user, trickId })
 
             if (time) return res.json({ time: time.time })
-            else return res.json(null)
+            else return res.json({ time: null })
         } else {
             // If no trick specified return all tricks that have times
             let times = await BestTime.find({ 'user._id': req.user })

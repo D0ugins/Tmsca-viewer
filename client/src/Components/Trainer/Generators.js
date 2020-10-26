@@ -79,8 +79,8 @@ let Generators = [
             "12": [3, 12, ["Multiply by Teens"]],
             "5": [3, 5, []],
             "15": [2, 15, []],
-            "25": [2, 25, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x25.md"],
-            "50": [2, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x50.md"],
+            "25": [3, 25, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x25.md"],
+            "50": [3, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x50.md"],
         },
 
         generate([length, constNum]) {
@@ -108,7 +108,7 @@ let Generators = [
             "12.5": [2, 8, 100, "12 " + frac([1, 2]), ["Multiply by factors of 1s and 0s"], "x125.md"],
             "37": [2, 3, 111, "37", ["Multiply by factors of 1s and 0s"]],
             "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"]],
-            "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
+            "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x75.md"],
         },
 
         generate([length, factor, base, string]) {
@@ -181,8 +181,8 @@ let Generators = [
         name: "Remainder of number divided by ",
         types: ["Remainders"],
         presets: {
-            "11": [5, 11, []],
-            "9": [5, 9, []]
+            "11": [5, 11, [], "remain11.md"],
+            "9": [5, 9, [], "remain9.md"]
         },
 
         generate([length, num]) {
@@ -193,7 +193,7 @@ let Generators = [
 
             let a = randXDigitNum(length)
             return {
-                question: "\\text{Remainder of } " + a + " \\div " + num,
+                question: a + " \\div " + num + "\\text{ has a remainder of}",
                 answer: a % num
             }
         }
@@ -214,7 +214,7 @@ let Generators = [
     },
 
     {
-        name: "Multiply numbers slgihtly below or above Power of 10",
+        name: "Multiply numbers slightly below or above Power of 10",
         types: ["Multiplication tricks"],
         generate([pow = 2, mode = "random"]) {
             let a = randInRange(1, 12);
@@ -256,7 +256,8 @@ let Generators = [
                 answer: (base - a) * (base + a)
             }
 
-        }
+        },
+        explanationFile: "abvblw.md"
     },
 
     {
@@ -280,7 +281,34 @@ let Generators = [
                 question: a + "^2",
                 answer: a * a
             }
-        }
+        },
+
+    },
+
+    {
+        name: "Squares Ending in 5",
+        type: ["Sqaures", "Shape numbers"],
+        generate([min = 3, max = 9]) {
+            let a = randInRange(min, max);
+            return {
+                question: a + "5^2",
+                answer: (a * 10 + 5) ** 2
+            }
+        },
+        explanationFile: "sqaureEndIn5.md"
+    },
+
+    {
+        name: "Squares Ending in 0",
+        type: ["Sqaures", "Shape numbers"],
+        generate([min = 3, max = 9]) {
+            let a = randInRange(min, max);
+            return {
+                question: a + "0^2",
+                answer: (a * 10) ** 2
+            }
+        },
+        explanationFile: "sqaureEndIn0.md"
     },
 
     {
@@ -292,7 +320,8 @@ let Generators = [
                 question: `${a}^2 + ${a * 3}^2`,
                 answer: a * a * 10
             }
-        }
+        },
+        explanationFile: "x3xsquared.md"
     },
 
     {

@@ -30,11 +30,18 @@ export default function Explanation() {
 
     }, [trick])
 
+    const findTrick = (explanationFile) => {
+        return Generators.find(gen => {
+            return gen.explanationFile === explanationFile
+        }).id
+    }
+
     // Renderers for math/tables
     const renderers = {
-        inlineMath: ({ value }) => <Math tex={value} />,
+        inlineMath: ({ value }) => <Math tex={value} display={false} />,
         math: ({ value }) => <Math tex={value} />,
-        table: ({ children }) => <Table bordered striped style={{ width: "75%", margin: "2% auto" }} > {children}</Table>
+        table: ({ children }) => <Table bordered striped style={{ width: "75%", margin: "2% auto" }} > {children}</Table>,
+        link: ({ href, children }) => { return <a href={"./" + findTrick(href)}>{children}</a> }
     }
 
     return (
