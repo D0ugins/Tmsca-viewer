@@ -103,9 +103,9 @@ let Generators = [
         types: ["Multiplicaition Tricks"],
 
         presets: {
-            "33.3": [2, 3, 100, "33 " + frac([1, 3]), ["Multiply by factors of 1s and 0s"]],
-            "16.6": [2, 6, 100, "16 " + frac([2, 3]), ["Multiply by factors of 1s and 0s"]],
-            "12.5": [2, 8, 100, "12 " + frac([1, 2]), ["Multiply by factors of 1s and 0s"]],
+            "33.3": [2, 3, 100, "33 " + frac([1, 3]), ["Multiply by factors of 1s and 0s"], "x33.md"],
+            "16.6": [2, 6, 100, "16 " + frac([2, 3]), ["Multiply by factors of 1s and 0s"], "x166.md"],
+            "12.5": [2, 8, 100, "12 " + frac([1, 2]), ["Multiply by factors of 1s and 0s"], "x125.md"],
             "37": [2, 3, 111, "37", ["Multiply by factors of 1s and 0s"]],
             "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"]],
             "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"]],
