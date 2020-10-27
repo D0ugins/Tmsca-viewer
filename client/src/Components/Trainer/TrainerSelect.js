@@ -63,7 +63,7 @@ export default function TrainerSelect() {
                                     return (
                                         <tr key={i}>
                                             <td><a href={"/trainer/" + i + "?mode=" + (infinite ? "infinite" : "timed")} key={i}>{gen.name}</a></td>
-                                            {user?.user ? <td>{bests[i] || "None"}</td> : ""}
+                                            {user?.user ? <td>{bests[gen.name] || "None"}</td> : ""}
                                             {/* If there is an explanation checkmark else X */}
                                             <td>{gen.explanationFile
                                                 ? <a href={"/explanations/" + i}>

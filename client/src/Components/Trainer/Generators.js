@@ -74,11 +74,10 @@ let Generators = [
         presets: {
             "11": [2, 11, ["Multiply by 1s and 0s"], "x11.md"],
             "101": [3, 101, ["Multiply by 1s and 0s"], "x101.md"],
-            "111": [3, 111, ["Multiply by 1s and 0s"]],
-            "1001": [4, 1001, ["Multiply by 1s and 0s"]],
-            "12": [3, 12, ["Multiply by Teens"]],
-            "5": [3, 5, []],
-            "15": [2, 15, []],
+            "111": [3, 111, ["Multiply by 1s and 0s"], "x111.md"],
+            "1001": [4, 1001, ["Multiply by 1s and 0s"], "x1001.md"],
+            "12": [3, 12, ["Multiply by Teens"], "x12.md"],
+            "15": [2, 15, [], "x15.md"],
             "25": [3, 25, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x25.md"],
             "50": [3, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x50.md"],
         },
@@ -106,8 +105,7 @@ let Generators = [
             "33.3": [2, 3, 100, "33 " + frac([1, 3]), ["Multiply by factors of 1s and 0s"], "x33.md"],
             "16.6": [2, 6, 100, "16 " + frac([2, 3]), ["Multiply by factors of 1s and 0s"], "x166.md"],
             "12.5": [2, 8, 100, "12 " + frac([1, 2]), ["Multiply by factors of 1s and 0s"], "x125.md"],
-            "37": [2, 3, 111, "37", ["Multiply by factors of 1s and 0s"]],
-            "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"]],
+            "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"], "x143.md"],
             "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x75.md"],
         },
 
@@ -131,7 +129,7 @@ let Generators = [
         presets: {
             "addition": [3, 3, "+", []],
             "subtraction": [3, 3, "-", []],
-            "foil": [2, 2, "*", []],
+            "foil": [2, 2, "*", [], "foil.md"],
             "division 1": [4, 1, "/", []],
             "division 2": [5, 2, "/", []]
         },
@@ -242,7 +240,8 @@ let Generators = [
                 question: a + " \\times " + b,
                 answer: a * b
             };
-        }
+        },
+        explanationFile: "abvblwpow10.md"
     },
 
     {
@@ -282,7 +281,7 @@ let Generators = [
                 answer: a * a
             }
         },
-
+        explanationFile: "squares.md"
     },
 
     {
@@ -364,7 +363,8 @@ let Generators = [
                 answer: (a + b) * (a - b)
             }
 
-        }
+        },
+        explanationFile: "difsqrs.md"
     },
 
     {
@@ -391,7 +391,8 @@ let Generators = [
                 question,
                 answer
             }
-        }
+        },
+        explanationFile: "num+recip.md"
     },
 ]
 

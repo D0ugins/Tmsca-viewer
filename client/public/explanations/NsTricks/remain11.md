@@ -1,3 +1,5 @@
+[Video](http://mathninja.org/divisibility-rules/)
+
 To find the remainder of a number divided by 11, alternate subtracting and adding its digits, then find the remainder of that value and 11
 
 ### $\text{Remainder of } 82471 \div 11$

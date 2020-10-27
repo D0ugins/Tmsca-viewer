@@ -5,13 +5,13 @@ const router = require("express").Router();
 
 router.post("/bestTimes", auth, async (req, res) => {
     try {
-        const { trickId, time } = req.body;
-        if (!time || trickId == null) return res.status(401).json({ msg: "No trick and/or time provided" })
+        const { trick, time } = req.body;
+        if (!time || trick == null) return res.status(401).json({ msg: "No trick and/or time provided" })
 
         let user = await User.findById(req.user);
         if (!user) return res.status(401).json({ msg: "User does not exist" })
 
-        let old = await BestTime.findOne({ 'user._id': req.user, trickId })
+        let old = await BestTime.findOne({ 'user._id': req.user, trick })
         if (!old) {
             // If no best time yet craete a new one and save it
             return res.json(await new BestTime({
@@ -19,7 +19,7 @@ router.post("/bestTimes", auth, async (req, res) => {
                     _id: req.user,
                     fullName: user.firstName + " " + user.lastName
                 },
-                trickId,
+                trick,
                 time
             }).save())
         } else {
@@ -38,11 +38,11 @@ router.post("/bestTimes", auth, async (req, res) => {
 router.get("/bestTimes", auth, async (req, res) => {
     try {
 
-        const { trickId } = req.query
+        const { trick } = req.query
 
-        if (trickId != null) {
+        if (trick != null) {
             // If requestion specific trick return that
-            let time = await BestTime.findOne({ 'user._id': req.user, trickId })
+            let time = await BestTime.findOne({ 'user._id': req.user, trick })
 
             if (time) return res.json({ time: time.time })
             else return res.json({ time: null })
@@ -52,7 +52,7 @@ router.get("/bestTimes", auth, async (req, res) => {
 
             let obj = {}
             times.map(time => {
-                obj[time.trickId] = time.time
+                obj[time.trick] = time.time
             })
 
             return res.json(obj)

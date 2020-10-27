@@ -121,7 +121,7 @@ export default function Trainer() {
             if (time < best || !best) {
                 setBest(time)
                 Axios.post('/api/trainer/bestTimes', {
-                    trickId: trainer.id,
+                    trick: trainer.name,
                     time
                 }, { headers: { "x-auth-token": user.token } })
             }
@@ -142,7 +142,7 @@ export default function Trainer() {
         // Load the best time from the database
         const loadBest = async () => {
             setBest((await Axios.get('/api/trainer/bestTimes', {
-                params: { trickId: trainer.id },
+                params: { trick: trainer.name },
                 headers: { "x-auth-token": user.token }
             })).data.time)
         }
@@ -150,7 +150,7 @@ export default function Trainer() {
         if (mode === "timed" && user?.user) {
             loadBest()
         }
-    }, [mode, trainer.id, user.token, user.user])
+    }, [mode, trainer.name, user.token, user.user])
 
     return (
         <div>

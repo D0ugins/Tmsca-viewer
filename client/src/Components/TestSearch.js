@@ -114,7 +114,7 @@ export default function TestSearch() {
                         <label htmlFor="num">Choose test number: </label>
                         {/* Onchange update num and reset classname */}
                         <input id="num" name="num" value={num} onChange={e => { setNum(e.target.value); e.target.className = "" }} list="nums"
-                            className={""} />
+                            className={""} autoComplete="off" />
                         <datalist id="nums">
                             {nums.map(n =>
                                 <option value={n} key={n} />

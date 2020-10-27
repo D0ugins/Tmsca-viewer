@@ -41,7 +41,12 @@ export default function Explanation() {
         inlineMath: ({ value }) => <Math tex={value} display={false} />,
         math: ({ value }) => <Math tex={value} />,
         table: ({ children }) => <Table bordered striped style={{ width: "75%", margin: "2% auto" }} > {children}</Table>,
-        link: ({ href, children }) => { return <a href={"./" + findTrick(href)}>{children}</a> }
+        link: ({ href, children }) => {
+            if (href.startsWith("http")) {
+                return <a href={href}>{children}</a>
+            }
+            return <a href={"./" + findTrick(href)}>{children}</a>
+        }
     }
 
     return (

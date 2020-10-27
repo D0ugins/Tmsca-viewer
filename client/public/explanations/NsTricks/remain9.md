@@ -1,3 +1,5 @@
+[Video](http://mathninja.org/divisibility-rules/)
+
 To find the remainder of a number divided by 9, add all of the digits and find the remainder of the sum and 9
 
 ### $\text{Remainder of } 82937 \div 9$
