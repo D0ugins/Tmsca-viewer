@@ -22,9 +22,11 @@ export default function Trainer() {
     const randInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min + 1;
     const newTrainer = () => {
         let base = Generators[randInRange(0, Generators.length - 1)]
-        base.realName = base.name
-        base.name = "Random"
-        return base
+        return {
+            ...base,
+            realName: base.name,
+            name: "Random"
+        }
     }
 
     const [random] = useState(trainerId === "random")
@@ -77,7 +79,6 @@ export default function Trainer() {
         } else {
             setQuestion(trainer.generate(preset));
         }
-
         setStartedTime(Date.now())
     }
 

@@ -320,7 +320,7 @@ let Generators = [
                 answer: a * a * 10
             }
         },
-        explanationFile: "x3xsquared.md"
+        explanationFile: "x3xsqaured.md"
     },
 
     {
