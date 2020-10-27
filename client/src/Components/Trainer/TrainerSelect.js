@@ -45,6 +45,8 @@ export default function TrainerSelect() {
                 <input type="text" className="form-control trainer-search" placeholder="Search"
                     value={search} onChange={e => setSearch(e.target.value)} />
 
+                <h2><a href={"/trainer/random" + "?mode=" + (infinite ? "infinite" : "timed")}>Random</a></h2>
+                <br />
                 <Table striped bordered hover style={{ width: "90%", margin: "0 auto" }}>
                     <thead>
                         <tr>
@@ -54,7 +56,6 @@ export default function TrainerSelect() {
                         </tr>
                     </thead>
                     <tbody>
-
                         {
                             Generators
                                 .filter(gen =>

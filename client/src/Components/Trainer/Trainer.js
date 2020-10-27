@@ -10,7 +10,7 @@ import UserContext from '../../Context/UserContext'
 
 import { useParams } from 'react-router-dom'
 import { Button, Alert } from 'react-bootstrap'
-import { MathComponent as Math } from 'mathjax-react'
+import { MathComponent } from 'mathjax-react'
 import Axios from 'axios'
 
 
@@ -19,10 +19,22 @@ export default function Trainer() {
     const { trainerId } = useParams()
     const { user } = useContext(UserContext)
 
-    const [trainer] = useState(() => {
+    const randInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min + 1;
+    const newTrainer = () => {
+        let base = Generators[randInRange(0, Generators.length - 1)]
+        base.realName = base.name
+        base.name = "Random"
+        return base
+    }
+
+    const [random] = useState(trainerId === "random")
+    const [trainer, setTrainer] = useState(() => {
         let id = parseInt(trainerId)
         if (!isNaN(id)) {
             return Generators[id]
+        }
+        else if (trainerId === "random") {
+            return newTrainer()
         }
         else return window.location.pathname = "/trainer/select"
     })
@@ -58,7 +70,14 @@ export default function Trainer() {
 
     const reset = () => {
         setAnswer("");
-        setQuestion(trainer.generate(preset));
+        if (random) {
+            let newtrainer = newTrainer()
+            setTrainer(newtrainer)
+            setQuestion(newtrainer.generate(newtrainer.preset || []))
+        } else {
+            setQuestion(trainer.generate(preset));
+        }
+
         setStartedTime(Date.now())
     }
 
@@ -156,14 +175,18 @@ export default function Trainer() {
         <div>
             <Navbar />
             <div className="question-container">
-                {trainer.name} <a style={{ fontSize: "2vw" }} href={"/explanations/" + trainerId}>Learn</a>
+                {trainer.name} {!random ? <a style={{ fontSize: "2vw" }} href={"/explanations/" + trainerId}>Learn</a> : ""}
                 <hr />
                 <form onSubmit={e => checkAnswer(e)} className="question-container">
 
                     {
                         started ? <>
+                            {random ? <>
+                                <span style={{ fontSize: "2rem" }}>{trainer.realName} </span>
+                                <a style={{ fontSize: "2vw" }} href={"/explanations/" + trainer.id}>Learn</a>
+                            </> : ""}
                             <h3 ref={prevRef}>{prev}</h3>
-                            <div className="math-container"><Math tex={question.question}></Math></div>
+                            <div className="math-container"><MathComponent tex={question.question}></MathComponent></div>
                             <input value={answer} onChange={e => updateAnswer(e.target.value)}
                                 name="answer" autoComplete="off" className="question-input"></input>
                             <Qtimer startedTime={startedTime} />

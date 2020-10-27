@@ -394,6 +394,61 @@ let Generators = [
         },
         explanationFile: "num+recip.md"
     },
+
+    {
+        name: "Consecutive Integers",
+        types: ["Addition tricks", "Shape numbers"],
+        generate([min = 10, max = 24]) {
+            let rand = Math.random()
+            let len = randInRange(max, min)
+
+            if (rand < .33) {
+                // Normal consecutive
+                return {
+                    question: "1 + 2 + 3 \\ldots " + len,
+                    answer: (len * (len + 1)) / 2
+                }
+            }
+            else if (rand < .66) {
+                // Consectutive even
+                return {
+                    question: "2 + 4 + 6 \\ldots " + len * 2,
+                    answer: (len * (len + 1))
+                }
+            }
+            else {
+                // Consectutive odd
+                return {
+                    question: "1 + 3 + 5 \\ldots " + ((len * 2) - 1),
+                    answer: (len ** 2)
+                }
+            }
+
+        },
+        explanationFile: "consecint.md"
+    },
+
+    {
+        name: "To base 10",
+        types: ["Bases", "Conversions"],
+        generate([min = 4, max = 7, length = 3]) {
+
+            let base = randInRange(min, max)
+            let question = ""
+            let answer = 0
+            for (let i = length - 1; i >= 0; i--) {
+                let num = randInRange(0, base - 1)
+                question += num
+                answer += num * (base ** i)
+            }
+
+            return {
+                question: question + "_" + base + "\\text{ to base 10}",
+                answer
+            }
+        },
+        explanationFile: "tobase10.md"
+    }
 ]
 
 let generators = [];

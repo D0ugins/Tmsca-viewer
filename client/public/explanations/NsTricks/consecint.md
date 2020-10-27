@@ -1,0 +1,1 @@
+[Video](http://mathninja.org/adding-consecutive-integers/)
