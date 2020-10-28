@@ -189,7 +189,7 @@ export default function Trainer() {
                             <h3 ref={prevRef}>{prev}</h3>
                             <div className="math-container"><MathComponent tex={question.question}></MathComponent></div>
                             <input value={answer} onChange={e => updateAnswer(e.target.value)}
-                                name="answer" autoComplete="off" className="question-input"></input>
+                                name="answer" autoComplete="off" className="question-input" autoFocus></input>
                             <Qtimer startedTime={startedTime} />
                         </> : ""
                     }
