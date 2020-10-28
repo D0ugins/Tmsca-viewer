@@ -18,7 +18,8 @@ async function updateLeaderBoard({ trick, time, user }) {
 
     if (!old) {
         board.times.push({ user, time })
-    } else {
+    }
+    else {
         let index = board.times.indexOf(old)
         board.times[index] = { user, time }
     }
@@ -33,7 +34,8 @@ async function getRanks(user, tricks) {
             return board.times.findIndex((time => {
                 return time.user._id.toString() === user.toString()
             })) + 1
-        } else {
+        }
+        else {
             return null
         }
     }))
@@ -64,7 +66,8 @@ router.post("/bestTimes", auth, async (req, res) => {
             updateLeaderBoard(result)
             return
 
-        } else {
+        }
+        else {
             // If there was one check to make sure it is faster then update it
 
             if (old.time >= parseFloat(time)) old.time = time
@@ -99,7 +102,8 @@ router.get("/bestTimes", auth, async (req, res) => {
                 return res.json({ time: time.time, rank })
             }
             else return res.json({ time: null })
-        } else {
+        }
+        else {
             // If no trick specified return all tricks that have times
             let times = await BestTime.find({ 'user._id': req.user })
 

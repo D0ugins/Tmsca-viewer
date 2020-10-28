@@ -127,8 +127,8 @@ let Generators = [
         types: ["Arithmetic"],
 
         presets: {
-            "addition": [3, 3, "+", []],
-            "subtraction": [3, 3, "-", []],
+            "addition": [3, 3, "+", [], "add.md"],
+            "subtraction": [3, 3, "-", [], "subtract.md"],
             "foil": [2, 2, "*", [], "foil.md"],
             "division 1": [4, 1, "/", []],
             "division 2": [5, 2, "/", []]
@@ -246,7 +246,7 @@ let Generators = [
 
     {
         name: "Multiply X below and X above multiple of 5",
-        type: ["Multiplication Tricks"],
+        types: ["Multiplication Tricks"],
         generate() {
             let base = randInRange(5, 19) * 5
             let a = randInRange(1, 6);
@@ -261,19 +261,20 @@ let Generators = [
 
     {
         name: "Square roots",
-        type: ["Square roots"],
+        types: ["Square roots"],
         generate([min = 11, max = 59]) {
             let a = randInRange(min, max);
             return {
                 question: "\\sqrt{" + a * a + "}",
                 answer: a
             }
-        }
+        },
+        explanationFile: "sqrt.md"
     },
 
     {
         name: "Squares",
-        type: ["Sqaures", "Shape numbers"],
+        types: ["Sqaures", "Shape numbers"],
         generate([min = 11, max = 30]) {
             let a = randInRange(min, max);
             return {
@@ -285,8 +286,34 @@ let Generators = [
     },
 
     {
+        name: "Cubes",
+        types: ["Cubes", "Shape numbers"],
+        generate([min = 3, max = 15]) {
+            let a = randInRange(min, max);
+            return {
+                question: a + "^3",
+                answer: a ** 3
+            }
+        },
+        explanationFile: "cubes.md"
+    },
+
+    {
+        name: "Cube root",
+        types: ["Cubes", "Cube roots", "Shape numbers"],
+        generate([min = 3, max = 15]) {
+            let a = randInRange(min, max);
+            return {
+                question: "\\sqrt[3]{" + a ** 3 + "}",
+                answer: a
+            }
+        },
+        explanationFile: "cubrt.md"
+    },
+
+    {
         name: "Squares Ending in 5",
-        type: ["Sqaures", "Shape numbers"],
+        types: ["Sqaures", "Shape numbers"],
         generate([min = 3, max = 9]) {
             let a = randInRange(min, max);
             return {
@@ -299,7 +326,7 @@ let Generators = [
 
     {
         name: "Squares Ending in 0",
-        type: ["Sqaures", "Shape numbers"],
+        types: ["Sqaures", "Shape numbers"],
         generate([min = 3, max = 9]) {
             let a = randInRange(min, max);
             return {
@@ -312,7 +339,7 @@ let Generators = [
 
     {
         name: "X² + 3X²",
-        type: ["Sqaures", "Squares tricks"],
+        types: ["Sqaures", "Squares tricks"],
         generate([min = 11, max = 25]) {
             let a = randInRange(min, max);
             return {
@@ -325,7 +352,7 @@ let Generators = [
 
     {
         name: "Difference of squares",
-        type: ["Sqaures", "Squares tricks"],
+        types: ["Sqaures", "Squares tricks"],
         generate() {
             let type = ""
             let sum = undefined
@@ -448,6 +475,41 @@ let Generators = [
             }
         },
         explanationFile: "tobase10.md"
+    },
+
+    {
+        name: "Triangular numbers",
+        types: ["Shape numbers"],
+        generate([min = 9, max = 24]) {
+
+            let a = randInRange(min, max)
+            let extension = "th"
+
+            if (a === 21) extension = "st"
+            if (a === 22) extension = "nd"
+            if (a === 23) extension = "rd"
+
+            return {
+                question: "\\text{" + a + extension + " Triangular number}",
+                answer: (a * (a + 1)) / 2
+            }
+        },
+        explanationFile: "traingnum.md"
+    },
+
+    {
+        name: "Pentagonal numbers",
+        types: ["Shape numbers"],
+        generate([min = 4, max = 15]) {
+
+            let a = randInRange(min, max)
+
+            return {
+                question: "\\text{" + a + "th Pentagonal number}",
+                answer: (a * ((3 * a) - 1)) / 2
+            }
+        },
+        explanationFile: "pentanum.md"
     }
 ]
 

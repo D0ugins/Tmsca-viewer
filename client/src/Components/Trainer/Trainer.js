@@ -76,7 +76,8 @@ export default function Trainer() {
             let newtrainer = newTrainer()
             setTrainer(newtrainer)
             setQuestion(newtrainer.generate(newtrainer.preset || []))
-        } else {
+        }
+        else {
             setQuestion(trainer.generate(preset));
         }
         setStartedTime(Date.now())

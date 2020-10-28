@@ -62,7 +62,9 @@ export default function TrainerSelect() {
                         {
                             Generators
                                 .filter(gen =>
-                                    gen.name.toLowerCase().includes(search.toLowerCase()) || !search)
+                                    !search
+                                    || gen.name.toLowerCase().includes(search.toLowerCase())
+                                    || gen.types.join(" ").toLowerCase().includes(search.toLowerCase()))
                                 .map((gen, i) => {
                                     return (
                                         <tr key={i}>
