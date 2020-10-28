@@ -152,7 +152,7 @@ export default function Trainer() {
 
     useEffect(() => {
         // Once score is greater than 10 end the test
-        if (score >= 3 && mode === "timed") {
+        if (score >= 7 && mode === "timed") {
             endTest()
         }
         // eslint-disable-next-line
@@ -215,7 +215,7 @@ export default function Trainer() {
                                 </div>
 
                             : <div>
-                                Score: {score} / 10
+                                Score: {score} / 7
                             </div>
 
                         : answers === undefined || answers.filter(ans => ans.correct).length === 0 ? ""
