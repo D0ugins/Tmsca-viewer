@@ -45,13 +45,16 @@ export default function TrainerSelect() {
                 <input type="text" className="form-control trainer-search" placeholder="Search"
                     value={search} onChange={e => setSearch(e.target.value)} />
 
-                <h2><a href={"/trainer/random" + "?mode=" + (infinite ? "infinite" : "timed")}>Random</a></h2>
+                <h2><a href={"/trainer/random?mode=" + (infinite ? "infinite" : "timed")}>Random</a></h2>
                 <br />
                 <Table striped bordered hover style={{ width: "90%", margin: "0 auto" }}>
                     <thead>
                         <tr>
                             <td> <h1>Trick</h1> </td>
-                            {user?.user ? <td> <h1>Best time</h1> </td> : ""}
+                            {user?.user ? <>
+                                <td> <h1>Best time</h1> </td>
+                                <td> <h1>Rank</h1> </td>
+                            </> : ""}
                             <td> <h1>Explanation</h1> </td>
                         </tr>
                     </thead>
@@ -63,8 +66,13 @@ export default function TrainerSelect() {
                                 .map((gen, i) => {
                                     return (
                                         <tr key={i}>
-                                            <td><a href={"/trainer/" + i + "?mode=" + (infinite ? "infinite" : "timed")} key={i}>{gen.name}</a></td>
-                                            {user?.user ? <td>{bests[gen.name] || "None"}</td> : ""}
+                                            <td>
+                                                <a href={"/trainer/" + i + "?mode=" + (infinite ? "infinite" : "timed")} key={i}>{gen.name}</a>
+                                            </td>
+                                            {user?.user ? <>
+                                                <td>{bests[gen.name]?.time || "None"}</td>
+                                                <td>{bests[gen.name]?.rank || "None"}</td>
+                                            </> : ""}
                                             {/* If there is an explanation checkmark else X */}
                                             <td>{gen.explanationFile
                                                 ? <a href={"/explanations/" + i}>
