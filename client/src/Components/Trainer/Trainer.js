@@ -198,7 +198,7 @@ export default function Trainer() {
                     mode === "timed"
                         ? !started
                             ? !done ? <div>
-                                <h1>Complete 10 questions as quickly as possible</h1>
+                                <h1>Complete 7 questions as quickly as possible</h1>
                                 <br />
                                 <h2>Current best: {best || "None"}</h2>
                                 <Button style={{ fontSize: ".5em", width: "10%" }} onClick={startTimed}>Start</Button>
