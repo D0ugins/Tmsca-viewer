@@ -334,7 +334,7 @@ let Generators = [
                 answer: (a * 10) ** 2
             }
         },
-        explanationFile: "sqaureEndIn0.md"
+        explanationFile: "squareEndIn0.md"
     },
 
     {
@@ -494,7 +494,7 @@ let Generators = [
                 answer: (a * (a + 1)) / 2
             }
         },
-        explanationFile: "traingnum.md"
+        explanationFile: "triangnum.md"
     },
 
     {
