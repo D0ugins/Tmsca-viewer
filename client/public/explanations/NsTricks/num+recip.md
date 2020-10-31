@@ -2,7 +2,7 @@
 
 To add a number to its reciprocal (ex. $\frac{6}{13} + \frac{13}{6}$) the result is 2 $\frac{\text{Difference of numbers squared}}{\text{Product of numbers}}$ (in this case the numbers are 7 and 11)
 
-### $\frac{11}{7} \times \frac{7}{11}$
+### $\frac{11}{7} + \frac{7}{11}$
 
 | Step                                | Math                  | Write down       |
 | ----------------------------------- | --------------------- | ---------------- |
