@@ -130,8 +130,7 @@ let Generators = [
             "addition": [3, 3, "+", [], "add.md"],
             "subtraction": [3, 3, "-", [], "subtract.md"],
             "foil": [2, 2, "*", [], "foil.md"],
-            "division 1": [4, 1, "/", []],
-            "division 2": [5, 2, "/", []]
+            "division": [4, 1, "/", []],
         },
 
         generate([aLen, bLen, op]) {
