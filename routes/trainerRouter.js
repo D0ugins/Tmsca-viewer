@@ -27,20 +27,6 @@ async function updateLeaderBoard({ trick, time, user }) {
     await board.save()
 }
 
-async function getRanks(user, tricks) {
-    return Promise.all(tricks.map(async (trick) => {
-        const board = await Leaderboard.findOne({ trick })
-        if (board) {
-            return board.times.findIndex((time => {
-                return time.user._id.toString() === user.toString()
-            })) + 1
-        }
-        else {
-            return null
-        }
-    }))
-}
-
 router.post("/bestTimes", auth, async (req, res) => {
     try {
         const { trick, time } = req.body;
@@ -87,17 +73,18 @@ router.post("/bestTimes", auth, async (req, res) => {
 router.get("/bestTimes", auth, async (req, res) => {
     try {
 
-        const { trick } = req.query
+        const trick = req.query.trick
+        const user = req.user
 
         if (trick != null) {
             // If requestion specific trick return that
-            let time = await BestTime.findOne({ 'user._id': req.user, trick })
+            let time = await BestTime.findOne({ 'user._id': user, trick })
 
             if (time) {
                 let board = await Leaderboard.findOne({ trick })
-                let rank = board.times.findIndex((time => {
-                    return time.user._id.toString() === req.user.toString()
-                }))
+                let rank = board.times.findIndex(time => {
+                    return time.user._id.toString() === user.toString()
+                })
 
                 return res.json({ time: time.time, rank })
             }
@@ -105,19 +92,22 @@ router.get("/bestTimes", auth, async (req, res) => {
         }
         else {
             // If no trick specified return all tricks that have times
-            let times = await BestTime.find({ 'user._id': req.user })
+            let times = await BestTime.find({ 'user._id': user })
 
-            let obj = {}
-            const ranks = await getRanks(req.user, times.map(time => time.trick))
+            let data = {}
+            for (let i in times) {
+                const { time, trick } = times[i]
+                let rank = null
 
-            times.map((time, i) => {
-                obj[time.trick] = {
-                    time: time.time,
-                    rank: ranks[i]
+                const board = await Leaderboard.findOne({ trick })
+                if (board) {
+                    rank = board.times.findIndex(time => time.user._id.toString() === user.toString()) + 1
                 }
-            })
 
-            return res.json(obj)
+                data[trick] = { time, rank, }
+            }
+
+            return res.json(data)
         }
 
     } catch (err) {
