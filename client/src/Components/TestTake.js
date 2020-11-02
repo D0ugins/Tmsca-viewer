@@ -416,7 +416,7 @@ export default function TestTake() {
             if (valid.data) save = window.confirm((!manual ? "Time is up!\n" : "") + "Would you like to save these results?")
 
             // Send results to backed for grading
-            const res = await Axios.post(`/api/grade`, {
+            const res = await Axios.post(`/api/results/grade`, {
                 type,
                 keypath: test.path,
                 answers
