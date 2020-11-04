@@ -14,6 +14,26 @@ export default function Results() {
     const [filter, setFilter] = useState("All")
 
     const updateOpen = (i) => {
+        const loadDetails = async (index) => {
+            const { _id, type } = results[index]
+            const details = await Axios.get("/api/results/details", { params: { result_id: _id, type } })
+            setResults(prev => {
+                return prev.map((result, i) => {
+                    // If at the correct index return result + details, else just return the result
+                    if (i === index) {
+                        return {
+                            ...result,
+                            ...details.data,
+                        }
+                    }
+                    else {
+                        return result
+                    }
+                })
+            })
+        }
+
+        // loadDetails(i)
         setOpen(prev => { return { ...prev, [i]: !prev[i] } })
     }
 
@@ -147,13 +167,19 @@ export default function Results() {
             }).map((result, i) => {
                 let { test_name, score, takenAt, gradeStates, times, type } = result
 
-                let groups = type === "Number Sense" ? [20, 40, 60, 80] : (type === "Math" ? [12, 25, 38, 50] : [])
-                let last = getLast(gradeStates)
+                let groups = []
+                let last = []
+                let averageTime = 0
+                if (times && gradeStates) {
+                    groups = type === "Number Sense" ? [20, 40, 60, 80] : (type === "Math" ? [12, 25, 38, 50] : [])
+                    last = getLast(gradeStates)
 
-                groups = groups.filter(group => group <= last)
+                    groups = groups.filter(group => group <= last)
 
-                times = parseTimes(times)
-                let averageTime = (type === "Number Sense" ? 600 : 2400) / findGradeStates(["correct", "wrong"], gradeStates)
+                    times = parseTimes(times)
+                    averageTime = (type === "Number Sense" ? 600 : 2400) / findGradeStates(["correct", "wrong"], gradeStates)
+                }
+
 
                 return (
                     <Card className="result-container" key={"container" + i}>
@@ -169,44 +195,47 @@ export default function Results() {
                         <Button variant="primary" style={{ marginTop: "2%" }} onClick={(e) => updateOpen(i, e)}>Questions</Button>
                         <Collapse in={open[i]}>
                             <div>
-                                <Table striped bordered hover className="result-stats">
-                                    <thead>
-                                        <tr>
-                                            {
-                                                type === "Number Sense" ? <>
-                                                    <td><h3>Questions answered</h3></td>
-                                                    <td><h3>Question reached</h3></td>
-                                                    <td><h3>Skipped</h3></td>
-                                                    <td><h3>Accuracy</h3></td></>
-
-                                                    : <><td><h3>Questions answered</h3></td>
+                                {
+                                    gradeStates ? <Table striped bordered hover className="result-stats">
+                                        <thead>
+                                            <tr>
+                                                {
+                                                    type === "Number Sense" ? <>
+                                                        <td><h3>Questions answered</h3></td>
+                                                        <td><h3>Question reached</h3></td>
+                                                        <td><h3>Skipped</h3></td>
                                                         <td><h3>Accuracy</h3></td></>
-                                            }
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
 
-                                            {
-                                                type === "Number Sense" ? <>
-                                                    <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
-                                                    <td><h5>{findGradeStates(["correct", "wrong", "skipped"], gradeStates)}</h5></td>
-                                                    <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td>
-                                                    <td><h5>{Math.floor((
-                                                        findGradeStates(["correct"], gradeStates) /
-                                                        findGradeStates(["correct", "wrong", "skipped"], gradeStates)
-                                                    ) * 100)}%</h5></td></>
+                                                        : <><td><h3>Questions answered</h3></td>
+                                                            <td><h3>Accuracy</h3></td></>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
 
-                                                    : <><td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                                {
+                                                    type === "Number Sense" ? <>
+                                                        <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                                        <td><h5>{findGradeStates(["correct", "wrong", "skipped"], gradeStates)}</h5></td>
+                                                        <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td>
                                                         <td><h5>{Math.floor((
                                                             findGradeStates(["correct"], gradeStates) /
-                                                            findGradeStates(["correct", "wrong"], gradeStates)
+                                                            findGradeStates(["correct", "wrong", "skipped"], gradeStates)
                                                         ) * 100)}%</h5></td></>
-                                            }
-                                        </tr>
-                                    </tbody>
-                                </Table>
-                                {type !== "Science" ? <h2>Sections</h2> : ""}
+
+                                                        : <><td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
+                                                            <td><h5>{Math.floor((
+                                                                findGradeStates(["correct"], gradeStates) /
+                                                                findGradeStates(["correct", "wrong"], gradeStates)
+                                                            ) * 100)}%</h5></td></>
+                                                }
+                                            </tr>
+                                        </tbody>
+                                    </Table> : ""
+                                }
+
+                                {groups.length !== 0 ? <h2>Sections</h2> : ""}
                                 {groups ? <Table bordered hover className="group-times">
                                     <thead>
                                         <tr>
@@ -245,7 +274,7 @@ export default function Results() {
                                 </Table> : ""}
 
                                 <hr />
-                                <table className="result-questions">
+                                {times ? <table className="result-questions">
                                     <thead>
                                         <tr>
                                             <td>Question</td>
@@ -275,7 +304,8 @@ export default function Results() {
                                             )
                                         })}
                                     </tbody>
-                                </table>
+                                </table> : ""}
+
                             </div>
                         </Collapse>
                     </Card>

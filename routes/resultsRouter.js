@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
+const { NsDetails, MthSciDetails } = require('../models/resultDetailsModel')
 const { NsResult, MthSciResult } = require('../models/resultModel')
 const User = require('../models/userModel')
 const fs = require('fs');
@@ -95,7 +96,17 @@ router.post("/", auth, async (req, res) => {
         const { type, test_name, score, gradeStates, times } = req.body
         let user = await User.findById(req.user)
 
-        if (!type || !test_name || score == null || !gradeStates || !times) return res.status(401).json({ msg: "Not all data has been provided" })
+        if (!type || !test_name || score == null || !gradeStates || !times) {
+            return res.status(401).json({ msg: "Not all data has been provided" })
+        }
+        let Result = type === "Number Sense" ? NsResult : MthSciResult
+        let Details = type === "Number Sense" ? NsDetails : MthSciDetails
+
+        // Checks if test has been saved from less than a few seconds ago and if so cancels
+        let results = await Result.find({ 'user._id': req.user })
+        for (result of results) {
+            if (Date.now() - Date.parse(result.takenAt) < 30000) return res.status(401).json({ msg: "Test seems to have been saved twice" })
+        }
 
         let data = {
             user: {
@@ -104,20 +115,12 @@ router.post("/", auth, async (req, res) => {
             },
             type,
             test_name,
-            score,
-            gradeStates,
-            times
+            score
         };
+        let result = await new Result(data).save()
 
-        let Result = type === "Number Sense" ? NsResult : MthSciResult
-        // Checks if test has been saved from less than a few seconds ago and if so cancels
-        let results = await Result.find({ 'user._id': req.user })
-        for (result of results) {
-            if (Date.now() - Date.parse(result.takenAt) < 30000) return res.status(401).json({ msg: "Test seems to have been saved twice" })
-        }
-
-        res.json(await new Result(data).save())
-
+        let details = await new Details({ ...data, gradeStates, times, _id: result._id }).save()
+        return res.json(details)
 
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -127,11 +130,10 @@ router.post("/", auth, async (req, res) => {
 
 router.get("/", cors(), async (req, res) => {
     try {
-
         let results = []
         const { user_id, test_name, type } = req.query
 
-        /* Finds tests based on search query from body
+        /* Finds results based on search query from body
         Further filtering can be handled client side */
         if (test_name) {
             if (test_name.slice(2, 4) === "NS") results = await NsResult.find({ test_name })
@@ -140,11 +142,13 @@ router.get("/", cors(), async (req, res) => {
 
         // If admin account skip and return all results
         else if (user_id && user_id !== "5f84b37e35bf0600177f25ce") {
-            let ns = await NsResult.find({ 'user._id': user_id })
-            let mthsci = await MthSciResult.find({ 'user._id': user_id })
-            results = ns.concat(mthsci)
+            let ns = NsResult.find({ 'user._id': user_id })
+            let mthsci = MthSciResult.find({ 'user._id': user_id })
+            results = [
+                ...(await ns),
+                ...(await mthsci)
+            ]
         }
-
 
         else if (type) {
             if (type === "Number Sense") results = await NsResult.find()
@@ -152,13 +156,31 @@ router.get("/", cors(), async (req, res) => {
         }
 
         // If nothing specified return all results
-        else results = (await NsResult.find()).concat(await MthSciResult.find())
-
+        else {
+            let res = [NsResult.find(), MthSciResult.find()]
+            results = await Promise.all(res)
+            results = results.flat(1)
+        }
         return res.json(results)
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ error: err.message });
     }
 
+})
+
+// Gets details (gradeStates and times) for specific test
+router.get("/details", async (req, res) => {
+    try {
+        const { result_id, type } = req.query
+        let Details = type === "Number Sense" ? NsDetails : MthSciDetails
+
+        return res.json(await Details.findById(result_id))
+
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({ error: err.message });
+    }
 })
 
 module.exports = router;

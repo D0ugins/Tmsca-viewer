@@ -61,6 +61,7 @@ router.post("/bestTimes", auth, async (req, res) => {
 
             const result = await old.save()
             res.json(result).send()
+
             updateLeaderBoard(result)
             return
         }
