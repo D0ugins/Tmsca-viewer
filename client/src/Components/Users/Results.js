@@ -33,7 +33,7 @@ export default function Results() {
             })
         }
 
-        // loadDetails(i)
+        loadDetails(i)
         setOpen(prev => { return { ...prev, [i]: !prev[i] } })
     }
 
@@ -232,7 +232,7 @@ export default function Results() {
                                                 }
                                             </tr>
                                         </tbody>
-                                    </Table> : ""
+                                    </Table> : <h3 style={{ marginTop: "2%" }}>Loading...</h3>
                                 }
 
                                 {groups.length !== 0 ? <h2>Sections</h2> : ""}
