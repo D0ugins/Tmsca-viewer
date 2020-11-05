@@ -33,7 +33,10 @@ export default function Results() {
             })
         }
 
-        loadDetails(i)
+        if (!results[i].gradeStates || !results[i].times) {
+            loadDetails(i)
+        }
+
         setOpen(prev => { return { ...prev, [i]: !prev[i] } })
     }
 
