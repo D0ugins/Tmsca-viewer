@@ -494,7 +494,7 @@ export default function TestTake() {
                 </div>
                 : ""}
 
-            <button onClick={endTest} disabled={!ready} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
+            <button onClick={endTest} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
             <Link hidden={started && (!done)} id="exit-button" className="btn btn-danger corner-button" to="/"><p>Exit</p></Link>
         </>
     )

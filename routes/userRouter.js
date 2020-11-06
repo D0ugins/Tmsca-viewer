@@ -38,6 +38,7 @@ router.post("/register", async (req, res) => {
         }).save());
 
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ error: err.message });
     }
 })
@@ -68,6 +69,7 @@ router.post("/login", async (req, res) => {
             }
         });
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ error: err.message });
     }
 })
@@ -97,6 +99,7 @@ router.post("/update", auth, async (req, res) => {
         })
 
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ error: err.message });
     }
 
@@ -119,6 +122,7 @@ router.post("/isTokenValid", async (req, res) => {
         return res.json(res["val"]);
 
     } catch (err) {
+        console.error(err)
         return res.status(500).json({ error: err.message });
     }
 

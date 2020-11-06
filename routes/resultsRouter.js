@@ -123,6 +123,7 @@ router.post("/", auth, async (req, res) => {
         return res.json(details)
 
     } catch (err) {
+        console.error(err)
         res.status(500).json({ error: err.message });
     }
 
