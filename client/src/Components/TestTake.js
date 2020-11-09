@@ -191,7 +191,7 @@ export default function TestTake() {
             else {
                 // Checks if there was an _
                 if (lastindex > -1) {
-                    // Checks if the blank was only one span 
+                    // Checks if the blank was only one span
                     if (text.str.includes(`(${question + 2})`)) {
                         mode = "new";
                         i--
@@ -232,6 +232,12 @@ export default function TestTake() {
             "3, 1, MSSC10 18-19": ["repeat", -1],
             "1, 6, MSSC12 18-19": ["missing"],
             "3, 37, MSSC13 18-19": ["repeat", -1],
+            "0, 19, MSSC KO 20-21": ["intext"],
+            "2, 49, MSSC KO 20-21": ["intext"],
+            "2, 27, MSSC2 20-21": ["intext"],
+            "3, 1, MSSC3 20-21": ["intext"],
+            "0, 30, MSSC3 20-21": ["intext"],
+            "1, 30, MSSC3 20-21": ["missing"],
 
             "2, 6, MSMA2 19-20": ["repeat", 1],
             "2, 32, MSMA2 19-20": ["repeat", -1],
