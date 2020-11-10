@@ -236,6 +236,7 @@ export default function TestTake() {
             "2, 49, MSSC KO 20-21": ["intext"],
             "2, 27, MSSC2 20-21": ["intext"],
             "3, 1, MSSC3 20-21": ["intext"],
+            "0, 12, MSSC3 20-21": ["image"],
             "0, 30, MSSC3 20-21": ["intext"],
             "1, 30, MSSC3 20-21": ["missing"],
 
@@ -255,12 +256,16 @@ export default function TestTake() {
             "3, 5, MSMA11 17-18": ["missing"],
             "3, 25, MSMA11 17-18": ["missing"]
         }
+        const manual_fixed_strs = {
+            "A.  uracil           B  phosphate           C.  ": "A.  uracil           B.  phosphate           C.  "
+        }
 
         // Tracks if current exception has been handled
         var exception_state = 0
         var page = type === "Science" ? 1 : 0
         var offset = page * pageheight
         for (let i = 0, question = 0; i < texts.length - 1; i++) {
+            offset = page * pageheight;
             let text = texts[i]
             var str = text.str
 
@@ -272,11 +277,9 @@ export default function TestTake() {
 
             // Check if question is exception
             if (Object.keys(exceptions).includes(`${choice}, ${question + 1}, ${test.name}`)) {
-                const manual_fixed_strs = {
-                }
 
                 var exception = exceptions[`${choice}, ${question + 1}, ${test.name}`]
-
+                // Deals with A. or something appears within the question
                 if (exception[0] === "intext") {
                     // Skips over falsley detected text
                     if (exception_state === 0 && (str.includes(choices[choice] + '.') || split)) {
@@ -293,6 +296,7 @@ export default function TestTake() {
                         // Takes into accout any text before the choice if there was any
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
+
                     exception_state++
                     if (choice === last - 2) { choice = 0; question++; }
                     continue;
@@ -319,6 +323,30 @@ export default function TestTake() {
                     if (str.includes(choices[choice + exception[1]] + '.') || split) i--
 
                     exception_state++;
+                    continue;
+                }
+                // Deals with when the answer choices are imbeded in an image for some reason
+                else if (exception[0] === "image" && str.includes(question + 1)) {
+
+                    // Checks for new page
+                    let last = areas[question - 1];
+                    if (last.choices[0].top > (text.top + offset)) { page++ }
+                    offset = pageheight * page
+
+                    areas[question] = {
+                        "id": question + 1,
+                        "choices": []
+                    }
+
+                    const lefts = [20, 40, 60, 80]
+                    for (const left in lefts) {
+                        areas[question].choices[left] = {
+                            "top": (text.top - (pageheight / 5)) + offset,
+                            "left": window.innerWidth * (lefts[left] / 100)
+                        }
+
+                    }
+                    question++;
                     continue;
                 }
 
@@ -351,7 +379,7 @@ export default function TestTake() {
 
                 // Checks if 2 choices were in the same text
                 split = text.str.charAt(str.length - 1) === choices[choice] && texts[i + 1].str.charAt(0) === endchar
-                if (str.includes(choices[choice] + endchar) || split) i--
+                if (str.includes(choices[choice] + endchar) || split || Object.keys(manual_fixed_strs).includes(str)) i--
 
                 if (choice === last) { choice = 0; question++; }
 
