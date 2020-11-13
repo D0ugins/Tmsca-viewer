@@ -60,7 +60,7 @@ export default function TestSearch() {
         const test_name = `MS${map[type]}${test_num} ${year}`
 
         if (action === "view") return `${process.env.PUBLIC_URL}/tests/${type}/${type} ${year}/${test_name}.pdf`
-        return `/take/${test_name.replaceAll(" ", "_")}`
+        return `/take/${test_name.replace(/ /g, "_")}`
     }
 
     const brokentest = () => {

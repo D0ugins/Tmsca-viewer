@@ -26,7 +26,7 @@ export default function TestTake() {
         'CA': 'Calculator'
     }
 
-    const name = testName.replaceAll("_", " ")
+    const name = testName.replace(/_/g, " ")
     const type = typeMap[name.slice(2, 4)]
 
     const path = `${type}/${type} ${name.slice(-5)}/${name}`
