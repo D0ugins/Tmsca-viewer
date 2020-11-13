@@ -93,7 +93,7 @@ async function parseKey(text_path) {
 
 async function parseCalc(key, text_path) {
 
-    let tpath = text_path.split("/").slice(5).join("/").slice(0, -4) + ".json"
+    let tpath = text_path.split("/").slice(5).join("/").slice(0, -4) + " Key.json"
     var qnum = 1
     let mode = "new"
     const path_array = tpath.split("/")
@@ -102,7 +102,7 @@ async function parseCalc(key, text_path) {
     let json = {
         "type": type,
         "year": path_array[0].slice(-5),
-        "name": path_array[1].slice(0, -5),
+        "name": path_array[1].slice(0, -9),
         "path": path.join(type, tpath),
         "prize": 5,
         "penalty": 4,
@@ -110,7 +110,7 @@ async function parseCalc(key, text_path) {
     }
 
     const exceptions = {
-        "26, Calculator 18-19/MSCA STATE 18-19.json": ["misexponent"]
+        "26, Calculator 18-19/MSCA STATE 18-19 Key.json": ["misexponent"]
     }
 
     let answers = {}
@@ -275,7 +275,7 @@ async function parseCalc(key, text_path) {
     }
 
     // Saves file
-    fs.writeFile(path.join(JSONFOLDER, type, tpath), JSON.stringify(answers), (err) => {
+    fs.writeFile(path.join(JSONFOLDER, type, tpath), JSON.stringify(json), (err) => {
         if (err) console.error(err)
         else console.log("Saved: " + tpath)
     })
@@ -292,7 +292,7 @@ glob("**/*.txt", (err, files) => {
 })
 
 
-glob("../client/build/tests/Calculator/**/*.pdf", (err, paths) => {
+glob("../client/public/tests/Calculator/**/*.pdf", (err, paths) => {
     if (err) throw err;
     for (const test_path of paths) {
         let parser = new PDFParser();
