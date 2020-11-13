@@ -1,6 +1,6 @@
 {
   "homepage": "https://tmsca.herokuapp.com/",
-  "name": "Tmsca-viewer",
+  "name": "tmsca-viewer",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

@@ -156,7 +156,7 @@ export default function Results() {
             <Navbar />
             <div className="result-filters">
                 {
-                    ["Number Sense", "Math", "Science", "All"].map(s => {
+                    ["Number Sense", "Math", "Science", "Calculator", "All"].map(s => {
                         return <Form.Check inline className="result-filter" checked={filter === s} label={s}
                             type="radio" value={s} name="type" key={s + "filter"} onClick={() => {
                                 setFilter(s)
@@ -174,13 +174,21 @@ export default function Results() {
                 let last = []
                 let averageTime = 0
                 if (times && gradeStates) {
-                    groups = type === "Number Sense" ? [20, 40, 60, 80] : (type === "Math" ? [12, 25, 38, 50] : [])
+                    if (type === "Number Sense") groups = [20, 40, 60, 80]
+                    else if (type === "Math") groups = [12, 25, 38, 50]
+                    else if (type === "Calculator") groups = [13, 26, 38, 50, 60, 72, 80]
+
                     last = getLast(gradeStates)
 
                     groups = groups.filter(group => group <= last)
 
                     times = parseTimes(times)
-                    averageTime = (type === "Number Sense" ? 600 : 2400) / findGradeStates(["correct", "wrong"], gradeStates)
+
+                    if (type === "Number Sense") averageTime = 600
+                    else if (type === "Math") averageTime = 2400
+                    else if (type === "Calculator") averageTime = 1800
+
+                    averageTime /= findGradeStates(["correct", "wrong"], gradeStates)
                 }
 
 
@@ -277,7 +285,7 @@ export default function Results() {
                                 </Table> : ""}
 
                                 <hr />
-                                {times ? <table className="result-questions">
+                                {times || gradeStates ? <table className="result-questions">
                                     <thead>
                                         <tr>
                                             <td>Question</td>
@@ -293,6 +301,27 @@ export default function Results() {
                                             if (Array.isArray(correct)) {
                                                 if (i % 10 === 0) correct = correct[0] + ' - ' + correct[1]
                                                 else correct = correct[0]
+                                            }
+
+                                            if (type === "Calculator") {
+                                                if (correct.exponent) {
+                                                    correct = <>
+                                                        {correct.base} &times; 10<sup>{correct.exponent}</sup>
+                                                    </>
+                                                }
+                                                else {
+                                                    correct = correct.base
+                                                }
+
+                                                if (answer.exponent) {
+                                                    answer = <>
+                                                        {answer.base} &times; 10<sup>{answer.exponent}</sup>
+                                                    </>
+                                                }
+                                                else {
+                                                    answer = answer.base
+                                                }
+
                                             }
 
                                             if (answer === "na") answer = ""

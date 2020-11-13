@@ -7,7 +7,7 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
 
     // Makes sure only valid characters and that nothing was removed
     const validate = (val) => {
-        let reg = new RegExp('^[-]?[0-9/. ]*$');
+        let reg = /^[-]?[0-9/. ]*$/
         let old = value;
 
         return (reg.test(val) && val.length > old.length)

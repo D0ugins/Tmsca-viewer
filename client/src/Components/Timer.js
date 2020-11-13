@@ -5,7 +5,11 @@ export default function Timer({ type, endTest }) {
 
     const [startTime, setStartTime] = useState(Date.now())
     // Sets time inseconds based on test type
-    const [totalTime] = useState(type === "Number Sense" ? (10 * 60) : (40 * 60))
+    const [totalTime] = useState(() => {
+        if (type === "Number Sense") return 10 * 60
+        else if (type === "Calculator") return 30 * 60
+        else return 40 * 60
+    })
     const [time, setTime] = useState(totalTime)
     const decreaseTime = () => {
         // Calculates time elapsed since start

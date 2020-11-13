@@ -4,6 +4,7 @@ import Axios from "axios"
 
 import NsInput from './Inputs/NsInput'
 import MthSciInput from './Inputs/MthSciInput'
+import CaInput from './Inputs/CaInput'
 
 import UserContext from '../Context/UserContext'
 import Timer from './Timer'
@@ -11,8 +12,6 @@ import './TestTake.css'
 import { Link, useParams } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
-
 
 
 export default function TestTake() {
@@ -35,12 +34,14 @@ export default function TestTake() {
 
     const [pages, setPages] = useState([]);
     const [data, setData] = useState();
+    const [ints, setInts] = useState({});
 
     const [ready, setReady] = useState(false);
     const onLoad = (pdf) => {
         // Set what pages to load once test is started
         if (type === "Number Sense") setPages([3, 4])
         else if (type === "Math") setPages([3, 4, 5, 6])
+        else if (type === "Calculator") setPages([2, 3, 4, 5, 6, 7, 8])
         else {
             // Sets pages for Science
             let scpages = []
@@ -67,7 +68,7 @@ export default function TestTake() {
         setTimes(prevTimes => {
             return {
                 ...prevTimes,
-                [id]: (value ? Date.now() - startedAt : null)
+                [id]: (value != null ? Date.now() - startedAt : null)
             }
         })
     };
@@ -115,22 +116,36 @@ export default function TestTake() {
         return width;
     }
 
+    const loadInts = async () => {
+        let res = await Axios.get("/api/results/ints", { params: { keypath: path } });
+        setInts(res.data)
+    }
+
     const findNs = (texts) => {
         var question = 0;
         var areas = [];
 
-        const pageheight = (window.innerWidth / 600.575) * 792;
+        const pageheight = (window.innerWidth / 600.7) * 792;
         var page = 0;
         var offset = pageheight * page;
 
         var mode = "new"
         for (var i = 0; i < texts.length; i++) {
+
+            // Fixes certain sections of questions appearing out of order
+            if (type === "Calculator" && name.slice(-5) !== '20-21') {
+                if (question === 72 && areas.length < 75) question = 60;
+                else if (question === 60 && areas.length < 62) question = 62;
+                else if (question === 62 && areas.length > 70) question = 74;
+                else if (question === 80) question = 72;
+            }
+
             const text = texts[i];
             var index = text.str.indexOf("_");
             var lastindex = text.str.lastIndexOf("_");
 
             // List of weidly formated questions (num, test)
-            var exceptions = [
+            const exceptions = [
                 "68, MSNS1 19-20",
                 "67, MSNS6 18-19",
                 "63, MSNS7 18-19",
@@ -153,7 +168,7 @@ export default function TestTake() {
                     }
                 }
                 else {
-                    let reg = new RegExp('^[ ]$')
+                    let reg = /^[ ]$/
                     if (reg.test(text.str)) {
                         areas[question].width += (getWidth("_") * .65);
                     }
@@ -169,9 +184,12 @@ export default function TestTake() {
             if (mode === "new") {
 
                 // Checks if new page
-                if (question !== 0 && index > -1) {
-                    let last = areas[question - 1];
-                    if (last.top > (text.top + offset) && last.left > text.left) { page++ }
+                if (i !== 0) {
+                    let last = texts[i - 1];
+
+                    let old_page = last.span.parentElement.parentElement.dataset.pageNumber
+                    let new_page = text.span.parentElement.parentElement.dataset.pageNumber
+                    if (old_page < new_page) page++
                     offset = page * pageheight;
                 }
 
@@ -185,12 +203,43 @@ export default function TestTake() {
                         "width": getWidth(text.str.slice(index, lastindex + 1), text.span)
                     };
                     mode = "expand";
+
+                    // Checks if 2 blanks in same span
+                    if (text.str.includes(`${question + 2}=`) && text.str.split("=")[1].includes("_")) {
+                        // Set str to text before the second question
+                        let str = text.str.split(`${question + 2}=`)[0]
+
+                        areas[question] = {
+                            "id": question + 1,
+                            "top": text.top + offset,
+                            // Takes into account text before and after the actual _'s)
+                            "left": text.left + getWidth(str.slice(0, index), text.span),
+                            "width": getWidth(str.slice(index, str.lastIndexOf("_") + 1), text.span)
+                        };
+
+
+                        // Replaces all the starting underscores with spaces (2 spaces have same width)
+
+                        // Removes non underscore stuff from the start
+                        if (text.str.startsWith(`${question + 1}=`)) text.str = text.str.slice(3)
+                        else if (text.str.startsWith("=")) text.str = text.str.slice(1)
+
+                        let j = 0
+                        while (text.str[j] === "_") {
+                            text.str = text.str.slice(0, j) + "  " + text.str.slice(j + 1)
+                            j += 2
+                        }
+                        text.span.innerText = text.str
+                        mode = "new";
+                        i--
+                        question++;
+                    }
                 }
             }
 
             else {
                 // Checks if there was an _
-                if (lastindex > -1) {
+                if (text.str.startsWith("_")) {
                     // Checks if the blank was only one span
                     if (text.str.includes(`(${question + 2})`)) {
                         mode = "new";
@@ -202,10 +251,13 @@ export default function TestTake() {
                 // If no _ move to next question
                 else {
                     mode = "new";
+                    i--
                     question++;
                 }
             }
         }
+        console.log(Object.keys(areas).length)
+
         return areas
     }
 
@@ -390,6 +442,9 @@ export default function TestTake() {
     }
 
     const findInputs = async () => {
+
+        if (type === "Calculator") loadInts()
+
         // Loads a page to wait enough time for document to load its pages
         await (await data.getPage(pages[1])).getTextContent();
 
@@ -418,6 +473,9 @@ export default function TestTake() {
                 break;
             case "Science":
                 setAreas(findMthSci(texts));
+                break;
+            case "Calculator":
+                setAreas(findNs(texts));
                 break;
             default:
                 console.error("Unsupported test type");
@@ -458,7 +516,10 @@ export default function TestTake() {
             const { score, gradeStates } = res.data
             setGradeStates(gradeStates)
             setScore(score)
-            if (save && !done) {
+            setReady(true)
+            setDone(true)
+
+            if (save) {
                 // Save results to database
                 await Axios.post(`/api/results`, {
                     type,
@@ -469,8 +530,6 @@ export default function TestTake() {
                 }, { headers: { "x-auth-token": user.token } }
                 )
             }
-            setReady(true)
-            setDone(true)
         } catch (err) {
             console.error("Something went wrong with saving or grading your test results")
         }
@@ -513,17 +572,31 @@ export default function TestTake() {
                             })
                         )
                         :
-                        (!done ?
-                            areas.map(area => {
-                                return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} />
-                            })
+                        type === "Calculator"
+                            ?
+                            (!done ?
+                                areas.map(area => {
+                                    return <CaInput data={area} setAnswer={updateAnswers} key={area.id} int={ints[area.id]} />
+                                })
 
-                            : areas.map(area => {
-                                const { state, correct, answer } = gradeStates[area.id]
-                                return <MthSciInput data={area} key={area.id} type={type}
-                                    gradeState={state} correct={correct} old={answer} />
-                            })
-                        )
+                                : areas.map(area => {
+                                    const { state, correct, answer } = gradeStates[area.id]
+                                    return <CaInput data={area} key={area.id} int={ints[area.id]}
+                                        gradeState={state} correct={correct} old={answer} />
+                                })
+                            )
+                            :
+                            (!done ?
+                                areas.map(area => {
+                                    return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} />
+                                })
+
+                                : areas.map(area => {
+                                    const { state, correct, answer } = gradeStates[area.id]
+                                    return <MthSciInput data={area} key={area.id} type={type}
+                                        gradeState={state} correct={correct} old={answer} />
+                                })
+                            )
                     }
                 </div>
                 : ""}

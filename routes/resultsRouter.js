@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
-const { NsDetails, MthSciDetails } = require('../models/resultDetailsModel')
-const { NsResult, MthSciResult } = require('../models/resultModel')
+const { NsDetails, MthSciDetails, CaDetails } = require('../models/resultDetailsModel')
+const { NsResult, MthSciResult, CaResult } = require('../models/resultModel')
 const User = require('../models/userModel')
 const fs = require('fs');
 const path = require('path');
@@ -21,16 +21,46 @@ const checkNs = (ans, correct, num) => {
     else return ans === correct;
 }
 
-const gradeTest = (key, answers, type) => {
+const checkCalc = (ans, correct) => {
+    if (!ans) return false
+    let base = ans.base
+    if (!base) return false
+    let exp = ans.exponent ? ans.exponent : 0
+
+    let correct_base = correct.base
+    let correct_exp = correct.exponent ? correct.exponent : 0
+
+    if (exp > 300 || correct_exp > 300) {
+        return exp === correct_exp && base === correct_base
+    }
+
+    return base * (10 ** exp) === correct_base * (10 ** correct_exp)
+}
+
+const gradeTest = (key, ans, type) => {
     var states = {};
-    let is_ns = type === "Number Sense";
+    let penalize_skip = type === "Number Sense" || type === "Calculator";
+
+    let answers = ans
+    if (type === "Calculator") {
+        for (answer in answers) {
+            const { base, exponent } = answers[answer]
+            if (exponent) {
+                answers[answer] = { base: parseFloat(base.trim()), exponent: parseInt(exponent.trim()) }
+            }
+            else {
+                answers[answer] = { base: parseFloat(base.trim()) }
+            }
+
+        }
+    }
 
     let score = 0;
     // Gets all the questions that were actually answered
     let answered = Object.keys(answers).filter(q => answers[q]);
 
     // Sets score as if every question was wrong then adds back score for questions that were right
-    if (is_ns) {
+    if (penalize_skip) {
         var last = 0;
         // Gets last question that was answered
         if (answered.length) last = Math.max(...answered.map(x => parseInt(x)));
@@ -40,13 +70,18 @@ const gradeTest = (key, answers, type) => {
         score = answered.length * key.penalty * -1;
     }
 
-    for (let i = 1; i <= (is_ns ? 80 : 50); i++) {
+
+    for (let i = 1; i <= (penalize_skip ? 80 : 50); i++) {
         let correct = key.answers[i];
         let state = "";
-        if (i <= last || !is_ns) {
+        if (i <= last || !penalize_skip) {
             if (answered.includes(i.toString())) {
-                // If number sense test use checkNS function otherwise just compare answer to correct
-                let is_correct = is_ns ? checkNs(answers[i].trim(), correct, i) : answers[i] === correct;
+
+                let is_correct = true;
+                // If number sense test use checkNS function, Calculator uses checkCalc, otherwise just compare answer to correct
+                if (type === "Number sense") is_correct = checkNs(answers[i].trim(), correct, i)
+                else if (type === "Calculator") is_correct = checkCalc(answers[i], correct)
+                else is_correct = answers[i] === correct;
 
                 if (is_correct) {
                     score += key.prize + key.penalty;
@@ -57,7 +92,7 @@ const gradeTest = (key, answers, type) => {
                 }
             }
             else {
-                if (is_ns) state = "skipped";
+                if (penalize_skip) state = "skipped";
                 else state = "na";
             }
         }
@@ -76,6 +111,26 @@ const gradeTest = (key, answers, type) => {
     };
 }
 
+// Load correct schemas based on type
+const loadSchemas = (type) => {
+    let Result = {}
+    let Details = {}
+    if (type === "Number Sense") {
+        Result = NsResult
+        Details = NsDetails
+    }
+    else if (type === "Calculator") {
+        Result = CaResult
+        Details = CaDetails
+    }
+    else {
+        Result = MthSciResult
+        Details = MthSciDetails
+    }
+    return { Result, Details }
+}
+
+// Grades test basedo on answer key path and answers sent in body
 router.post('/grade', cors(), (req, res) => {
     try {
         const { type, keypath, answers } = req.body
@@ -91,6 +146,7 @@ router.post('/grade', cors(), (req, res) => {
 
 })
 
+// Saves results to account
 router.post("/", auth, async (req, res) => {
     try {
         const { type, test_name, score, gradeStates, times } = req.body
@@ -99,8 +155,8 @@ router.post("/", auth, async (req, res) => {
         if (!type || !test_name || score == null || !gradeStates || !times) {
             return res.status(401).json({ msg: "Not all data has been provided" })
         }
-        let Result = type === "Number Sense" ? NsResult : MthSciResult
-        let Details = type === "Number Sense" ? NsDetails : MthSciDetails
+
+        let { Result, Details } = loadSchemas(type)
 
         // Checks if test has been saved from less than a few seconds ago and if so cancels
         let results = await Result.find({ 'user._id': req.user })
@@ -129,6 +185,7 @@ router.post("/", auth, async (req, res) => {
 
 })
 
+// Gets results
 router.get("/", cors(), async (req, res) => {
     try {
         let results = []
@@ -145,22 +202,28 @@ router.get("/", cors(), async (req, res) => {
         else if (user_id && user_id !== "5f84b37e35bf0600177f25ce") {
             let ns = NsResult.find({ 'user._id': user_id })
             let mthsci = MthSciResult.find({ 'user._id': user_id })
+            let ca = CaResult.find({ 'user._id': user_id })
             results = [
                 ...(await ns),
-                ...(await mthsci)
+                ...(await mthsci),
+                ...(await ca)
             ]
         }
-
         else if (type) {
-            if (type === "Number Sense") results = await NsResult.find()
-            else results = await MthSciResult.find()
+            let { Result } = loadSchemas(type)
+            results = await Result.find()
         }
 
         // If nothing specified return all results
         else {
-            let res = [NsResult.find(), MthSciResult.find()]
-            results = await Promise.all(res)
-            results = results.flat(1)
+            let ns = NsResult.find({})
+            let mthsci = MthSciResult.find({})
+            let ca = CaResult.find({})
+            results = [
+                ...(await ns),
+                ...(await mthsci),
+                ...(await ca)
+            ]
         }
         return res.json(results)
     } catch (err) {
@@ -174,13 +237,32 @@ router.get("/", cors(), async (req, res) => {
 router.get("/details", async (req, res) => {
     try {
         const { result_id, type } = req.query
-        let Details = type === "Number Sense" ? NsDetails : MthSciDetails
+        let { Details } = loadSchemas(type)
 
         return res.json(await Details.findById(result_id))
 
     } catch (err) {
         console.error(err)
         return res.status(500).json({ error: err.message });
+    }
+})
+
+// Returns an object of all answers that dont need an exponent box for calculator tests
+router.get("/ints", (req, res) => {
+    try {
+        const { keypath } = req.query;
+
+        // Load answer key from file
+        const key = JSON.parse(fs.readFileSync(path.resolve('AnswerKeys', (keypath + " Key.json")), 'utf-8')).answers
+        let ints = {}
+        for (const i of Object.keys(key)) {
+            ints[i] = key[i].exponent == undefined
+        }
+
+        return res.json(ints)
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: err.message })
     }
 })
 

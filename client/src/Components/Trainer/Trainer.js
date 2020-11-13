@@ -62,7 +62,7 @@ export default function Trainer() {
 
     const validate = (val) => {
         // Make sure answer is only valid characters
-        let reg = new RegExp('^[-]?[0-9/. ]*$');
+        let reg = /^[-]?[0-9/. ]*$/
         return (reg.test(val))
     }
 
