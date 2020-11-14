@@ -15,7 +15,8 @@ export default function Results() {
 
     const updateOpen = (i) => {
         const loadDetails = async (index) => {
-            const { _id, type } = results[index]
+            const { _id, type } = results.filter((result) => filter === "All" || result.type === filter)[index]
+
             const details = await Axios.get("/api/results/details", { params: { result_id: _id, type } })
             setResults(prev => {
                 return prev.map((result, i) => {
