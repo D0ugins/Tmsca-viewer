@@ -15,7 +15,7 @@ export default function Results() {
 
     const updateOpen = (i) => {
         const loadDetails = async (index) => {
-            const { _id, type } = results.filter((result) => filter === "All" || result.type === filter)[index]
+            const { _id, type } = results[index]
 
             const details = await Axios.get("/api/results/details", { params: { result_id: _id, type } })
             setResults(prev => {
@@ -190,13 +190,15 @@ export default function Results() {
                 }
             </div>
 
-            { results.filter((result) => {
-                return filter === "All" || result.type === filter
-            }).map((result, i) => {
+            { results.map((result, i) => {
+
+                // Using this instead of .filter to preserve indexes
+                if (filter !== "All" && result.type !== filter) return ""
                 let { test_name, score, takenAt, gradeStates, times, type } = result
 
                 let groups = []
                 let averageTime = 0
+                // Sets goups and average time base on ype
                 if (times && gradeStates) {
                     switch (type) {
                         case "Number Sense":
