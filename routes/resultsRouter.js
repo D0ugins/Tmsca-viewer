@@ -37,7 +37,7 @@ const checkCalc = (ans, correct) => {
     let correct_exp = correct.exponent ? correct.exponent : 0
 
     // Checks if exponent is correct and that base isnt more than .01 away from correct
-    if (exp === correct_exp && Math.abs(base - correct_base) < .01) return true;
+    if (exp === correct_exp && Math.abs(base - correct_base) <= .011) return true;
 
     return false;
 }
