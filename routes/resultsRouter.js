@@ -33,7 +33,6 @@ const checkCalc = (ans, correct) => {
         exp = parseFloat(exp)
     }
 
-
     let correct_base = correct.base
     let correct_exp = correct.exponent ? correct.exponent : 0
 
