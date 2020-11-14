@@ -15,7 +15,7 @@ const getNums = (year) => {
     };
 
     if (year === "20-21") {
-        return ['1', '2', '3', 'Kickoff'];
+        return ['1', '2', '3', '4', 'Kickoff'];
     }
     else {
         return base.concat(extras[year]);
