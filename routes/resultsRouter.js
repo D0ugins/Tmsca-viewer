@@ -120,17 +120,19 @@ const gradeTest = (key, ans, type) => {
 const loadSchemas = (type) => {
     let Result = {}
     let Details = {}
-    if (type === "Number Sense") {
-        Result = NsResult
-        Details = NsDetails
-    }
-    else if (type === "Calculator") {
-        Result = CaResult
-        Details = CaDetails
-    }
-    else {
-        Result = MthSciResult
-        Details = MthSciDetails
+    switch (type) {
+        case "Number Sense":
+            Result = NsResult;
+            Details = NsDetails;
+            break;
+        case "Calculator":
+            Result = CaResult;
+            Details = CaDetails;
+            break;
+        default:
+            Result = MthSciResult;
+            Details = MthSciDetails;
+            break;
     }
     return { Result, Details }
 }

@@ -256,7 +256,6 @@ export default function TestTake() {
                 }
             }
         }
-        console.log(Object.keys(areas).length)
 
         return areas
     }

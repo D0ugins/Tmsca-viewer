@@ -4,7 +4,7 @@ const genGradeStates = (type) => {
     var gradeStates = {}
 
     if (type === "Calculator") {
-        for (i = 1; i <= (type === "Number Sense" ? 80 : 50); i++) {
+        for (i = 1; i <= 80; i++) {
             gradeStates[i.toString()] = {
                 "state": { type: String, required: true, default: "na" },
                 "answer": {

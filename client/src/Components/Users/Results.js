@@ -134,6 +134,30 @@ export default function Results() {
         return `${process.env.PUBLIC_URL}/tests/${type}/${type} ${name.slice(-5)}/${name}.pdf`
     }
 
+    const numCrunchMissed = (states) => {
+        if (!states) return 0;
+        const nonNumCruch = [
+            11, 12, 13, 24, 25, 26, 35, 36, 37, 38, 47, 48, 49, 50, 58, 59, 60, 61, 62, 71, 72, 73, 74
+        ]
+
+        return Object.entries(states).filter(state => {
+            if (state[1].state === "correct" || state[1].state === "na") return false;
+            return !(nonNumCruch.includes(parseInt(state[0])))
+        }).length
+    }
+
+    const statedGeo = (states) => {
+        if (!states) return 0;
+        const statedGeo = [
+            11, 12, 13, 24, 25, 26, 35, 36, 37, 38, 47, 48, 49, 50, 58, 59, 60, 61, 62, 71, 72, 73, 74
+        ]
+
+        return Object.entries(states).filter(state => {
+            if (!statedGeo.includes(parseInt(state[0]))) return false
+            return state[1].state === "correct"
+        }).length
+    }
+
     useEffect(() => {
         const getResults = async () => {
             // Load results from backend
@@ -171,26 +195,35 @@ export default function Results() {
                 let { test_name, score, takenAt, gradeStates, times, type } = result
 
                 let groups = []
-                let last = []
                 let averageTime = 0
                 if (times && gradeStates) {
-                    if (type === "Number Sense") groups = [20, 40, 60, 80]
-                    else if (type === "Math") groups = [12, 25, 38, 50]
-                    else if (type === "Calculator") groups = [13, 26, 38, 50, 60, 72, 80]
-
-                    last = getLast(gradeStates)
-
+                    switch (type) {
+                        case "Number Sense":
+                            groups = [20, 40, 60, 80];
+                            averageTime = 600;
+                            break;
+                        case "Calculator":
+                            groups = [13, 26, 38, 50, 60, 72, 80];
+                            averageTime = 1800;
+                            break;
+                        case "Math":
+                            groups = [12, 25, 38, 50];
+                            averageTime = 2400;
+                            break;
+                        default:
+                            groups = [];
+                            averageTime = 2400;
+                            break;
+                    }
+                    let last = getLast(gradeStates)
                     groups = groups.filter(group => group <= last)
+                    averageTime /= findGradeStates(["correct", "wrong"], gradeStates)
 
                     times = parseTimes(times)
-
-                    if (type === "Number Sense") averageTime = 600
-                    else if (type === "Math") averageTime = 2400
-                    else if (type === "Calculator") averageTime = 1800
-
-                    averageTime /= findGradeStates(["correct", "wrong"], gradeStates)
                 }
 
+                const ns = type === "Number Sense"
+                const ca = type === "Calculator"
 
                 return (
                     <Card className="result-container" key={"container" + i}>
@@ -209,38 +242,30 @@ export default function Results() {
                                 {
                                     gradeStates ? <Table striped bordered hover className="result-stats">
                                         <thead>
-                                            <tr>
-                                                {
-                                                    type === "Number Sense" ? <>
-                                                        <td><h3>Questions answered</h3></td>
-                                                        <td><h3>Question reached</h3></td>
-                                                        <td><h3>Skipped</h3></td>
-                                                        <td><h3>Accuracy</h3></td></>
+                                            <tr style={{ fontSize: "2rem" }}>
+                                                <td>Questions answered</td>
 
-                                                        : <><td><h3>Questions answered</h3></td>
-                                                            <td><h3>Accuracy</h3></td></>
-                                                }
+                                                {(ns || ca) && <td>Question reached</td>}
+                                                {ns && <td>Skipped</td>}
+                                                {ca && <td>Number Crunchers Missed</td>}
+                                                {ca && <td>Stated and Geometry Correct</td>}
+
+                                                <td>Accuracy</td>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
+                                            <tr style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
+                                                <td>{findGradeStates(["correct", "wrong"], gradeStates)}</td>
 
-                                                {
-                                                    type === "Number Sense" ? <>
-                                                        <td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
-                                                        <td><h5>{findGradeStates(["correct", "wrong", "skipped"], gradeStates)}</h5></td>
-                                                        <td><h5>{findGradeStates(["skipped"], gradeStates)}</h5></td>
-                                                        <td><h5>{Math.floor((
-                                                            findGradeStates(["correct"], gradeStates) /
-                                                            findGradeStates(["correct", "wrong", "skipped"], gradeStates)
-                                                        ) * 100)}%</h5></td></>
+                                                {(ns || ca) && <td>{getLast(gradeStates)}</td>}
+                                                {ns && <td>{findGradeStates(["skipped"], gradeStates)}</td>}
+                                                {ca && <td>{numCrunchMissed(gradeStates)}</td>}
+                                                {ca && <td>{statedGeo(gradeStates)}</td>}
 
-                                                        : <><td><h5>{findGradeStates(["correct", "wrong"], gradeStates)}</h5></td>
-                                                            <td><h5>{Math.floor((
-                                                                findGradeStates(["correct"], gradeStates) /
-                                                                findGradeStates(["correct", "wrong"], gradeStates)
-                                                            ) * 100)}%</h5></td></>
-                                                }
+                                                <td>{Math.floor((
+                                                    findGradeStates(["correct"], gradeStates) /
+                                                    findGradeStates(["correct", "wrong", "skipped"], gradeStates)
+                                                ) * 100)}%</td>
                                             </tr>
                                         </tbody>
                                     </Table> : <h3 style={{ marginTop: "2%" }}>Loading...</h3>
@@ -304,24 +329,9 @@ export default function Results() {
                                             }
 
                                             if (type === "Calculator") {
-                                                if (correct.exponent) {
-                                                    correct = <>
-                                                        {correct.base} &times; 10<sup>{correct.exponent}</sup>
-                                                    </>
-                                                }
-                                                else {
-                                                    correct = correct.base
-                                                }
-
-                                                if (answer.exponent) {
-                                                    answer = <>
-                                                        {answer.base} &times; 10<sup>{answer.exponent}</sup>
-                                                    </>
-                                                }
-                                                else {
-                                                    answer = answer.base
-                                                }
-
+                                                // If there is an exponent its basex10^exponent, otherwise just base
+                                                correct = <>{correct.base}{correct.exponent && <>&times; 10<sup>{correct.exponent}</sup></>}</>
+                                                answer = <>{answer.base}{answer.exponent && <>&times; 10<sup>{answer.exponent}</sup></>}</>
                                             }
 
                                             if (answer === "na") answer = ""
@@ -331,7 +341,9 @@ export default function Results() {
                                                     <td>{i}</td>
                                                     <td>{answer}</td>
                                                     <td>{correct}</td>
-                                                    <td style={{ color: times[i] > averageTime * 2 ? "red" : "black" }}>{times[i]}{times[i] ? "s" : ""}</td>
+                                                    <td style={times[i] > averageTime * 2 ? { color: "red" } : {}}>
+                                                        {times[i]}{times[i] ? "s" : ""}
+                                                    </td>
                                                 </tr>
                                             )
                                         })}
