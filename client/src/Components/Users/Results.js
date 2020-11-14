@@ -198,7 +198,7 @@ export default function Results() {
 
                 let groups = []
                 let averageTime = 0
-                // Sets goups and average time base on ype
+                // Sets goups and average time base on type
                 if (times && gradeStates) {
                     switch (type) {
                         case "Number Sense":
