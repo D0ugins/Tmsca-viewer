@@ -27,14 +27,20 @@ const checkCalc = (ans, correct) => {
     if (!base) return false
     let exp = ans.exponent ? ans.exponent : 0
 
+    if (!exp && correct.exponent) {
+        [base, exp] = base.toExponential(2).split("e+")
+        base = parseFloat(base)
+        exp = parseFloat(exp)
+    }
+
+
     let correct_base = correct.base
     let correct_exp = correct.exponent ? correct.exponent : 0
 
-    if (exp > 300 || correct_exp > 300) {
-        return exp === correct_exp && base === correct_base
-    }
+    // Checks if exponent is correct and that base isnt more than .01 away from correct
+    if (exp === correct_exp && Math.abs(base - correct_base) < .01) return true;
 
-    return base * (10 ** exp) === correct_base * (10 ** correct_exp)
+    return false;
 }
 
 const gradeTest = (key, ans, type) => {
