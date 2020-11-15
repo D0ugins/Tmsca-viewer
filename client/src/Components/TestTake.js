@@ -134,10 +134,13 @@ export default function TestTake() {
 
             // Fixes certain sections of questions appearing out of order
             if (type === "Calculator" && name.slice(-5) !== '20-21') {
-                if (question === 72 && areas.length < 75) question = 60;
-                else if (question === 60 && areas.length < 62) question = 62;
-                else if (question === 62 && areas.length > 70) question = 74;
-                else if (question === 80) question = 72;
+                // Filter out undefined terms
+                const len = areas.filter(area => area).length
+                if (question === 72 && len < 72) question = 60;
+                else if (question === 60 && len < 62) question = 62;
+                // MSCA4 19-20 only has out of order on one page
+                else if (question === 62 && len > 70) question = name === "MSCA4 19-20" ? 72 : 74;
+                else if (question === 80 && name === "MSCA4 19-20") question = 72;
             }
 
             const text = texts[i];
