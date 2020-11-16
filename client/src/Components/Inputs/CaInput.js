@@ -6,10 +6,8 @@ export default function CaInput({ data, setAnswer, int, gradeState = "", correct
     const [exponent, setExponent] = useState("")
 
     // Makes sure only valid characters and that nothing was removed
-    const validate = (val, exp) => {
-        let reg = /^[-]?[0-9/. ]*$/
-        let old = exp ? exponent : base;
-        return (reg.test(val) && val.length > old.length)
+    const validate = (val) => {
+        return /^[-]?[0-9/. ]*$/.test(val)
     }
 
     // Sets inputs value and updates answer list from parent
