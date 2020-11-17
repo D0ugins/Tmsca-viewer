@@ -333,8 +333,8 @@ export default function Results() {
 
                                             if (type === "Calculator") {
                                                 // If there is an exponent its basex10^exponent, otherwise just base
-                                                correct = <>{correct.base}{correct.exponent && <>&times; 10<sup>{correct.exponent}</sup></>}</>
-                                                answer = <>{answer.base}{answer.exponent && <>&times; 10<sup>{answer.exponent}</sup></>}</>
+                                                correct = <>{correct.base}{correct.exponent && <>&times;10<sup>{correct.exponent}</sup></>}</>
+                                                answer = <>{answer.base}{answer.exponent && <>&times;10<sup>{answer.exponent}</sup></>}</>
                                             }
 
                                             if (answer === "na") answer = ""
