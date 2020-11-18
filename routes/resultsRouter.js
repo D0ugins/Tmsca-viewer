@@ -84,7 +84,7 @@ const gradeTest = (key, ans, type) => {
 
                 let is_correct = true;
                 // If number sense test use checkNS function, Calculator uses checkCalc, otherwise just compare answer to correct
-                if (type === "Number sense") is_correct = checkNs(answers[i].trim(), correct, i)
+                if (type === "Number Sense") is_correct = checkNs(answers[i].trim(), correct, i)
                 else if (type === "Calculator") is_correct = checkCalc(answers[i], correct)
                 else is_correct = answers[i] === correct;
 
