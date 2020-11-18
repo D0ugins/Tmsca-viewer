@@ -140,7 +140,7 @@ export default function TestTake() {
                 else if (question === 60 && len < 62) question = 62;
                 // MSCA4 19-20 only has out of order on one page
                 else if (question === 62 && len > 70) question = name === "MSCA4 19-20" ? 72 : 74;
-                else if (question === 80 && name === "MSCA4 19-20") question = 72;
+                else if (question === 80 && name !== "MSCA4 19-20") question = 72;
             }
 
             const text = texts[i];
@@ -582,6 +582,7 @@ export default function TestTake() {
                                 })
 
                                 : areas.map(area => {
+                                    if (area.id === 1) console.log([...areas])
                                     const { state, correct, answer } = gradeStates[area.id]
                                     return <CaInput data={area} key={area.id} int={ints[area.id]}
                                         gradeState={state} correct={correct} old={answer} />
