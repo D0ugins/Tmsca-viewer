@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
+const mkdirp = require('mkdirp')
 
 const PDFParser = require("pdf2json");
 
@@ -15,30 +16,42 @@ function nsAnswer(str, num) {
     return str
 }
 
-const cleanCalc = (data) => {
-    pages = data.formImage.Pages.slice(8, 10)
+const clean = (data, type) => {
 
-    key = pages.map(page => {
+    let pages = data.formImage.Pages
+    switch (type) {
+        case "Calculator":
+            pages = pages.slice(8, 10);
+            break;
+        case "Math":
+            pages = pages.slice(6, 7);
+            break;
+        case "Science":
+            pages = pages.slice(-1);
+            break;
+    }
+
+    let key = pages.map(page => {
         return page.Texts.map(text => {
-            return decodeURI(text.R[0].T).replace(/%3D/g, "=").replace(/%24/g, "$")
+            return decodeURI(text.R[0].T).replace(/%3D/g, "=").replace(/%24/g, "$").trim()
         })
     })
 
-    return key[0].concat(key[1])
+    return key.flat()
 }
 
-async function parseKey(text_path) {
+async function parseNs(text_path) {
     fs.readFile(text_path, 'utf8', (err, data) => {
         if (err) throw err;
 
         const path_array = text_path.split('/')
-        const type = path_array[1]
+        const type = "Number Sense"
         const name = path.parse(text_path).name.slice(0, -4)
 
         const key = data.trim().split('\n').map(str => str.trim())
 
         // If key dosent have the proper number of questions print error and return
-        if (key.length !== 50 && key.length !== 80) { console.error("Incorrect number of questions for test: " + name); return; }
+        if (key.length !== 80) { console.error("Incorrect number of questions for test: " + name); return; }
 
 
         let json = {
@@ -47,7 +60,7 @@ async function parseKey(text_path) {
             "name": name,
             "path": type + '/' + path_array[2] + '/' + name,
             "prize": 5,
-            "penalty": type === "Number Sense" ? 4 : 2,
+            "penalty": 4,
             "answers": {}
         }
 
@@ -58,30 +71,16 @@ async function parseKey(text_path) {
             normal: (num) ans
             multiple acceptable: (num) ans1 or ans2 or ans3
             estimation: *(num) min-max
-        Mth/Sci:
-            normal: num. ans
         */
-        let count = type === "Number Sense" ? 80 : 50
+        let count = 80
         for (let i = 1; i <= count; i++) {
-
             let str = key[i - 1]
-            let answer = type === "Number Sense" ? nsAnswer(str.split(") ")[1], i)
-                : str.split(". ")[1]
-
-            json.answers[i.toString()] = answer
+            json.answers[i.toString()] = nsAnswer(str.split(") ")[1], i)
 
         }
         // Makes path if it dosent exist
-        if (!fs.existsSync(path.join(JSONFOLDER, type, path_array[2]))) {
-            // If parent folder dosent exist make that first
-            if (!fs.existsSync(path.join(JSONFOLDER, type))) {
-                // Make base folder if it dosent exist
-                if (!fs.existsSync(JSONFOLDER)) fs.mkdirSync(JSONFOLDER)
+        mkdirp.sync(path.join(JSONFOLDER, "Number Sense", path_array[2]))
 
-                fs.mkdirSync(path.join(JSONFOLDER, type))
-            }
-            fs.mkdirSync(path.join(JSONFOLDER, type, path_array[2]))
-        }
         // Saves file
         fs.writeFile(path.join(JSONFOLDER, json.path + ' Key.json'), JSON.stringify(json), (err) => {
             if (err) console.error(err)
@@ -91,11 +90,86 @@ async function parseKey(text_path) {
     })
 }
 
+async function parseMthSci(key, text_path) {
+    let tpath = text_path.split("/").slice(5).join("/").slice(0, -4) + " Key.json"
+    const path_array = tpath.split("/")
+    const type = tpath.includes("Math") ? "Math" : "Science"
+
+    let json = {
+        "type": type,
+        "year": path_array[0].slice(-5),
+        "name": path_array[1].slice(0, -9),
+        "path": type + "/" + tpath.slice(0, -9),
+        "prize": 5,
+        "penalty": 2,
+        "answers": {}
+    }
+
+    for (let i = 1; i <= 50; i++) {
+        let index = key.findIndex((str, index) => {
+            if (!str) return false
+            const split1 = str.endsWith(i) && key[index + 1].startsWith(".")
+            const split2 = i >= 10
+                && str.endsWith(Math.floor(i / 10))
+                && key[index + 1].startsWith(i % 10)
+                && (key[index + 1].includes(".") || key[index + 2].startsWith("."));
+            let found = str.includes(i + ".") || split1 || split2
+
+            // Prevents stuff like 35. being counted for quetsion 5 on science
+            if (found) {
+                let foundIndex = str.indexOf(i + ".")
+                // If started with thing, check end of previous string instead
+                if (foundIndex === 0) {
+                    return isNaN(key[index - 1].slice(-1))
+                }
+                // Check if character before where the question was found was a number
+                return isNaN(parseInt(str[foundIndex - 1]))
+            }
+        })
+
+        if (index < 0) {
+            console.log(key)
+            return console.error("Could not find question " + i + " for test " + json.path)
+        }
+
+        let str = key[index];
+        let arr = str.split(".")
+
+        if (arr.length > 1 && arr[1].trim()) {
+            json.answers[i.toString()] = arr[1].trim()
+        }
+        else {
+            let str = key[++index];
+            const answers = ["A", "B", "C", "D", "E"];
+            if (!answers.includes(str)) {
+                if (!str.includes(".")) str = key[++index]
+                if (str === ".") str = key[++index]
+                else {
+                    if (str.startsWith(".")) str = str.slice(1);
+                    else if (str.endsWith(".")) str = key[++index]
+                    else str = str.split(".")[1];
+                }
+            }
+            if (!str) console.log(key)
+            json.answers[i.toString()] = str
+        }
+    }
+
+    // Makes folders if they dont exist
+    mkdirp.sync(path.join(JSONFOLDER, type, path_array[0]));
+
+    // Saves file
+    fs.writeFile(path.join(JSONFOLDER, type, tpath), JSON.stringify(json), (err) => {
+        if (err) console.error(err)
+        else console.log("Saved: " + tpath)
+    })
+
+    if (Object.keys(json.answers).length !== 50) console.log(Object.keys(json.answers).length, tpath)
+}
+
 async function parseCalc(key, text_path) {
 
     let tpath = text_path.split("/").slice(5).join("/").slice(0, -4) + " Key.json"
-    var qnum = 1
-    let mode = "new"
     const path_array = tpath.split("/")
     const type = "Calculator"
 
@@ -103,7 +177,7 @@ async function parseCalc(key, text_path) {
         "type": type,
         "year": path_array[0].slice(-5),
         "name": path_array[1].slice(0, -9),
-        "path": path.join(type, tpath),
+        "path": type + "/" + tpath.slice(0, -9),
         "prize": 5,
         "penalty": 4,
         "answers": {}
@@ -113,6 +187,8 @@ async function parseCalc(key, text_path) {
         "26, Calculator 18-19/MSCA STATE 18-19 Key.json": ["misexponent"]
     }
 
+    let qnum = 1
+    let mode = "new"
     let answers = {}
     for (let i = 0; i < key.length; i++) {
         ans = answers[qnum.toString()]
@@ -128,12 +204,12 @@ async function parseCalc(key, text_path) {
                 i++;
                 text = key[i].replace(/X/g, "x");
                 end = qnum.toString()[1]
-                const split = text.trim().endsWith(end) && key[i + 1].startsWith("=")
+                const split = text.endsWith(end) && key[i + 1].startsWith("=")
                 if (text.startsWith(end + " =") || split) {
                     mode = "rest"
                     if (split) continue;
 
-                    let arr = text.trim().split(" = ")
+                    let arr = text.split(" = ")
                     if (arr.length === 2) {
                         if (text.includes("x")) answers[qnum.toString()] = { base: arr[1] }
                     } else {
@@ -148,12 +224,12 @@ async function parseCalc(key, text_path) {
 
             if (text.startsWith(qnum)) {
 
-                const split = text.trim().endsWith(qnum) && key[i + 1].startsWith("=")
+                const split = text.endsWith(qnum) && key[i + 1].startsWith("=")
                 if (text.startsWith(qnum + " =") || split) {
                     mode = "rest"
                     if (split) continue;
 
-                    let arr = text.trim().split(" = ")
+                    let arr = text.split(" = ")
                     if (arr.length === 2) {
                         if (text.includes("x")) answers[qnum.toString()] = { base: arr[1].slice(0, -3) }
                     } else {
@@ -172,7 +248,7 @@ async function parseCalc(key, text_path) {
             }
 
             if (text.includes("INT")) {
-                if (text.trim().length <= 4) text = key[i - 1].trim()
+                if (text.length <= 4) text = key[i - 1]
                 else {
                     text = text.trim()
                     text = text.slice(0, -4)
@@ -183,7 +259,7 @@ async function parseCalc(key, text_path) {
             }
 
             if (text.startsWith("$")) {
-                if (text.length === 1) text = key[i - 1].trim()
+                if (text.length === 1) text = key[i - 1]
                 else text = text.slice(1)
 
                 answers[qnum.toString()] = { base: text.trim() }
@@ -263,16 +339,7 @@ async function parseCalc(key, text_path) {
     json.answers = answers
 
     // Makes folders if they dont exist
-    if (!fs.existsSync(path.join(JSONFOLDER, type, path_array[0]))) {
-        // If parent folder dosent exist make that first
-        if (!fs.existsSync(path.join(JSONFOLDER, type))) {
-            // Make base folder if it dosent exist
-            if (!fs.existsSync(JSONFOLDER)) fs.mkdirSync(JSONFOLDER)
-
-            fs.mkdirSync(path.join(JSONFOLDER, type))
-        }
-        fs.mkdirSync(path.join(JSONFOLDER, type, path_array[0]))
-    }
+    mkdirp.sync(path.join(JSONFOLDER, type, path_array[0]));
 
     // Saves file
     fs.writeFile(path.join(JSONFOLDER, type, tpath), JSON.stringify(json), (err) => {
@@ -288,7 +355,7 @@ async function parseCalc(key, text_path) {
 glob("**/*.txt", (err, files) => {
     if (err) throw err;
 
-    files.forEach(path => parseKey(path));
+    files.forEach(path => parseNs(path));
 })
 
 
@@ -297,8 +364,35 @@ glob("../client/public/tests/Calculator/**/*.pdf", (err, paths) => {
     for (const test_path of paths) {
         let parser = new PDFParser();
         parser.on("pdfParser_dataReady", (data) => {
-            parseCalc(cleanCalc(data), test_path);
+            parseCalc(clean(data, "Calculator"), test_path);
         })
         parser.loadPDF(test_path);
     }
 })
+
+glob("../client/public/tests/Math/**/*.pdf", (err, paths) => {
+    if (err) throw err;
+
+    for (const test_path of paths) {
+        let parser = new PDFParser();
+        parser.on("pdfParser_dataReady", (data) => {
+            parseMthSci(clean(data, "Math"), test_path);
+        })
+        parser.loadPDF(test_path);
+    }
+})
+
+
+glob("../client/public/tests/Science/**/*.pdf", (err, paths) => {
+    if (err) throw err;
+
+    for (const test_path of paths) {
+        let parser = new PDFParser();
+        parser.on("pdfParser_dataReady", (data) => {
+            parseMthSci(clean(data, "Science"), test_path);
+        })
+        parser.loadPDF(test_path);
+    }
+})
+
+
