@@ -23,6 +23,14 @@ export default function Guides() {
                     <a href={process.env.PUBLIC_URL + "/Explanations/Math/MSMA1 20-21 Explanations.pdf"} download>(Download)</a>
                 </div>
 
+                <div style={{ textAlign: "center", fontSize: "2rem", marginBottom: "5%" }}>
+                    <a href="https://docs.google.com/document/d/1WBgqvuqrGtXX_SlqA1X41hRajkEd6GZHZPqEwYDh_y4/edit?usp=sharing"
+                        style={{ marginRight: "5%" }}>
+                        Math Test 2 20-21
+                    </a>
+                    <a href={process.env.PUBLIC_URL + "/Explanations/Math/MSMA2 20-21 Explanations.pdf"} download>(Download)</a>
+                </div>
+
                 <h1 style={{ fontSize: "3rem" }}>Number Sense</h1>
                 <hr />
                 <div style={{ textAlign: "center", fontSize: "2rem" }}>
@@ -30,6 +38,7 @@ export default function Guides() {
                         Number Sense Kickoff 20-21 (WIP)
                     </a>
                 </div>
+
 
             </div>
         </div>
