@@ -59,7 +59,7 @@ function reduce(nums) {
         presets (optional): {
             name: [...params, [types], explanationFile]
         }
-        generate([params]): function to generate random quesiton returns {
+        generate(params): function to generate random quesiton returns {
             question: String that represents question (formmated with LaTeX),
             answer: Answer to the question
         }
@@ -82,10 +82,10 @@ let Generators = [
             "50": [3, 50, ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x50.md"],
         },
 
-        generate([length, constNum]) {
+        generate(length, constNum) {
 
             if (!length || !constNum) {
-                console.error("Usage: generate([#digits, constant number])");
+                console.error("Usage: generate(#digits, constant number)");
                 return;
             }
 
@@ -109,7 +109,7 @@ let Generators = [
             "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x75.md"],
         },
 
-        generate([length, factor, base, string]) {
+        generate(length, factor, base, string) {
             if (!length || !factor || !base || !string) {
                 console.error("Usage: genMultipleTrick([length, factor, base, string])");
                 return;
@@ -133,7 +133,7 @@ let Generators = [
             "division": [4, 1, "/", []],
         },
 
-        generate([aLen, bLen, op]) {
+        generate(aLen, bLen, op) {
 
             if (!aLen || !bLen || !op) {
                 console.error("Usage: generate(aLength, bLength, operation)");
@@ -182,9 +182,9 @@ let Generators = [
             "9": [5, 9, [], "remain9.md"]
         },
 
-        generate([length, num]) {
+        generate(length, num) {
             if (!length || !num) {
-                console.error("Usage: generate([length, divisor])");
+                console.error("Usage: generate(length, divisor)");
                 return;
             }
 
@@ -213,7 +213,7 @@ let Generators = [
     {
         name: "Multiply numbers slightly below or above Power of 10",
         types: ["Multiplication tricks"],
-        generate([pow = 2, mode = "random"]) {
+        generate(pow = 2, mode = "random") {
             let a = randInRange(1, 12);
             let b = randInRange(1, 13 - a);
 
@@ -261,7 +261,7 @@ let Generators = [
     {
         name: "Square roots",
         types: ["Square roots"],
-        generate([min = 11, max = 59]) {
+        generate(min = 11, max = 59) {
             let a = randInRange(min, max);
             return {
                 question: "\\sqrt{" + a * a + "}",
@@ -274,7 +274,7 @@ let Generators = [
     {
         name: "Squares",
         types: ["Sqaures", "Shape numbers"],
-        generate([min = 11, max = 30]) {
+        generate(min = 11, max = 30) {
             let a = randInRange(min, max);
             return {
                 question: a + "^2",
@@ -287,7 +287,7 @@ let Generators = [
     {
         name: "Cubes",
         types: ["Cubes", "Shape numbers"],
-        generate([min = 3, max = 15]) {
+        generate(min = 3, max = 15) {
             let a = randInRange(min, max);
             return {
                 question: a + "^3",
@@ -300,7 +300,7 @@ let Generators = [
     {
         name: "Cube root",
         types: ["Cubes", "Cube roots", "Shape numbers"],
-        generate([min = 3, max = 15]) {
+        generate(min = 3, max = 15) {
             let a = randInRange(min, max);
             return {
                 question: "\\sqrt[3]{" + a ** 3 + "}",
@@ -313,7 +313,7 @@ let Generators = [
     {
         name: "Squares Ending in 5",
         types: ["Sqaures", "Shape numbers"],
-        generate([min = 3, max = 9]) {
+        generate(min = 3, max = 9) {
             let a = randInRange(min, max);
             return {
                 question: a + "5^2",
@@ -326,7 +326,7 @@ let Generators = [
     {
         name: "Squares Ending in 0",
         types: ["Sqaures", "Shape numbers"],
-        generate([min = 3, max = 9]) {
+        generate(min = 3, max = 9) {
             let a = randInRange(min, max);
             return {
                 question: a + "0^2",
@@ -339,7 +339,7 @@ let Generators = [
     {
         name: "X² + 3X²",
         types: ["Sqaures", "Squares tricks"],
-        generate([min = 11, max = 25]) {
+        generate(min = 11, max = 25) {
             let a = randInRange(min, max);
             return {
                 question: `${a}^2 + ${a * 3}^2`,
@@ -424,7 +424,7 @@ let Generators = [
     {
         name: "Consecutive Integers",
         types: ["Addition tricks", "Shape numbers"],
-        generate([min = 10, max = 24]) {
+        generate(min = 10, max = 24) {
             let rand = Math.random()
             let len = randInRange(max, min)
 
@@ -457,7 +457,7 @@ let Generators = [
     {
         name: "To base 10",
         types: ["Bases", "Conversions"],
-        generate([min = 4, max = 7, length = 3]) {
+        generate(min = 4, max = 7, length = 3) {
 
             let base = randInRange(min, max)
             let question = ""
@@ -479,7 +479,7 @@ let Generators = [
     {
         name: "Triangular numbers",
         types: ["Shape numbers"],
-        generate([min = 9, max = 24]) {
+        generate(min = 9, max = 24) {
 
             let a = randInRange(min, max)
             let extension = "th"
@@ -499,7 +499,7 @@ let Generators = [
     {
         name: "Pentagonal numbers",
         types: ["Shape numbers"],
-        generate([min = 4, max = 15]) {
+        generate(min = 4, max = 15) {
 
             let a = randInRange(min, max)
 

@@ -45,7 +45,7 @@ export default function Trainer() {
     const [answer, setAnswer] = useState("")
     const [startedTime, setStartedTime] = useState(Date.now())
     const [prev, setPrev] = useState("")
-    const [question, setQuestion] = useState(trainer.generate(preset))
+    const [question, setQuestion] = useState(trainer.generate(...preset))
     const [answers, setAnswers] = useState([])
     const [score, setScore] = useState(0)
 
@@ -75,10 +75,10 @@ export default function Trainer() {
         if (random) {
             let newtrainer = newTrainer()
             setTrainer(newtrainer)
-            setQuestion(newtrainer.generate(newtrainer.preset || []))
+            setQuestion(newtrainer.generate(...(newtrainer.preset || [])))
         }
         else {
-            setQuestion(trainer.generate(preset));
+            setQuestion(trainer.generate(...preset));
         }
         setStartedTime(Date.now())
     }
