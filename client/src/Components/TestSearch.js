@@ -4,7 +4,7 @@ import Navbar from "./Navbar.js"
 
 const getNums = (year) => {
     // Creates array for test numbers 1-13
-    var base = []
+    let base = []
     for (let i = 1; i <= 13; i++) { base.push(i.toString()) }
 
     // List of all the non standard 1-13 tests for each year
@@ -15,7 +15,7 @@ const getNums = (year) => {
     };
 
     if (year === "20-21") {
-        return ['1', '2', '3', '4', 'Kickoff'];
+        return ['1', '2', '3', '4', '5', '6', 'Kickoff'];
     }
     else {
         return base.concat(extras[year]);
