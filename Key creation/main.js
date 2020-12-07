@@ -8,6 +8,7 @@ const PDFParser = require("pdf2json");
 const JSONFOLDER = '../AnswerKeys'
 
 function nsAnswer(str, num) {
+    if (!str) return console.error("test")
     // If contains 'or' returns array of acceptable answers
     if (str.includes('or')) return str.split(' or ')
     /* If question is multiple of 10 (estimation question)  
