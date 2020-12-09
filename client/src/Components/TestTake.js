@@ -79,13 +79,13 @@ export default function TestTake() {
 
         const fontSize = (window.innerWidth / 54.34).toFixed(1);
         const fontWeight = type === "Science" ? 500 : 900
-        var width = 0;
+        let width = 0;
         if (string.length === 0) return 0;
 
         else if (el === "") {
             // For getting width of string not in text
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
+            let canvas = document.createElement("canvas");
+            let context = canvas.getContext("2d");
             context.font = `normal normal ${fontWeight} ${fontSize}px times`
             width = context.measureText(string).width;
         }
@@ -102,11 +102,11 @@ export default function TestTake() {
             selection.removeAllRanges();
             selection.addRange(range);
 
-            var sel = window.getSelection();
+            let sel = window.getSelection();
             range = sel.getRangeAt(0).cloneRange();
             selection.removeAllRanges();
 
-            var rect = range.getBoundingClientRect();
+            let rect = range.getBoundingClientRect();
             width = rect.width
             // Deals with that font being squished for some reason
             if (el.style.fontFamily.includes("g_d0") && type === "Science") { width *= 1.234 }
@@ -122,15 +122,15 @@ export default function TestTake() {
     }
 
     const findNs = (texts) => {
-        var question = 0;
-        var areas = [];
+        let question = 0;
+        let areas = [];
 
         const pageheight = (window.innerWidth / 600.7) * 792;
-        var page = 0;
-        var offset = pageheight * page;
+        let page = 0;
+        let offset = pageheight * page;
 
-        var mode = "new"
-        for (var i = 0; i < texts.length; i++) {
+        let mode = "new"
+        for (let i = 0; i < texts.length; i++) {
 
             // Fixes certain sections of questions appearing out of order
             if (type === "Calculator" && name.slice(-5) !== '20-21') {
@@ -144,8 +144,8 @@ export default function TestTake() {
             }
 
             const text = texts[i];
-            var index = text.str.indexOf("_");
-            var lastindex = text.str.lastIndexOf("_");
+            let index = text.str.indexOf("_");
+            let lastindex = text.str.lastIndexOf("_");
 
             // List of weidly formated questions (num, test)
             const exceptions = [
@@ -266,10 +266,10 @@ export default function TestTake() {
     const findMthSci = (texts) => {
         const pageheight = (window.innerWidth / 600.7) * 792;
 
-        var last = type === "Science" ? 4 : 5
-        var areas = [];
-        var choice = 0;
-        var choices = ["A", "B", "C", "D", "E"]
+        const last = type === "Science" ? 4 : 5
+        let areas = [];
+        let choice = 0;
+        const choices = ["A", "B", "C", "D", "E"]
 
         /* List of questions with exceptions/typos that have to be dealt with (choice, num, test : [type, flags])
            The fact that this list is so long makes me sad */
@@ -293,6 +293,7 @@ export default function TestTake() {
             "0, 12, MSSC3 20-21": ["image"],
             "0, 30, MSSC3 20-21": ["intext"],
             "1, 30, MSSC3 20-21": ["missing"],
+            "2, 40, MSSC6 20-21": ["missing"],
 
             "2, 6, MSMA2 19-20": ["repeat", 1],
             "2, 32, MSMA2 19-20": ["repeat", -1],
@@ -316,24 +317,24 @@ export default function TestTake() {
         }
 
         // Tracks if current exception has been handled
-        var exception_state = 0
-        var page = type === "Science" ? 1 : 0
-        var offset = page * pageheight
+        let exception_state = 0
+        let page = type === "Science" ? 1 : 0
+        let offset = page * pageheight
         for (let i = 0, question = 0; i < texts.length - 1; i++) {
             offset = page * pageheight;
             let text = texts[i]
-            var str = text.str
+            let str = text.str
 
             // In the 17-18 Science tests it uses the form A) instead of A.
             let endchar = test.name.includes("17-18") && type === "Science" ? ')' : "."
 
             // Checks If Choice got split over mutiple texts
-            var split = text.str.charAt(str.length - 1) === choices[choice] && texts[i + 1].str.charAt(0) === endchar
+            let split = text.str.charAt(str.length - 1) === choices[choice] && texts[i + 1].str.charAt(0) === endchar
 
             // Check if question is exception
             if (Object.keys(exceptions).includes(`${choice}, ${question + 1}, ${test.name}`)) {
 
-                var exception = exceptions[`${choice}, ${question + 1}, ${test.name}`]
+                const exception = exceptions[`${choice}, ${question + 1}, ${test.name}`]
                 // Deals with A. or something appears within the question
                 if (exception[0] === "intext") {
                     // Skips over falsley detected text
@@ -409,7 +410,7 @@ export default function TestTake() {
 
             if (str.includes(choices[choice] + endchar) || split) {
 
-                var index = str.indexOf(choices[choice] + endchar)
+                let index = str.indexOf(choices[choice] + endchar)
                 // Slightly different stuff for first choice
                 if (choice === 0) {
                     // Checks for new page
@@ -453,9 +454,9 @@ export default function TestTake() {
 
         // Returns all spans in document
         let texts = []
-        var spans = document.querySelectorAll("span")
-        var weight = type === "Science" ? 500 : 900
-        for (var i = 0; i < spans.length; i++) {
+        const spans = document.querySelectorAll("span")
+        const weight = type === "Science" ? 500 : 900
+        for (let i = 0; i < spans.length; i++) {
             let span = spans[i];
             texts[i] = {
                 "str": span.innerText,
