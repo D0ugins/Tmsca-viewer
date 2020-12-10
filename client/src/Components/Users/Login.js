@@ -16,7 +16,7 @@ export default function Login() {
     const logIn = async (e) => {
         e.preventDefault()
         try {
-            var res = await Axios.post(`/api/users/login`, {
+            const res = await Axios.post(`/api/users/login`, {
                 email,
                 password
             })

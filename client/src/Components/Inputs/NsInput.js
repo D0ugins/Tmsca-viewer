@@ -1,33 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import './NsInput.css'
 
-export default function NsInput({ data, setAnswer, gradeState = "", correct = "", old = "" }) {
-
-    const [value, setValue] = useState("")
+export default function NsInput({ data, setAnswer, value = "", gradeState = "", correct = "", old = "" }) {
 
     // Makes sure only valid characters and that nothing was removed
     const validate = (val) => {
-        let reg = /^[-]?[0-9/. ]*$/
-        let old = value;
+        const reg = /^[-]?[0-9/. ]*$/
+        const old = value;
 
         return (reg.test(val) && val.length > old.length)
     }
 
-    // Sets inputs value and updates answer list from parent
+    // Validates value and updates answer list
     const update = (e) => {
         if (gradeState === "") {
-            var valid = validate(e.target.value);
-            if (valid) { setAnswer(data.id, e.target.value); setValue(e.target.value) };
+            const valid = validate(e.target.value);
+            if (valid) { setAnswer(data.id, e.target.value); };
         }
     }
 
-    // Gets width of screen (d is direction width/height)
+    // return p percent of the screens width
     const percent = (p) => {
         return window.innerWidth * (p / 100);
     }
 
     // Positions and sizes elements 
-    var styles = {
+    let styles = {
         "position": "absolute",
         "left": data.left - percent(1.5),
         "top": data.top + percent(0.1),
@@ -36,33 +34,40 @@ export default function NsInput({ data, setAnswer, gradeState = "", correct = ""
         "fontSize": ((window.innerWidth / 54.34).toFixed(1) - 2)
     }
 
-    // Fixes missalignments on mobile
+    // Adjuts styles for small boxes
     if (styles.width <= percent(5)) {
         styles.width += percent(.9)
         styles["padding"] = "2px"
         styles.fontSize *= 0.8
     }
 
-    useEffect(() => {
-        if (gradeState === "wrong" || gradeState === "skipped" || gradeState === "na") {
 
-            // Deals with esimation problems and ones with multiple right
-            var answer = correct
-            if (typeof answer === "object") {
-                if (data.id % 10 === 0) answer = answer[0] + " - " + answer[1]
-                else answer = answer[0]
-            }
-
-            // Condition is for wheter or not there should be space
-            setValue(gradeState === "wrong" ? `${old} Correct: ${answer}` : `Correct: ${answer}`);
+    let val = value;
+    // Handles adding correct answer after grading
+    if (gradeState) {
+        let answer = correct
+        if (typeof answer === "object") {
+            if (data.id % 10 === 0) answer = answer[0] + " - " + answer[1]
+            else answer = answer[0]
         }
-        // eslint-disable-next-line
-    }, [gradeState])
 
-    var gradeClass = ` ns-${gradeState}`
+        switch (gradeState) {
+            case "wrong":
+                val = `${value} Correct: ${answer}`;
+                break;
+            case "skipped":
+            case "na":
+                val = `Correct: ${answer}`;
+                break;
+            default:
+                val = value
+        }
+    }
+
+    const gradeClass = ` ns-${gradeState}`
     return (
         <input type="text" id={`input${data.id}`} className={"form-control test-input" + gradeClass}
-            style={styles} value={value} onChange={e => update(e)}
+            style={styles} value={val} onChange={e => update(e)}
             autoComplete="off" />
     )
 }

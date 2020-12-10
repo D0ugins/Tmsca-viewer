@@ -32,7 +32,7 @@ export default function Register() {
     const [error, setError] = useState(undefined)
 
     const updateComps = (e) => {
-        var next = {}
+        let next = {}
         next[e.target.value] = !competitions[e.target.value]
         setCompetitions((prev => {
             return {
@@ -45,7 +45,7 @@ export default function Register() {
     const register = async (e) => {
         e.preventDefault()
         try {
-            var res = await Axios.post(`/api/users/register`, {
+            const res = await Axios.post(`/api/users/register`, {
                 email,
                 password,
                 passwordCheck,
@@ -54,7 +54,7 @@ export default function Register() {
                 competitions
             })
             if (res.status === 200) {
-                var user = await Axios.post(`/api/users/login`, {
+                const user = await Axios.post(`/api/users/login`, {
                     email,
                     password
                 })
@@ -63,6 +63,7 @@ export default function Register() {
             }
         } catch (err) {
             if (err.response.data.msg) { setError(err.response.data.msg); document.documentElement.scrollTop = 0; }
+            else console.error(err);
         }
 
     }

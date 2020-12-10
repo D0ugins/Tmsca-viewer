@@ -43,7 +43,7 @@ const checkCalc = (ans, correct) => {
 }
 
 const gradeTest = (key, ans, type) => {
-    var states = {};
+    let states = {};
     let penalize_skip = type === "Number Sense" || type === "Calculator";
 
     let answers = ans
@@ -59,14 +59,13 @@ const gradeTest = (key, ans, type) => {
 
         }
     }
-
     let score = 0;
     // Gets all the questions that were actually answered
     let answered = Object.keys(answers).filter(q => answers[q]);
 
+    let last = 0;
     // Sets score as if every question was wrong then adds back score for questions that were right
     if (penalize_skip) {
-        var last = 0;
         // Gets last question that was answered
         if (answered.length) last = Math.max(...answered.map(x => parseInt(x)));
         score = last * key.penalty * -1;

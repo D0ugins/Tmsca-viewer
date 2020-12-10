@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './MthSciInput.css'
 
 
-export default function MthSciInput({ data, setAnswer, type, correct = "", gradeState = "", old = "" }) {
-    const [selected, setSelected] = useState("")
+export default function MthSciInput({ data, setAnswer, type, correct = "", gradeState = "", old = "", selected = "" }) {
 
     // Gets width screen (d is direction width/height)
     const percent = (p) => {
@@ -28,14 +27,13 @@ export default function MthSciInput({ data, setAnswer, type, correct = "", grade
     }
 
     const update = (val) => {
-        if (gradeState === "") {
+        if (!gradeState) {
             if (val === selected) val = ""
-            setSelected(val);
             setAnswer(data.id, val);
         }
     }
 
-    var states = {
+    let states = {
         "A": "",
         "B": "",
         "C": "",
@@ -44,8 +42,8 @@ export default function MthSciInput({ data, setAnswer, type, correct = "", grade
     }
 
     // Calculates what styles go on which choices
-    if (gradeState !== "") {
-        if (old !== "") {
+    if (gradeState) {
+        if (old) {
             if (old === correct) states[old] = "mthsci-correct";
             else {
                 states[old] = "mthsci-wrong";
@@ -58,7 +56,7 @@ export default function MthSciInput({ data, setAnswer, type, correct = "", grade
     }
 
     else {
-        for (var i in states) states[i] = "unselected";
+        for (const i in states) states[i] = "unselected";
         states[selected] = "selected";
     }
 

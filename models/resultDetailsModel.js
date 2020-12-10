@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const genGradeStates = (type) => {
-    var gradeStates = {}
+    let gradeStates = {}
 
     if (type === "Calculator") {
         for (i = 1; i <= 80; i++) {
@@ -38,7 +38,7 @@ const genGradeStates = (type) => {
 }
 
 const genTimes = (is_long) => {
-    var times = {}
+    let times = {}
     for (i = 1; i <= (is_long ? 80 : 50); i++) {
         times[i.toString()] = { type: Number, default: null }
     }

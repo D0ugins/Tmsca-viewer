@@ -105,7 +105,7 @@ export default function Results() {
 
     const findGradeStates = (searches, gradeStates) => {
         // Get count of certain grade state
-        var total = 0
+        let total = 0
         for (let search of searches) {
             total += Object.entries(gradeStates).filter(gradeState => gradeState[1].state === search).length
         }

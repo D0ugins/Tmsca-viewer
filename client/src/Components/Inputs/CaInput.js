@@ -1,27 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
-export default function CaInput({ data, setAnswer, int, gradeState = "", correct = "", old = "" }) {
+export default function CaInput({ data, setAnswer, int, gradeState = "", correct = { base: "", exponent: "" }, value = { base: "", exponent: "" } }) {
 
-    const [base, setBase] = useState("")
-    const [exponent, setExponent] = useState("")
+    let { base, exponent } = value
 
-    // Makes sure only valid characters and that nothing was removed
-    const validate = (val) => {
-        return /^[-]?[0-9/. ]*$/.test(val)
-    }
+    // Makes sure only valid characters
+    const validate = (val) => /^[-]?[0-9/. ]*$/.test(val)
 
     // Sets inputs value and updates answer list from parent
     const updateBase = (e) => {
         if (gradeState === "") {
-            var valid = validate(e.target.value, false);
-            if (valid) { setAnswer(data.id, { base: e.target.value, exponent }); setBase(e.target.value) };
+            const valid = validate(e.target.value);
+            if (valid) { setAnswer(data.id, { base: e.target.value, exponent }); };
         }
     }
 
     const updateExp = (e) => {
         if (gradeState === "") {
-            var valid = validate(e.target.value, true);
-            if (valid) { setAnswer(data.id, { base, exponent: e.target.value }); setExponent(e.target.value) };
+            const valid = validate(e.target.value);
+            if (valid) { setAnswer(data.id, { base, exponent: e.target.value }); };
         }
     }
 
@@ -57,23 +54,22 @@ export default function CaInput({ data, setAnswer, int, gradeState = "", correct
         styles.fontSize *= 0.8
     }
 
-    useEffect(() => {
-        if (gradeState === "wrong" || gradeState === "skipped" || gradeState === "na") {
 
-            // Deals with esimation problems and ones with multiple right
-            var answer = correct
-            if (typeof answer === "object") {
-                if (data.id % 10 === 0) answer = answer[0] + " - " + answer[1]
-                else answer = answer[0]
-            }
+    switch (gradeState) {
+        case "wrong":
+            base = `${base} Correct: ${correct.base}`;
+            exponent = `${exponent ?? ""} | ${correct.exponent}`
+            break;
+        case "skipped":
+        case "na":
+            base = `Correct: ${correct.base}`;
+            exponent = correct.exponent
+            break;
+        default:
+            break;
+    }
 
-            setBase(old?.base ? `${old.base} Correct: ${correct.base}` : `Correct: ${correct.base}`);
-            setExponent(old?.exponent ? `${old.exponent} | ${correct.exponent}` : `${correct.exponent}`);
-        }
-        // eslint-disable-next-line
-    }, [gradeState])
-
-    var gradeClass = ` ns-${gradeState}`
+    const gradeClass = ` ns-${gradeState}`
     return (
         <>
             <input type="text" id={`base${data.id}`} className={"form-control test-input" + gradeClass}

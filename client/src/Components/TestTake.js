@@ -259,7 +259,6 @@ export default function TestTake() {
                 }
             }
         }
-
         return areas
     }
 
@@ -566,13 +565,13 @@ export default function TestTake() {
                         ?
                         (!done ?
                             areas.map(area => {
-                                return <NsInput data={area} setAnswer={updateAnswers} key={area.id} />
+                                return <NsInput data={area} value={answers[area.id]} setAnswer={updateAnswers} key={area.id} />
                             })
 
                             : areas.map(area => {
                                 const { state, correct, answer } = gradeStates[area.id]
                                 return <NsInput data={area} key={area.id}
-                                    gradeState={state} correct={correct} old={answer} />
+                                    gradeState={state} correct={correct} value={answer} />
                             })
                         )
                         :
@@ -580,20 +579,19 @@ export default function TestTake() {
                             ?
                             (!done ?
                                 areas.map(area => {
-                                    return <CaInput data={area} setAnswer={updateAnswers} key={area.id} int={ints[area.id]} />
+                                    return <CaInput data={area} setAnswer={updateAnswers} value={answers[area.id]} key={area.id} int={ints[area.id]} />
                                 })
 
                                 : areas.map(area => {
-                                    if (area.id === 1) console.log([...areas])
                                     const { state, correct, answer } = gradeStates[area.id]
                                     return <CaInput data={area} key={area.id} int={ints[area.id]}
-                                        gradeState={state} correct={correct} old={answer} />
+                                        gradeState={state} correct={correct} value={answer} />
                                 })
                             )
                             :
                             (!done ?
                                 areas.map(area => {
-                                    return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} />
+                                    return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} selected={answers[area.id]} />
                                 })
 
                                 : areas.map(area => {
