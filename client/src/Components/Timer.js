@@ -1,29 +1,36 @@
 import React, { useState, useEffect } from 'react'
 import './Timer.css'
 
-export default function Timer({ type, endTest }) {
+export default function Timer({ type, endTest, practice = false }) {
 
     const [startTime, setStartTime] = useState(Date.now())
-    // Sets time inseconds based on test type
+    // Sets time in seconds based on test type
     const [totalTime] = useState(() => {
+        if (practice) return 0
+
         if (type === "Number Sense") return 10 * 60
         else if (type === "Calculator") return 30 * 60
         else return 40 * 60
     })
     const [time, setTime] = useState(totalTime)
-    const decreaseTime = () => {
+    const updateTime = () => {
         // Calculates time elapsed since start
-        setTime(totalTime - Math.floor((Date.now() - startTime) / 1000))
+        if (practice) {
+            setTime(Math.floor((Date.now() - startTime) / 1000))
+        } else {
+            setTime(totalTime - Math.floor((Date.now() - startTime) / 1000))
+        }
     }
 
+    // Sets the time the timer started at on load
     useEffect(() => {
         setStartTime(Date.now())
     }, [])
 
     useEffect(() => {
-        if (time <= 0) { endTest(false); return }
+        if (time <= 0 && !practice) { endTest(false); return }
 
-        let id = setTimeout(decreaseTime, 1000);
+        let id = setTimeout(updateTime, 1000);
         return () => clearTimeout(id);
         // eslint-disable-next-line
     }, [time])

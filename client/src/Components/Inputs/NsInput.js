@@ -1,22 +1,25 @@
 import React from 'react'
 import './NsInput.css'
 
-export default function NsInput({ data, setAnswer, value = "", gradeState = "", correct = "", old = "" }) {
+export default function NsInput({ data, setAnswer, value = "", gradeState = "", correct = "", practice = false }) {
+
+    let state = gradeState;
+    // Disable "na" and "skipped" gradestate in practice mode
+    if (practice && (gradeState === "na" || gradeState === "skipped")) state = "";
 
     // Makes sure only valid characters and that nothing was removed
     const validate = (val) => {
+        if (practice && state === "") return true;
         const reg = /^[-]?[0-9/. ]*$/
         const old = value;
 
-        return (reg.test(val) && val.length > old.length)
+        return (reg.test(val) && val.length > old.length && state === "")
     }
 
     // Validates value and updates answer list
     const update = (e) => {
-        if (gradeState === "") {
-            const valid = validate(e.target.value);
-            if (valid) { setAnswer(data.id, e.target.value); };
-        }
+        const valid = validate(e.target.value);
+        if (valid) { setAnswer(data.id, e.target.value); };
     }
 
     // return p percent of the screens width
@@ -44,14 +47,14 @@ export default function NsInput({ data, setAnswer, value = "", gradeState = "", 
 
     let val = value;
     // Handles adding correct answer after grading
-    if (gradeState) {
-        let answer = correct
+    if (state) {
+        let answer = correct;
         if (typeof answer === "object") {
-            if (data.id % 10 === 0) answer = answer[0] + " - " + answer[1]
-            else answer = answer[0]
+            if (data.id % 10 === 0) answer = answer[0] + " - " + answer[1];
+            else answer = answer[0];
         }
 
-        switch (gradeState) {
+        switch (state) {
             case "wrong":
                 val = `${value} Correct: ${answer}`;
                 break;
@@ -64,7 +67,7 @@ export default function NsInput({ data, setAnswer, value = "", gradeState = "", 
         }
     }
 
-    const gradeClass = ` ns-${gradeState}`
+    const gradeClass = ` ns-${state}`
     return (
         <input type="text" id={`input${data.id}`} className={"form-control test-input" + gradeClass}
             style={styles} value={val} onChange={e => update(e)}

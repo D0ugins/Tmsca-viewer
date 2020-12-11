@@ -12,7 +12,7 @@ import './TestTake.css'
 import { Link, useParams } from 'react-router-dom';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-
+const practice = window.location.search.split("=")[1] === "practice"
 
 export default function TestTake() {
     const { user } = useContext(UserContext);
@@ -500,7 +500,8 @@ export default function TestTake() {
 
     const endTest = async (manual) => {
         try {
-            setReady(false)
+            // Only set ready to false if not in practice mode
+            setReady(practice)
             // Check if there is a logged in user
             const valid = await Axios.post(`/api/users/isTokenValid`, null,
                 { headers: { "x-auth-token": user.token } }
@@ -508,7 +509,7 @@ export default function TestTake() {
             let save = false
 
             // Ask if user wants to save results
-            if (valid.data) save = window.confirm((!manual ? "Time is up!\n" : "") + "Would you like to save these results?")
+            if (valid.data && !practice) save = window.confirm((!manual ? "Time is up!\n" : "") + "Would you like to save these results?")
 
             // Send results to backed for grading
             const res = await Axios.post(`/api/results/grade`, {
@@ -520,7 +521,8 @@ export default function TestTake() {
             setGradeStates(gradeStates)
             setScore(score)
             setReady(true)
-            setDone(true)
+            // Only set done to true if not in practice mode
+            setDone(!practice)
 
             if (save) {
                 // Save results to database
@@ -546,7 +548,7 @@ export default function TestTake() {
                 <button id="timer" className={"btn btn-primary" + (done ? " score-button" : "")} onClick={startTest} disabled={!(ready || started) || done}>
                     {done ? `Score: ${score}` : (!ready ? "Loading..." : "Start test")}
                 </button>
-                : <Timer type={type} endTest={endTest}></Timer>}
+                : <Timer type={type} endTest={endTest} practice={practice}></Timer>}
 
             <Document
                 file={`${process.env.PUBLIC_URL}/tests/${test.path}.pdf`}
@@ -561,50 +563,58 @@ export default function TestTake() {
             </Document>
             {started ?
                 <div id="inputs">
-                    {type === "Number Sense"
-                        ?
-                        (!done ?
-                            areas.map(area => {
-                                return <NsInput data={area} value={answers[area.id]} setAnswer={updateAnswers} key={area.id} />
-                            })
-
-                            : areas.map(area => {
-                                const { state, correct, answer } = gradeStates[area.id]
-                                return <NsInput data={area} key={area.id}
-                                    gradeState={state} correct={correct} value={answer} />
-                            })
-                        )
-                        :
-                        type === "Calculator"
-                            ?
-                            (!done ?
-                                areas.map(area => {
-                                    return <CaInput data={area} setAnswer={updateAnswers} value={answers[area.id]} key={area.id} int={ints[area.id]} />
-                                })
-
-                                : areas.map(area => {
-                                    const { state, correct, answer } = gradeStates[area.id]
+                    {areas.map(area => {
+                        if (done) {
+                            const { state, correct, answer } = gradeStates[area.id]
+                            switch (type) {
+                                case "Number Sense":
+                                    return <NsInput data={area} key={area.id}
+                                        gradeState={state} correct={correct} value={answer} />
+                                case "Calculator":
                                     return <CaInput data={area} key={area.id} int={ints[area.id]}
                                         gradeState={state} correct={correct} value={answer} />
-                                })
-                            )
-                            :
-                            (!done ?
-                                areas.map(area => {
-                                    return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} selected={answers[area.id]} />
-                                })
-
-                                : areas.map(area => {
-                                    const { state, correct, answer } = gradeStates[area.id]
+                                default:
                                     return <MthSciInput data={area} key={area.id} type={type}
                                         gradeState={state} correct={correct} old={answer} />
-                                })
-                            )
-                    }
+                            }
+                        }
+                        else if (practice) {
+                            let state = ""
+                            let correct = ""
+
+                            // If graded set proper state and correct
+                            if (gradeStates[area.id]) {
+                                state = gradeStates[area.id].state;
+                                correct = gradeStates[area.id].correct
+                            }
+                            switch (type) {
+                                case "Number Sense":
+                                    return <NsInput data={area} key={area.id} setAnswer={updateAnswers}
+                                        gradeState={state} correct={correct} value={answers[area.id]} practice={practice} />
+                                case "Calculator":
+                                    return <CaInput data={area} key={area.id} int={ints[area.id]} setAnswer={updateAnswers}
+                                        gradeState={state} correct={correct} value={answers[area.id]} practice={practice} />
+                                default:
+                                    return <MthSciInput data={area} key={area.id} type={type} setAnswer={updateAnswers} selected={answers[area.id]}
+                                        gradeState={state} correct={correct} old={answers[area.id]} practice={practice} />
+                            }
+                        }
+                        else {
+                            switch (type) {
+                                case "Number Sense":
+                                    return <NsInput data={area} value={answers[area.id]} setAnswer={updateAnswers} key={area.id} practice={practice} />
+                                case "Calculator":
+                                    return <CaInput data={area} setAnswer={updateAnswers} value={answers[area.id]} key={area.id} int={ints[area.id]} practice={practice} />
+                                default:
+                                    return <MthSciInput data={area} key={area.id} setAnswer={updateAnswers} type={type} selected={answers[area.id]} practice={practice} />
+                            }
+                        }
+
+                    })}
                 </div>
                 : ""}
 
-            <button onClick={endTest} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade Test</p></button>
+            <button onClick={endTest} id="grade-button" className="btn btn-success corner-button" hidden={(!started) || done}><p>Grade {practice ? "Questions" : "Test"}</p></button>
             <Link hidden={started && (!done)} id="exit-button" className="btn btn-danger corner-button" to="/"><p>Exit</p></Link>
         </>
     )

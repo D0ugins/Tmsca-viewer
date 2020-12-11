@@ -1,25 +1,28 @@
 import React from 'react'
 
-export default function CaInput({ data, setAnswer, int, gradeState = "", correct = { base: "", exponent: "" }, value = { base: "", exponent: "" } }) {
+export default function CaInput({ data, setAnswer, int, gradeState = "", correct = { base: "", exponent: "" }, value = { base: "", exponent: "" }, practice = false }) {
+
+    let state = gradeState;
+    // Disable "na" and "skipped" gradestate in practice mode
+    if (practice && (gradeState === "na" || gradeState === "skipped")) state = "";
 
     let { base, exponent } = value
 
     // Makes sure only valid characters
-    const validate = (val) => /^[-]?[0-9/. ]*$/.test(val)
+    const validate = (val) => {
+        if (practice && state === "") return true;
+        return /^[-]?[0-9/. ]*$/.test(val) && state === ""
+    }
 
     // Sets inputs value and updates answer list from parent
     const updateBase = (e) => {
-        if (gradeState === "") {
-            const valid = validate(e.target.value);
-            if (valid) { setAnswer(data.id, { base: e.target.value, exponent }); };
-        }
+        const valid = validate(e.target.value);
+        if (valid) { setAnswer(data.id, { base: e.target.value, exponent }); };
     }
 
     const updateExp = (e) => {
-        if (gradeState === "") {
-            const valid = validate(e.target.value);
-            if (valid) { setAnswer(data.id, { base, exponent: e.target.value }); };
-        }
+        const valid = validate(e.target.value);
+        if (valid) { setAnswer(data.id, { base, exponent: e.target.value }); };
     }
 
     // Gets width of screen (d is direction width/height)
@@ -55,7 +58,7 @@ export default function CaInput({ data, setAnswer, int, gradeState = "", correct
     }
 
 
-    switch (gradeState) {
+    switch (state) {
         case "wrong":
             base = `${base} Correct: ${correct.base}`;
             exponent = `${exponent ?? ""} | ${correct.exponent}`
@@ -69,7 +72,7 @@ export default function CaInput({ data, setAnswer, int, gradeState = "", correct
             break;
     }
 
-    const gradeClass = ` ns-${gradeState}`
+    const gradeClass = ` ns-${state}`
     return (
         <>
             <input type="text" id={`base${data.id}`} className={"form-control test-input" + gradeClass}

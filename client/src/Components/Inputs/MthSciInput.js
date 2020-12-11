@@ -2,7 +2,11 @@ import React from 'react'
 import './MthSciInput.css'
 
 
-export default function MthSciInput({ data, setAnswer, type, correct = "", gradeState = "", old = "", selected = "" }) {
+export default function MthSciInput({ data, setAnswer, type, correct = "", gradeState = "", old = "", selected = "", practice = false }) {
+
+    let state = gradeState;
+    // Disable "na" and "skipped" gradestate in practice mode
+    if (practice && gradeState === "na") state = "";
 
     // Gets width screen (d is direction width/height)
     const percent = (p) => {
@@ -27,7 +31,7 @@ export default function MthSciInput({ data, setAnswer, type, correct = "", grade
     }
 
     const update = (val) => {
-        if (!gradeState) {
+        if (!state) {
             if (val === selected) val = ""
             setAnswer(data.id, val);
         }
@@ -42,7 +46,7 @@ export default function MthSciInput({ data, setAnswer, type, correct = "", grade
     }
 
     // Calculates what styles go on which choices
-    if (gradeState) {
+    if (state) {
         if (old) {
             if (old === correct) states[old] = "mthsci-correct";
             else {
