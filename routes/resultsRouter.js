@@ -23,9 +23,9 @@ const checkNs = (ans, correct, num) => {
 
 const checkCalc = (ans, correct) => {
     if (!ans) return false
-    let base = ans.base
-    if (!base) return false
-    let exp = ans.exponent ? ans.exponent : 0
+    let base = parseFloat(ans.base)
+    if (!base || isNaN(base)) return false
+    let exp = parseFloat(ans.exponent) || 0
 
     if (!exp && correct.exponent) {
         [base, exp] = base.toExponential(2).split("e+")
@@ -40,6 +40,17 @@ const checkCalc = (ans, correct) => {
     if (exp === correct_exp && Math.abs(base - correct_base) <= .011) return true;
 
     return false;
+}
+
+const gradeQuestion = (ans, correct, type, num) => {
+    switch (type) {
+        case "Number Sense":
+            return checkNs(ans, correct, num);
+        case "Calculator":
+            return checkCalc(ans, correct);
+        default:
+            return ans === correct;
+    }
 }
 
 const gradeTest = (key, ans, type) => {
@@ -80,14 +91,7 @@ const gradeTest = (key, ans, type) => {
         let state = "";
         if (i <= last || !penalize_skip) {
             if (answered.includes(i.toString())) {
-
-                let is_correct = true;
-                // If number sense test use checkNS function, Calculator uses checkCalc, otherwise just compare answer to correct
-                if (type === "Number Sense") is_correct = checkNs(answers[i].trim(), correct, i)
-                else if (type === "Calculator") is_correct = checkCalc(answers[i], correct)
-                else is_correct = answers[i] === correct;
-
-                if (is_correct) {
+                if (gradeQuestion(answers[i], correct, type, i)) {
                     score += key.prize + key.penalty;
                     state = "correct";
                 }
@@ -139,12 +143,17 @@ const loadSchemas = (type) => {
 // Grades test basedo on answer key path and answers sent in body
 router.post('/grade', cors(), (req, res) => {
     try {
-        const { type, keypath, answers } = req.body
+        const { type, keypath, answers, question } = req.body
 
         // Load answer key from file
         const key = JSON.parse(fs.readFileSync(path.resolve('AnswerKeys', (keypath + " Key.json")), 'utf-8'))
+        if (!question) {
+            res.json(gradeTest(key, answers, type));
+        }
+        else {
+            res.json(gradeQuestion(answers[question.toString()], key.answers[question.toString()], type, question));
+        }
 
-        res.json(gradeTest(key, answers, type))
     } catch (err) {
         res.status(500).json({ "err": err.message })
         console.error(err)
