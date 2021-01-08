@@ -43,9 +43,10 @@ const checkCalc = (ans, correct) => {
 }
 
 const gradeQuestion = (ans, correct, type, num) => {
+    if (!ans) return false
     switch (type) {
         case "Number Sense":
-            return checkNs(ans, correct, num);
+            return checkNs(ans.trim(), correct, num);
         case "Calculator":
             return checkCalc(ans, correct);
         default:

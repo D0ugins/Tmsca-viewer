@@ -54,7 +54,7 @@ router.post("/bestTimes", auth, async (req, res) => {
 
         }
         else {
-            // If there was one check to make sure it is faster then update it
+            // If there was an old time check to make sure it is faster then update it
 
             if (old.time >= parseFloat(time)) old.time = time
             else return (res.json(null))
