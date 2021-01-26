@@ -293,6 +293,7 @@ export default function TestTake() {
             "0, 30, MSSC3 20-21": ["intext"],
             "1, 30, MSSC3 20-21": ["missing"],
             "2, 40, MSSC6 20-21": ["missing"],
+            "0, 7, MSSC7 20-21": ["image"],
 
             "2, 6, MSMA2 19-20": ["repeat", 1],
             "2, 32, MSMA2 19-20": ["repeat", -1],
