@@ -386,7 +386,7 @@ export default function TestTake() {
 
                     // Checks for new page
                     let last = areas[question - 1];
-                    if (last.choices[0].top > (text.top + offset)) { page++ }
+                    if (last.choices[0].top > (text.top + offset)) { page++; console.log(1); }
                     offset = pageheight * page
 
                     areas[question] = {
@@ -397,7 +397,7 @@ export default function TestTake() {
                     const lefts = [20, 40, 60, 80]
                     for (const left in lefts) {
                         areas[question].choices[left] = {
-                            "top": (text.top - (pageheight / 5)) + offset,
+                            "top": (text.top + (pageheight / 12)) + offset,
                             "left": window.innerWidth * (lefts[left] / 100)
                         }
 
