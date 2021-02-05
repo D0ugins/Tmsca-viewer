@@ -76,7 +76,6 @@ export default function TestTake() {
     const [score, setScore] = useState(null);
 
     const getWidth = (string, el = "") => {
-
         const fontSize = (window.innerWidth / 54.34).toFixed(1);
         const fontWeight = type === "Science" ? 500 : 900
         let width = 0;
@@ -110,7 +109,6 @@ export default function TestTake() {
             width = rect.width
             // Deals with that font being squished for some reason
             if (el.style.fontFamily.includes("g_d0") && type === "Science") { width *= 1.234 }
-
         }
 
         return width;
@@ -400,7 +398,6 @@ export default function TestTake() {
                             "top": (text.top + (pageheight / 12)) + offset,
                             "left": window.innerWidth * (lefts[left] / 100)
                         }
-
                     }
                     question++;
                     continue;
