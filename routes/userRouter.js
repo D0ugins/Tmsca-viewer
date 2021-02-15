@@ -108,27 +108,22 @@ router.post("/update", auth, async (req, res) => {
 router.post("/isTokenValid", async (req, res) => {
     try {
         const token = req.header("x-auth-token");
-        res["val"] = false;
+        if (!token) return res.json(false)
 
-        if (token) {
-            await jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-                if (err) return
-                if (decoded) {
-                    const user = await User.findById(decoded.id);
-                    if (user) res["val"] = true;
-                }
-            });
-        }
-        return res.json(res["val"]);
-
+        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+            // Check if token was decoded succsesfuly
+            if (!err && decoded) {
+                // Check if user actually exists
+                if (await User.findById(decoded.id)) return res.json(true)
+            }
+            // Otherwise return false
+            return res.json(false)
+        });
     } catch (err) {
         console.error(err)
         return res.status(500).json({ error: err.message });
     }
-
-
 })
-
 
 router.get("/", auth, async (req, res) => {
     const user = await User.findById(req.user)
@@ -139,7 +134,6 @@ router.get("/", auth, async (req, res) => {
     else {
         return res.json({ err: "User no longer exists" })
     }
-
 })
 
 module.exports = router;
