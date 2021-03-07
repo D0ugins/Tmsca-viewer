@@ -3,6 +3,10 @@ import './TestSearch.css'
 import Navbar from "./Navbar.js"
 
 const getNums = (year) => {
+
+    if (year === "20-21") {
+        return ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '12', 'Kickoff', 'Gear up'];
+    }
     // Creates array for test numbers 1-13
     let base = []
     for (let i = 1; i <= 13; i++) { base.push(i.toString()) }
@@ -14,12 +18,7 @@ const getNums = (year) => {
         "17-18": ['Regional', 'State']
     };
 
-    if (year === "20-21") {
-        return ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Kickoff', 'Gear up'];
-    }
-    else {
-        return base.concat(extras[year]);
-    }
+    return base.concat(extras[year]);
 
 }
 
