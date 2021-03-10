@@ -59,8 +59,6 @@ export default function TestSearch() {
     const brokentest = () => {
         // Certain tests formatting are just broken beyond repair you cant take those tests
         if (num === "Kickoff" && year === "18-19" && (type === "SC")) return true;
-        if (level === "EL" && type === "CA") return true;
-
         return false;
     }
 
