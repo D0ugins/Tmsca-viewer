@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import './Timer.css'
 
+const formatTime = time => {
+    let str = new Date(time * 1000).toISOString();
+    return time > 3600 ? str.substr(11, 8) : str.substr(14, 5)
+}
+
 export default function Timer({ type, endTest, practice = false }) {
 
     const [startTime, setStartTime] = useState(Date.now())
@@ -36,6 +41,6 @@ export default function Timer({ type, endTest, practice = false }) {
     }, [time])
 
     return (
-        <button id="timer" className="btn btn-primary"> {new Date(time * 1000).toISOString().substr(14, 5)} </button>
+        <button id="timer" className="btn btn-primary"> {formatTime(time)} </button>
     )
 }

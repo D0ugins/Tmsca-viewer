@@ -8,7 +8,7 @@ const PDFParser = require("pdf2json");
 const JSONFOLDER = '../AnswerKeys'
 
 function nsAnswer(str, num) {
-    if (!str) return console.error("test")
+    if (!str) return console.error(num)
     // If contains 'or' returns array of acceptable answers
     if (str.includes('or')) return str.split(' or ')
     /* If question is multiple of 10 (estimation question)  
@@ -47,6 +47,8 @@ async function parseNs(text_path) {
 
         const path_array = text_path.split('/')
         const type = "Number Sense"
+        const level = path_array[2]
+
         const name = path.parse(text_path).name.slice(0, -4)
 
         const key = data.trim().split('\n').map(str => str.trim())
@@ -56,10 +58,11 @@ async function parseNs(text_path) {
 
 
         let json = {
-            "type": type,
-            "year": path_array[2].slice(-5),
+            type,
+            level,
+            "year": path_array[4].slice(-5),
             "name": name,
-            "path": type + '/' + path_array[2] + '/' + name,
+            "path": `${level}/${type}/${path_array[4]}/${name}`,
             "prize": 5,
             "penalty": 4,
             "answers": {}
@@ -80,7 +83,7 @@ async function parseNs(text_path) {
 
         }
         // Makes path if it dosent exist
-        mkdirp.sync(path.join(JSONFOLDER, "Number Sense", path_array[2]))
+        mkdirp.sync(path.join(JSONFOLDER, level, type, path_array[4]))
 
         // Saves file
         fs.writeFile(path.join(JSONFOLDER, json.path + ' Key.json'), JSON.stringify(json), (err) => {
@@ -92,15 +95,16 @@ async function parseNs(text_path) {
 }
 
 async function parseMthSci(key, text_path) {
-    let tpath = text_path.split("/").slice(5).join("/").slice(0, -4) + " Key.json"
+    let tpath = text_path.split("/").slice(4).join("/").slice(0, -4) + " Key.json"
     const path_array = tpath.split("/")
+    const level = path_array[0]
     const type = tpath.includes("Math") ? "Math" : "Science"
-
     let json = {
-        "type": type,
-        "year": path_array[0].slice(-5),
-        "name": path_array[1].slice(0, -9),
-        "path": type + "/" + tpath.slice(0, -9),
+        type,
+        level,
+        "year": path_array[2].slice(-5),
+        "name": path_array[3].slice(0, -9),
+        "path": `${level}/${type}/${path_array[2]}/${path_array[3].slice(0, -9)}`,
         "prize": 5,
         "penalty": 2,
         "answers": {}
@@ -157,12 +161,12 @@ async function parseMthSci(key, text_path) {
     }
 
     // Makes folders if they dont exist
-    mkdirp.sync(path.join(JSONFOLDER, type, path_array[0]));
+    mkdirp.sync(path.join(JSONFOLDER, level, type, path_array[2]));
 
     // Saves file
-    fs.writeFile(path.join(JSONFOLDER, type, tpath), JSON.stringify(json), (err) => {
+    fs.writeFile(path.join(JSONFOLDER, json.path + " Key.json"), JSON.stringify(json), (err) => {
         if (err) console.error(err)
-        else console.log("Saved: " + tpath)
+        else console.log("Saved: " + json.path)
     })
 
     if (Object.keys(json.answers).length !== 50) console.log(Object.keys(json.answers).length, tpath)
@@ -170,22 +174,25 @@ async function parseMthSci(key, text_path) {
 
 async function parseCalc(key, text_path) {
 
-    let tpath = text_path.split("/").slice(5).join("/").slice(0, -4) + " Key.json"
+    let tpath = text_path.split("/").slice(4).join("/").slice(0, -4) + " Key.json"
     const path_array = tpath.split("/")
+    const level = path_array[0]
+    if (level === "Elementary") return;
     const type = "Calculator"
 
     let json = {
-        "type": type,
-        "year": path_array[0].slice(-5),
-        "name": path_array[1].slice(0, -9),
-        "path": type + "/" + tpath.slice(0, -9),
+        type,
+        level,
+        "year": path_array[2].slice(-5),
+        "name": path_array[3].slice(0, -9),
+        "path": `${level}/${type}/${path_array[2]}/${path_array[3].slice(0, -9)}`,
         "prize": 5,
         "penalty": 4,
         "answers": {}
     }
 
     const exceptions = {
-        "26, Calculator 18-19/MSCA STATE 18-19 Key.json": ["misexponent"]
+        "26, Middle/Calculator/Calculator 18-19/MSCA STATE 18-19 Key.json": ["misexponent"]
     }
 
     let qnum = 1
@@ -290,7 +297,7 @@ async function parseCalc(key, text_path) {
             else {
                 if (ans) {
                     if (text === "-") { i++; text = "-" + key[i] }
-                    if (!Object.keys(exceptions).includes(qnum + ", " + tpath)) {
+                    if (!Object.keys(exceptions).includes(qnum + ", " + json.path)) {
                         answers[qnum.toString()]["exponent"] = text
                     }
                     else {
@@ -340,12 +347,12 @@ async function parseCalc(key, text_path) {
     json.answers = answers
 
     // Makes folders if they dont exist
-    mkdirp.sync(path.join(JSONFOLDER, type, path_array[0]));
+    mkdirp.sync(path.join(JSONFOLDER, level, type, path_array[2]));
 
     // Saves file
-    fs.writeFile(path.join(JSONFOLDER, type, tpath), JSON.stringify(json), (err) => {
+    fs.writeFile(path.join(JSONFOLDER, json.path + " Key.json"), JSON.stringify(json), (err) => {
         if (err) console.error(err)
-        else console.log("Saved: " + tpath)
+        else console.log("Saved: " + json.path)
     })
 
     if (Object.keys(answers).length !== 80) console.log(Object.keys(answers).length, tpath)
@@ -353,14 +360,14 @@ async function parseCalc(key, text_path) {
 }
 
 // Gets all text files in working directory
-glob("**/*.txt", (err, files) => {
+glob("./Text Keys/**/*.txt", (err, files) => {
     if (err) throw err;
 
     files.forEach(path => parseNs(path));
 })
 
 
-glob("../client/public/tests/Calculator/**/*.pdf", (err, paths) => {
+glob("../client/public/tests/**/*CA*.pdf", (err, paths) => {
     if (err) throw err;
     for (const test_path of paths) {
         let parser = new PDFParser();
@@ -371,7 +378,7 @@ glob("../client/public/tests/Calculator/**/*.pdf", (err, paths) => {
     }
 })
 
-glob("../client/public/tests/Math/**/*.pdf", (err, paths) => {
+glob("../client/public/tests/**/*MA*.pdf", (err, paths) => {
     if (err) throw err;
 
     for (const test_path of paths) {
@@ -384,10 +391,11 @@ glob("../client/public/tests/Math/**/*.pdf", (err, paths) => {
 })
 
 
-glob("../client/public/tests/Science/**/*.pdf", (err, paths) => {
+glob("../client/public/tests/**/*SC*.pdf", (err, paths) => {
     if (err) throw err;
 
     for (const test_path of paths) {
+        if (test_path.includes("CA")) continue;
         let parser = new PDFParser();
         parser.on("pdfParser_dataReady", (data) => {
             parseMthSci(clean(data, "Science"), test_path);
@@ -395,5 +403,3 @@ glob("../client/public/tests/Science/**/*.pdf", (err, paths) => {
         parser.loadPDF(test_path);
     }
 })
-
-

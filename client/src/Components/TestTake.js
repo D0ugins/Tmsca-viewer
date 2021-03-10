@@ -10,6 +10,7 @@ import UserContext from '../Context/UserContext'
 import Timer from './Timer'
 import './TestTake.css'
 import { Link, useParams } from 'react-router-dom';
+import { getTestPath, typeMap } from '../utils/testNames'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const practice = window.location.search.split("=")[1] === "practice"
@@ -18,18 +19,10 @@ export default function TestTake() {
     const { user } = useContext(UserContext);
     const { testName } = useParams()
 
-    const typeMap = {
-        'NS': 'Number Sense',
-        'MA': 'Math',
-        'SC': 'Science',
-        'CA': 'Calculator'
-    }
-
     const name = testName.replace(/_/g, " ")
     const type = typeMap[name.slice(2, 4)]
 
-    const path = `${type}/${type} ${name.slice(-5)}/${name}`
-
+    const path = getTestPath(name)
     const test = { name, path }
 
     const [pages, setPages] = useState([]);
@@ -257,6 +250,21 @@ export default function TestTake() {
                 }
             }
         }
+        // Remove extra boxes at top on elementary tests
+        if (test.name.includes("EL") && type === "Number Sense") {
+            // Remove things at top
+            areas = areas.filter(area => (area.top / pageheight) > .25)
+            // Recalcuate ids and shift up because font is different
+            const shift = pageheight / 300
+            areas = areas.map((area, i) => {
+                return {
+                    ...area,
+                    id: i + 1,
+                    top: area.top - shift
+                }
+            })
+        }
+        console.log(areas, pageheight)
         return areas
     }
 
@@ -292,6 +300,7 @@ export default function TestTake() {
             "1, 30, MSSC3 20-21": ["missing"],
             "2, 40, MSSC6 20-21": ["missing"],
             "0, 7, MSSC7 20-21": ["image"],
+            "3, 5, ELSC SPRING OL 20-21": ["repeat", 1],
 
             "2, 6, MSMA2 19-20": ["repeat", 1],
             "2, 32, MSMA2 19-20": ["repeat", -1],
@@ -371,7 +380,7 @@ export default function TestTake() {
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
 
-                    if (choice === last + exception[1]) { choice = 0; question++; exception_state = 0; continue; }
+                    if (choice + exception[1] === last) { choice = 0; question++; exception_state = 0; continue; }
                     choice++;
                     // Deals with multiple choices in same string
                     if (str.includes(choices[choice + exception[1]] + '.') || split) i--
@@ -538,8 +547,6 @@ export default function TestTake() {
         }
 
     }
-
-
     return (
         <>
             {(!started || done || !ready) ?
