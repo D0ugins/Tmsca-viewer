@@ -11,15 +11,16 @@ const getNums = (level, year) => {
         return []
     }
 
-    if (year === "20-21") {
-        return ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '12', 'Kickoff', 'Gear up'];
-    }
     // Creates array for test numbers 1-13
     let base = []
     for (let i = 1; i <= 13; i++) { base.push(i.toString()) }
 
+    // Missing test 11 for 20-21
+    if (year === "20-21") base = base.filter(el => el !== "11");
+
     // List of all the non standard 1-13 tests for each year
     const extras = {
+        "20-21": ['Kickoff', 'Gear up'],
         "19-20": ['Kickoff', 'Regional'],
         "18-19": ['Kickoff', 'Gear up', 'Tune up', 'Regional', 'State'],
         "17-18": ['Regional', 'State']
