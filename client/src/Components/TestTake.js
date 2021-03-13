@@ -553,7 +553,7 @@ export default function TestTake() {
                 <button id="timer" className={"btn btn-primary" + (done ? " score-button" : "")} onClick={startTest} disabled={!(ready || started) || done}>
                     {done ? `Score: ${score}` : (!ready ? "Loading..." : "Start test")}
                 </button>
-                : <Timer type={type} endTest={endTest} practice={practice}></Timer>}
+                : <Timer type={type} endTest={endTest} practice={practice} score={score} />}
 
             <Document
                 file={`${process.env.PUBLIC_URL}/tests/${test.path}.pdf`}

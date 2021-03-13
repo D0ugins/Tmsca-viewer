@@ -6,7 +6,7 @@ const formatTime = time => {
     return time > 3600 ? str.substr(11, 8) : str.substr(14, 5)
 }
 
-export default function Timer({ type, endTest, practice = false }) {
+export default function Timer({ type, endTest, practice = false, score }) {
 
     const [startTime, setStartTime] = useState(Date.now())
     // Sets time in seconds based on test type
@@ -41,6 +41,6 @@ export default function Timer({ type, endTest, practice = false }) {
     }, [time])
 
     return (
-        <button id="timer" className="btn btn-primary"> {formatTime(time)} </button>
+        <button id="timer" className="btn btn-primary"> <b>{formatTime(time)}</b>{(practice && score) && " Current score: " + score} </button>
     )
 }
