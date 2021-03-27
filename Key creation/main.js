@@ -381,54 +381,47 @@ async function parseCalc(key, text_path) {
 
 }
 
-// // Gets all text files in working directory
-// glob("./Text Keys/**/*.txt", (err, files) => {
-//     if (err) throw err;
+// Gets all text files in working directory
+glob("./Text Keys/**/*.txt", (err, files) => {
+    if (err) throw err;
 
-//     files.forEach(path => parseNs(path));
-// })
-
-
-// glob("../client/public/tests/**/*CA*.pdf", (err, paths) => {
-//     if (err) throw err;
-//     for (const test_path of paths) {
-//         let parser = new PDFParser();
-//         parser.on("pdfParser_dataReady", (data) => {
-//             parseCalc(clean(data, "Calculator"), test_path);
-//         })
-//         parser.loadPDF(test_path);
-//     }
-// })
-
-// glob("../client/public/tests/**/*MA*.pdf", (err, paths) => {
-//     if (err) throw err;
-
-//     for (const test_path of paths) {
-//         let parser = new PDFParser();
-//         parser.on("pdfParser_dataReady", (data) => {
-//             parseMthSci(clean(data, "Math"), test_path);
-//         })
-//         parser.loadPDF(test_path);
-//     }
-// })
-
-
-// glob("../client/public/tests/**/*SC*.pdf", (err, paths) => {
-//     if (err) throw err;
-
-//     for (const test_path of paths) {
-//         if (test_path.includes("CA")) continue;
-//         let parser = new PDFParser();
-//         parser.on("pdfParser_dataReady", (data) => {
-//             parseMthSci(clean(data, "Science"), test_path);
-//         })
-//         parser.loadPDF(test_path);
-//     }
-// })
-
-const test_path = "../client/public/tests/Elementary/Calculator/Calculator 20-21/ELCA SPRING OL 20-21.pdf"
-let parser = new PDFParser();
-parser.on("pdfParser_dataReady", (data) => {
-    parseCalc(clean(data, "Calculator"), test_path);
+    files.forEach(path => parseNs(path));
 })
-parser.loadPDF(test_path);
+
+
+glob("../client/public/tests/**/*CA*.pdf", (err, paths) => {
+    if (err) throw err;
+    for (const test_path of paths) {
+        let parser = new PDFParser();
+        parser.on("pdfParser_dataReady", (data) => {
+            parseCalc(clean(data, "Calculator"), test_path);
+        })
+        parser.loadPDF(test_path);
+    }
+})
+
+glob("../client/public/tests/**/*MA*.pdf", (err, paths) => {
+    if (err) throw err;
+
+    for (const test_path of paths) {
+        let parser = new PDFParser();
+        parser.on("pdfParser_dataReady", (data) => {
+            parseMthSci(clean(data, "Math"), test_path);
+        })
+        parser.loadPDF(test_path);
+    }
+})
+
+
+glob("../client/public/tests/**/*SC*.pdf", (err, paths) => {
+    if (err) throw err;
+
+    for (const test_path of paths) {
+        if (test_path.includes("CA")) continue;
+        let parser = new PDFParser();
+        parser.on("pdfParser_dataReady", (data) => {
+            parseMthSci(clean(data, "Science"), test_path);
+        })
+        parser.loadPDF(test_path);
+    }
+})
