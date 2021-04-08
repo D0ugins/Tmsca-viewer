@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import './Timer.css'
 
 const formatTime = time => {
-    let str = new Date(time * 1000).toISOString();
-    return time > 3600 ? str.substr(11, 8) : str.substr(14, 5)
+    let str = new Date(time).toISOString();
+    return time > (3600 * 1000) ? str.substr(11, 8) : str.substr(14, 5)
 }
 
 export default function Timer({ type, endTest, practice = false, score }) {
@@ -20,11 +20,8 @@ export default function Timer({ type, endTest, practice = false, score }) {
     const [time, setTime] = useState(totalTime)
     const updateTime = () => {
         // Calculates time elapsed since start
-        if (practice) {
-            setTime(Math.floor((Date.now() - startTime) / 1000))
-        } else {
-            setTime(totalTime - Math.floor((Date.now() - startTime) / 1000))
-        }
+        const elapsed = Date.now() - startTime
+        setTime(practice ? elapsed : totalTime - elapsed)
     }
 
     // Sets the time the timer started at on load
