@@ -12,10 +12,11 @@ export default function Timer({ type, endTest, practice = false, score }) {
     // Sets time in seconds based on test type
     const [totalTime] = useState(() => {
         if (practice) return 0
+        const minute = 60 * 1000
 
-        if (type === "Number Sense") return 10 * 60
-        else if (type === "Calculator") return 30 * 60
-        else return 40 * 60
+        if (type === "Number Sense") return 10 * minute
+        else if (type === "Calculator") return 30 * minute
+        else return 40 * minute
     })
     const [time, setTime] = useState(totalTime)
     const updateTime = () => {
