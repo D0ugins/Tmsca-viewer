@@ -301,6 +301,8 @@ export default function TestTake() {
             "2, 40, MSSC6 20-21": ["missing"],
             "0, 7, MSSC7 20-21": ["image"],
             "3, 5, ELSC SPRING OL 20-21": ["repeat", 1],
+            "2, 39, MSSC11 20-21": ["repeat", -1],
+            "3, 39, MSSC11 20-21": ["repeat", -1],
 
             "2, 6, MSMA2 19-20": ["repeat", 1],
             "2, 32, MSMA2 19-20": ["repeat", -1],
@@ -341,7 +343,6 @@ export default function TestTake() {
 
             // Check if question is exception
             if (Object.keys(exceptions).includes(`${choice}, ${question + 1}, ${test.name}`)) {
-
                 const exception = exceptions[`${choice}, ${question + 1}, ${test.name}`]
                 // Deals with A. or something appears within the question
                 if (exception[0] === "intext") {
@@ -381,7 +382,7 @@ export default function TestTake() {
                         "left": text.left + (getWidth(str.slice(0, index), text.span)),
                     };
 
-                    if (choice + exception[1] === last) { choice = 0; question++; exception_state = 0; continue; }
+                    if (choice - exception[1] === last) { choice = 0; question++; exception_state = 0; continue; }
                     choice++;
                     // Deals with multiple choices in same string
                     if (str.includes(choices[choice + exception[1]] + '.') || split) i--
