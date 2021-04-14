@@ -17,12 +17,17 @@ function nsAnswer(str, num) {
     return str
 }
 
-const clean = (data, type) => {
+const calcExtraPage = [
+    "MSCA TU 20-21"
+]
+
+const clean = (data, type, testPath) => {
 
     let pages = data.formImage.Pages
     switch (type) {
         case "Calculator":
-            pages = pages.slice(8, 10);
+            let extraPage = calcExtraPage.find(test => testPath.includes(test));
+            pages = pages.slice(extraPage ? 9 : 8, 10);
             break;
         case "Math":
             pages = pages.slice(6, 7);
@@ -382,25 +387,25 @@ async function parseCalc(key, text_path) {
 }
 
 // Gets all text files in working directory
-glob("./Text Keys/**/*.txt", (err, files) => {
+glob("./Text Keys/Middle/**/*.txt", (err, files) => {
     if (err) throw err;
 
     files.forEach(path => parseNs(path));
 })
 
 
-glob("../client/public/tests/**/*CA*.pdf", (err, paths) => {
+glob("../client/public/tests/Middle/**/*CA*.pdf", (err, paths) => {
     if (err) throw err;
     for (const test_path of paths) {
         let parser = new PDFParser();
         parser.on("pdfParser_dataReady", (data) => {
-            parseCalc(clean(data, "Calculator"), test_path);
+            parseCalc(clean(data, "Calculator", test_path), test_path);
         })
         parser.loadPDF(test_path);
     }
 })
 
-glob("../client/public/tests/**/*MA*.pdf", (err, paths) => {
+glob("../client/public/tests/Middle/**/*MA*.pdf", (err, paths) => {
     if (err) throw err;
 
     for (const test_path of paths) {
@@ -413,7 +418,7 @@ glob("../client/public/tests/**/*MA*.pdf", (err, paths) => {
 })
 
 
-glob("../client/public/tests/**/*SC*.pdf", (err, paths) => {
+glob("../client/public/tests/Middle/**/*SC*.pdf", (err, paths) => {
     if (err) throw err;
 
     for (const test_path of paths) {
