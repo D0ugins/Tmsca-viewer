@@ -17,7 +17,7 @@ const getNums = (level, year) => {
 
     // List of all the non standard 1-13 tests for each year
     const extras = {
-        "20-21": ['11A', 'Kickoff', 'Gear up', 'Regional'],
+        "20-21": ['11A', 'Kickoff', 'Gear up', 'Regional', 'Tune up'],
         "19-20": ['Kickoff', 'Regional'],
         "18-19": ['Kickoff', 'Gear up', 'Regional', 'Tune up', 'State'],
         "17-18": ['Regional', 'State']
