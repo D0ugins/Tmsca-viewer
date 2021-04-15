@@ -320,7 +320,8 @@ export default function TestTake() {
             "3, 5, MSMA11 17-18": ["missing"],
             "3, 25, MSMA11 17-18": ["missing"],
             "4, 41, MSMA4 20-21": ["repeat", -1],
-            "0, 36, MSMA13 20-21": ["missing"]
+            "0, 36, MSMA13 20-21": ["missing"],
+            "2, 26, MSMA TU 20-21": ["missing"]
         }
         const manual_fixed_strs = {
             "A.  uracil           B  phosphate           C.  ": "A.  uracil           B.  phosphate           C.  "
