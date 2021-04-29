@@ -7,7 +7,7 @@ const getNums = (level, year) => {
 
     // Years for elementary tests
     if (level === "EL") {
-        if (year === "20-21") return ["Spring online"]
+        if (year === "20-21") return ["Spring online", "State"]
         return []
     }
 
