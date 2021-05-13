@@ -84,7 +84,7 @@ async function parseNs(text_path) {
         let count = 80
         for (let i = 1; i <= count; i++) {
             let str = key[i - 1]
-            json.answers[i.toString()] = nsAnswer(str.split(") ")[1], i)
+            json.answers[i.toString()] = nsAnswer(str.split(")")[1].trim(), i)
 
         }
         // Makes path if it dosent exist
@@ -394,39 +394,39 @@ glob("./Text Keys/Middle/**/*.txt", (err, files) => {
 })
 
 
-glob("../client/public/tests/Middle/**/*CA*.pdf", (err, paths) => {
-    if (err) throw err;
-    for (const test_path of paths) {
-        let parser = new PDFParser();
-        parser.on("pdfParser_dataReady", (data) => {
-            parseCalc(clean(data, "Calculator", test_path), test_path);
-        })
-        parser.loadPDF(test_path);
-    }
-})
+// glob("../client/public/tests/Middle/**/*CA*.pdf", (err, paths) => {
+//     if (err) throw err;
+//     for (const test_path of paths) {
+//         let parser = new PDFParser();
+//         parser.on("pdfParser_dataReady", (data) => {
+//             parseCalc(clean(data, "Calculator", test_path), test_path);
+//         })
+//         parser.loadPDF(test_path);
+//     }
+// })
 
-glob("../client/public/tests/Middle/**/*MA*.pdf", (err, paths) => {
-    if (err) throw err;
+// glob("../client/public/tests/Middle/**/*MA*.pdf", (err, paths) => {
+//     if (err) throw err;
 
-    for (const test_path of paths) {
-        let parser = new PDFParser();
-        parser.on("pdfParser_dataReady", (data) => {
-            parseMthSci(clean(data, "Math"), test_path);
-        })
-        parser.loadPDF(test_path);
-    }
-})
+//     for (const test_path of paths) {
+//         let parser = new PDFParser();
+//         parser.on("pdfParser_dataReady", (data) => {
+//             parseMthSci(clean(data, "Math"), test_path);
+//         })
+//         parser.loadPDF(test_path);
+//     }
+// })
 
 
-glob("../client/public/tests/Middle/**/*SC*.pdf", (err, paths) => {
-    if (err) throw err;
+// glob("../client/public/tests/Middle/**/*SC*.pdf", (err, paths) => {
+//     if (err) throw err;
 
-    for (const test_path of paths) {
-        if (test_path.includes("CA")) continue;
-        let parser = new PDFParser();
-        parser.on("pdfParser_dataReady", (data) => {
-            parseMthSci(clean(data, "Science"), test_path);
-        })
-        parser.loadPDF(test_path);
-    }
-})
+//     for (const test_path of paths) {
+//         if (test_path.includes("CA")) continue;
+//         let parser = new PDFParser();
+//         parser.on("pdfParser_dataReady", (data) => {
+//             parseMthSci(clean(data, "Science"), test_path);
+//         })
+//         parser.loadPDF(test_path);
+//     }
+// })
