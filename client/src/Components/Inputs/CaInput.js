@@ -6,7 +6,7 @@ export default function CaInput({ data, setAnswer, int, gradeState = "", correct
     // Disable "na" and "skipped" gradestate in practice mode
     if (practice && (gradeState === "na" || gradeState === "skipped")) state = "";
 
-    let { base, exponent } = value
+    let { base, exponent } = value ?? { base: "", exponent: "" }
 
     // Makes sure only valid characters
     const validate = (val) => {

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "bootstrap": "^4.5.2",
     "mathjax-react": "^1.0.6",
     "react": "^16.13.1",
@@ -13,7 +13,7 @@
     "react-markdown": "^5.0.2",
     "react-pdf": "^5.0.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.3",
     "remark-gfm": "^1.0.0",
     "remark-math": "^4.0.0"
   },

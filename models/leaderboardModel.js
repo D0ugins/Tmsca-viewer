@@ -5,7 +5,7 @@ const leaderboardSchema = new mongoose.Schema({
     times: [{
         user: {
             _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-            fullName: { type: String, required: true }
+            username: { type: String }
         },
         time: { type: Number, min: 0 },
     }]

@@ -110,7 +110,7 @@ const gradeTest = (key, ans, type) => {
         }
         states[i] = {
             "state": state,
-            "answer": answers[i] || "na",
+            "answer": answers[i] || null,
             "correct": correct
         };
     }
@@ -183,7 +183,7 @@ router.post("/", auth, async (req, res) => {
         let data = {
             user: {
                 _id: req.user,
-                fullName: user.firstName + " " + user.lastName
+                username: user.email ? user.firstName + " " + user.lastName : user.username
             },
             type,
             test_name,

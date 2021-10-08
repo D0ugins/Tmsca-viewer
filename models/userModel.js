@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, trim: true, unique: true },
+    username: { type: String, minlength: 2, maxlength: 32, required: true, trim: true, unique: true },
     password: { type: String, required: true },
-    firstName: { type: String, minlength: 2, maxlength: 32, trim: true, required: true },
-    lastName: { type: String, minlength: 2, maxlength: 32, trim: true, required: true },
     created: { type: Date, default: Date.now },
     competitions: {
         NS: { type: Boolean, default: false },

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const NsResultSchema = new mongoose.Schema({
     user: {
         _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-        fullName: { type: String, required: true }
+        username: { type: String, required: true }
     },
     test_name: { type: String, required: true },
     type: { type: String, required: true, default: "Number Sense" },
@@ -14,7 +14,7 @@ const NsResultSchema = new mongoose.Schema({
 const MthSciResultSchema = new mongoose.Schema({
     user: {
         _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-        fullName: { type: String, required: true }
+        username: { type: String, required: true }
     },
     test_name: { type: String, required: true },
     type: { type: String, required: true },
@@ -25,7 +25,7 @@ const MthSciResultSchema = new mongoose.Schema({
 const CaResultSchmea = new mongoose.Schema({
     user: {
         _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-        fullName: { type: String, required: true }
+        username: { type: String, required: true }
     },
     test_name: { type: String, required: true },
     type: { type: String, required: true, default: "Calculator" },

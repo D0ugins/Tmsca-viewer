@@ -1,6 +1,6 @@
 const BestTime = require('../models/bestTimeModel')
 const User = require('../models/userModel')
-const Leaderboard = require('../models/leaderboardSchema')
+const Leaderboard = require('../models/leaderboardModel')
 const auth = require('../middleware/auth')
 const router = require("express").Router();
 
@@ -42,7 +42,7 @@ router.post("/bestTimes", auth, async (req, res) => {
             const result = await new BestTime({
                 user: {
                     _id: req.user,
-                    fullName: user.firstName + " " + user.lastName
+                    username: user.email ? user.firstName + " " + user.lastName : user.username
                 },
                 trick,
                 time

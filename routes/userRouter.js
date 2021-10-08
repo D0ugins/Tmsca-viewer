@@ -3,13 +3,14 @@ const bycrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const User = require("../models/userModel");
 const auth = require('../middleware/auth');
+const fs = require("fs");
 
 router.post("/register", async (req, res) => {
     try {
-        const { email, password, passwordCheck, firstName, lastName, competitions } = req.body;
+        const { username, password, passwordCheck, competitions } = req.body;
 
         // Validation
-        if (!email || !password || !passwordCheck || !firstName || !lastName)
+        if (!username || !password || !passwordCheck)
             return res.status(400).json({ msg: "Please provide a value for all required fields" });
 
         if (password.length < 6)
@@ -18,22 +19,18 @@ router.post("/register", async (req, res) => {
         if (password !== passwordCheck)
             return res.status(400).json({ msg: "Passwords do not match" });
 
-        if (firstName.length > 32 || firstName.length < 2)
-            return res.status(400).json({ msg: `First name is too ${firstName.length > 2 ? 'long' : 'short'}` })
-        if (lastName.length > 32 || lastName.length < 2)
-            return res.status(400).json({ msg: `Last name is too ${lastName.length > 2 ? 'long' : 'short'}` })
+        if (username.length > 32 || username.length < 2)
+            return res.status(400).json({ msg: `Username is too ${firstName.length > 2 ? 'long' : 'short'}` })
 
-        if (await User.findOne({ email: email }))
-            return res.status(400).json({ msg: "Account with this email already exists" });
+        if (await User.findOne({ username }))
+            return res.status(400).json({ msg: "Account with this username already exists" });
 
         const salt = await bycrypt.genSalt();
         const passwordHash = await bycrypt.hash(password, salt);
 
         res.json(await new User({
-            email,
+            username,
             password: passwordHash,
-            firstName,
-            lastName,
             competitions
         }).save());
 
@@ -45,14 +42,14 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
 
-        if (!email || !password)
-            return res.status(400).json({ msg: "Please enter an email and password" });
+        if (!username || !password)
+            return res.status(400).json({ msg: "Please enter a username and password" });
 
-        const user = await User.findOne({ email: email });
+        const user = await User.findOne({ username });
         if (!user)
-            return res.status(400).json({ msg: "No user with this email exists" })
+            return res.status(400).json({ msg: "No user with this username exists" })
 
         if (!await bycrypt.compare(password, user.password))
             return res.status(400).json({ msg: "Incorrect password" });
@@ -62,9 +59,7 @@ router.post("/login", async (req, res) => {
             token,
             user: {
                 id: user._id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                username: user.username,
                 competititions: user.competitions
             }
         });
@@ -78,11 +73,9 @@ router.post("/update", auth, async (req, res) => {
     try {
         const user = await User.findById(req.user)
         if (!user) res.status(400).json({ msg: "User does not exist" })
-        const { email, firstName, lastName, competitions } = req.body
+        const { username, competitions } = req.body
 
-        if (email) user.email = email
-        if (firstName) user.firstName = firstName
-        if (lastName) user.lastName = lastName
+        if (username) user.username = username
         if (typeof competitions === 'object' && competitions !== null) {
             for (key of Object.keys(competitions)) {
                 user.competitions[key] = competitions[key]
@@ -92,9 +85,7 @@ router.post("/update", auth, async (req, res) => {
         await user.save()
         res.json({
             id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            username: user.username,
             competititions: user.competitions
         })
 

@@ -175,7 +175,6 @@ export default function Results() {
         }
         getResults()
     }, [user])
-
     return (
         <div>
             <Navbar />
@@ -190,7 +189,7 @@ export default function Results() {
                 }
             </div>
 
-            { results.map((result, i) => {
+            {results.map((result, i) => {
 
                 // Using this instead of .filter to preserve indexes
                 if (filter !== "All" && result.type !== filter) return ""
@@ -236,7 +235,7 @@ export default function Results() {
                                 <h2>{parseTestName(test_name)}</h2>
                             </a>
                             {/* Shows username if logged in as admin account */}
-                            {user.user._id === "5f84b37e35bf0600177f25ce" ? <h3>{result.user.fullName}</h3> : ""}
+                            {user.user._id === "5f84b37e35bf0600177f25ce" ? <h3>{result.user.username ?? result.user.fullName}</h3> : ""}
                             <h4>{parseDate(takenAt)}</h4>
                         </div>
                         <Button variant="primary" style={{ marginTop: "2%" }} onClick={(e) => updateOpen(i, e)}>Questions</Button>
@@ -334,7 +333,7 @@ export default function Results() {
                                             if (type === "Calculator") {
                                                 // If there is an exponent its basex10^exponent, otherwise just base
                                                 correct = <>{correct.base}{correct.exponent && <>&times;10<sup>{correct.exponent}</sup></>}</>
-                                                answer = <>{answer.base}{answer.exponent && <>&times;10<sup>{answer.exponent}</sup></>}</>
+                                                answer = answer ? <>{answer.base}{answer.exponent && <>&times;10<sup>{answer.exponent}</sup></>}</> : ""
                                             }
 
                                             if (answer === "na") answer = ""

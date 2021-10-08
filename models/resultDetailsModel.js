@@ -9,7 +9,7 @@ const genGradeStates = (type) => {
             type: {
                 base: { type: Number, required: true },
                 exponent: { type: Number }
-            }, defualt: "na"
+            }, defualt: null
         }
 
         for (i = 1; i <= 80; i++) {
@@ -21,7 +21,7 @@ const genGradeStates = (type) => {
         }
     }
     else {
-        const answer = { type: String, required: true, default: "na" }
+        const answer = { type: String, default: "na" }
         for (i = 1; i <= (type === "Number Sense" ? 80 : 50); i++) {
             gradeStates[i.toString()] = {
                 "state": state,
@@ -46,7 +46,7 @@ const genTimes = (is_long) => {
 const base = {
     user: {
         _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-        fullName: { type: String, required: true }
+        username: { type: String, required: true }
     },
     test_name: { type: String, required: true },
     takenAt: { type: Date, default: Date.now },

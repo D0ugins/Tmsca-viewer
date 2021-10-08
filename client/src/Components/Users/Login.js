@@ -9,7 +9,7 @@ import ErrorMessage from '../ErrorMessage'
 export default function Login() {
 
     const { setUser } = useContext(UserContext)
-    const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(undefined)
 
@@ -17,7 +17,7 @@ export default function Login() {
         e.preventDefault()
         try {
             const res = await Axios.post(`/api/users/login`, {
-                email,
+                username,
                 password
             })
             if (res.status === 200) {
@@ -40,8 +40,8 @@ export default function Login() {
                 <h1 className="login-header">Log in to save test results</h1>
                 <hr />
                 <div className="form-group">
-                    <input type="email" className="form-control" id="email-input" value={email} placeholder="Email"
-                        onChange={(e) => setEmail(e.target.value)}></input>
+                    <input type="text" className="form-control" id="username-input" value={username} placeholder="Username"
+                        onChange={(e) => setUsername(e.target.value)}></input>
 
                     <input type="password" className="form-control" id="password-input" value={password} placeholder="Password"
                         onChange={(e) => setPassword(e.target.value)}></input>

@@ -1,5 +1,4 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
 const path = require('path');
 
@@ -11,7 +10,7 @@ app.use(express.json());
 const port = process.env.PORT || 5000;
 
 // Mongoose setup
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }, (err) => {
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING, (err) => {
     if (err) throw err;
     console.log("Mongodb connection successful")
 })

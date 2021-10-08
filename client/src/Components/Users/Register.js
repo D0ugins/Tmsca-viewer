@@ -5,23 +5,16 @@ import './Register.css'
 import UserContext from '../../Context/UserContext'
 import Navbar from '../Navbar'
 import ErrorMessage from '../ErrorMessage'
+import { typeMap } from '../../utils/testNames'
 
-const typeMap = {
-    "NS": "Number Sense",
-    "MA": "Math",
-    "SC": "Science",
-    "CA": "Calculator"
-}
 
 export default function Register() {
 
     const { setUser } = useContext(UserContext)
 
-    const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [passwordCheck, setPasswordCheck] = useState("")
-    const [firstName, setFirstName] = useState("")
-    const [lastName, setLastName] = useState("")
     const [competitions, setCompetitions] = useState({
         "NS": false,
         "MA": false,
@@ -46,16 +39,14 @@ export default function Register() {
         e.preventDefault()
         try {
             const res = await Axios.post(`/api/users/register`, {
-                email,
+                username,
                 password,
                 passwordCheck,
-                firstName,
-                lastName,
                 competitions
             })
             if (res.status === 200) {
                 const user = await Axios.post(`/api/users/login`, {
-                    email,
+                    username,
                     password
                 })
                 setUser(user.data)
@@ -78,20 +69,14 @@ export default function Register() {
                 <h1 className="login-header">Create an account to save test results</h1>
                 <hr />
                 <div className="form-group">
-                    <input type="email" className="form-control" id="email-input" value={email} placeholder="Email"
-                        onChange={(e) => setEmail(e.target.value)} required></input>
+                    <input type="text" className="form-control" id="username-input" value={username} placeholder="Username"
+                        onChange={(e) => setUsername(e.target.value)} required></input>
                     <hr />
                     <input type="password" className="form-control" id="password-input" value={password} placeholder="Password"
                         onChange={(e) => setPassword(e.target.value)} required></input>
 
                     <input type="password" className="form-control" id="passwordCheck-input" value={passwordCheck} placeholder="Confirm Password"
                         onChange={(e) => setPasswordCheck(e.target.value)} required></input>
-                    <hr />
-                    <input type="text" className="form-control" id="firstName-input" value={firstName} placeholder="First Name"
-                        onChange={(e) => setFirstName(e.target.value)} required></input>
-
-                    <input type="text" className="form-control" id="lastName-input" value={lastName} placeholder="Last Name"
-                        onChange={(e) => setLastName(e.target.value)} required></input>
                     <hr />
                     <h3>What are your main competitions</h3>
                     <div className="comps-container">
