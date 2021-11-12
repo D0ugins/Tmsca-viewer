@@ -2,16 +2,20 @@ const router = require("express").Router();
 const bycrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const User = require("../models/userModel");
+const School = require("../models/schoolModel");
 const auth = require('../middleware/auth');
-const fs = require("fs");
 
 router.post("/register", async (req, res) => {
     try {
-        const { username, password, passwordCheck, competitions } = req.body;
+        const { schoolCode, password, passwordCheck, competitions } = req.body;
 
         // Validation
-        if (!username || !password || !passwordCheck)
+        if (!schoolCode || !password || !passwordCheck)
             return res.status(400).json({ msg: "Please provide a value for all required fields" });
+
+        const school = await School.findOne({ code: schoolCode.toLowerCase() });
+        if (!school)
+            return res.status(400).json({ msg: "School has not registered. Ask your teacher if you are unsure of your school code" })
 
         if (password.length < 6)
             return res.status(400).json({ msg: "Password must be at least 6 characters long" });
@@ -19,20 +23,20 @@ router.post("/register", async (req, res) => {
         if (password !== passwordCheck)
             return res.status(400).json({ msg: "Passwords do not match" });
 
-        if (username.length > 32 || username.length < 2)
-            return res.status(400).json({ msg: `Username is too ${firstName.length > 2 ? 'long' : 'short'}` })
 
-        if (await User.findOne({ username }))
-            return res.status(400).json({ msg: "Account with this username already exists" });
-
+        const username = schoolCode.toLowerCase() + school.students.length;
         const salt = await bycrypt.genSalt();
         const passwordHash = await bycrypt.hash(password, salt);
-
-        res.json(await new User({
+        const user = new User({
             username,
             password: passwordHash,
+            school: school.code,
             competitions
-        }).save());
+        })
+        school.students.push(user._id);
+
+        await school.save();
+        res.json(await user.save())
 
     } catch (err) {
         console.error(err)

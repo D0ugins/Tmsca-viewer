@@ -12,7 +12,7 @@ export default function Register() {
 
     const { setUser } = useContext(UserContext)
 
-    const [username, setUsername] = useState("")
+    const [schoolCode, setSchoolCode] = useState("")
     const [password, setPassword] = useState("")
     const [passwordCheck, setPasswordCheck] = useState("")
     const [competitions, setCompetitions] = useState({
@@ -39,12 +39,13 @@ export default function Register() {
         e.preventDefault()
         try {
             const res = await Axios.post(`/api/users/register`, {
-                username,
+                schoolCode,
                 password,
                 passwordCheck,
                 competitions
             })
             if (res.status === 200) {
+                const username = res.data.username;
                 const user = await Axios.post(`/api/users/login`, {
                     username,
                     password
@@ -69,8 +70,8 @@ export default function Register() {
                 <h1 className="login-header">Create an account to save test results</h1>
                 <hr />
                 <div className="form-group">
-                    <input type="text" className="form-control" id="username-input" value={username} placeholder="Username"
-                        onChange={(e) => setUsername(e.target.value)} required></input>
+                    <input type="text" className="form-control" id="schoolCode-input" value={schoolCode} placeholder="School Code"
+                        onChange={(e) => setSchoolCode(e.target.value)} required></input>
                     <hr />
                     <input type="password" className="form-control" id="password-input" value={password} placeholder="Password"
                         onChange={(e) => setPassword(e.target.value)} required></input>

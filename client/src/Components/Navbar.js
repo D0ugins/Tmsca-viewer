@@ -13,14 +13,20 @@ export default function Navbar() {
             <NavLink className="nav-item nav-link nav" to="/resources">Resources</NavLink>
             <NavLink className="nav-item nav-link nav" to="/trainer/select">Trainer</NavLink>
             <NavLink className="nav-item nav-link nav" to="/guides">Guides</NavLink>
-            { (user && user.user) ? <NavLink className="nav-item nav-link nav" to="/results">Results</NavLink> : ""}
+            {(user && user.user) ? <NavLink className="nav-item nav-link nav" to="/results">Results</NavLink> : ""}
             <div style={{ "marginLeft": "auto" }}>
                 {
-                    (user && user.user) ? <NavLink className="nav-item nav-link btn btn-link" to="/" onClick={() => {
-                        setUser({ token: "", data: undefined });
-                    }}>Log Out</NavLink>
-                        : <><NavLink className="nav-item nav-link" to="/login">Log in</NavLink>
-                            <NavLink className="nav-item nav-link" to="/register">Sign up</NavLink></>
+                    (user && user.user) ?
+                        <>
+                            <span className="nav-item nav-text" to="/"> Logged in as {user.user.username} </span>
+                            <NavLink className="nav-item nav-link" to="/" onClick={() => {
+                                setUser({ token: "", data: undefined });
+                            }}>Log Out</NavLink>
+                        </>
+                        : <>
+                            <NavLink className="nav-item nav-link" to="/login">Log in</NavLink>
+                            <NavLink className="nav-item nav-link" to="/register">Sign up</NavLink>
+                        </>
                 }
 
             </div>
