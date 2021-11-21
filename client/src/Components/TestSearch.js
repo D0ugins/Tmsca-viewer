@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './TestSearch.css'
 import Navbar from "./Navbar.js"
+import UserContext from '../Context/UserContext';
 
 import { getTestPath, nameMap } from '../utils/testNames'
 const getNums = (level, year) => {
@@ -33,7 +34,9 @@ export default function TestSearch() {
     const [type, setType] = useState(localStorage.getItem('type') || "NS")
     const [year, setYear] = useState(localStorage.getItem('year') || "19-20");
     const [nums, setNums] = useState(getNums("19-20", "MS"))
-    const [num, setNum] = useState('')
+    const [num, setNum] = useState('');
+
+    const { user } = useContext(UserContext)
 
     useEffect(() => {
         setNums(getNums(level, year))
@@ -129,12 +132,15 @@ export default function TestSearch() {
                 <a href={findTest("view")} onClick={checkInvalid}
                     className="btn btn-success search-button">View test</a>
 
-                <a href={findTest("take")} onClick={checkInvalid}
-                    className="btn btn-success search-button" hidden={brokentest()}>Take test</a>
+                {
+                    user?.user ? <>
+                        <a href={findTest("take")} onClick={checkInvalid}
+                            className="btn btn-success search-button" hidden={brokentest()}>Take test</a>
 
-                <a href={findTest("practice")} onClick={checkInvalid}
-                    className="btn btn-success search-button" hidden={brokentest()}>Practice test</a>
-
+                        <a href={findTest("practice")} onClick={checkInvalid}
+                            className="btn btn-success search-button" hidden={brokentest()}>Practice test</a> </>
+                        : <a href="/register" className="btn btn-danger search-button">Register to take tests</a>
+                }
             </div>
         </>
     );
