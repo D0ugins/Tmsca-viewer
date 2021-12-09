@@ -3,37 +3,15 @@ import './TestSearch.css'
 import Navbar from "./Navbar.js"
 import UserContext from '../Context/UserContext';
 
-import { getTestPath, nameMap } from '../utils/testNames'
-const getNums = (level, year) => {
+import { getTestPath, nameMap, getNums } from '../utils/testNames'
 
-    // Years for elementary tests
-    if (level === "EL") {
-        if (year === "20-21") return ["Spring online", "State"]
-        return []
-    }
-
-    // Creates array for test numbers 1-13
-    let base = []
-    for (let i = 1; i <= 13; i++) { base.push(i.toString()) }
-
-    // List of all the non standard 1-13 tests for each year
-    const extras = {
-        "20-21": ['11A', 'Kickoff', 'Gear up', 'Regional', 'Tune up'],
-        "19-20": ['Kickoff', 'Regional'],
-        "18-19": ['Kickoff', 'Gear up', 'Regional', 'Tune up', 'State'],
-        "17-18": ['Regional', 'State']
-    };
-
-    return base.concat(extras[year]);
-
-}
 
 export default function TestSearch() {
 
     const [level, setLevel] = useState(localStorage.getItem('level') || "MS")
     const [type, setType] = useState(localStorage.getItem('type') || "NS")
-    const [year, setYear] = useState(localStorage.getItem('year') || "19-20");
-    const [nums, setNums] = useState(getNums("19-20", "MS"))
+    const [year, setYear] = useState(localStorage.getItem('year') || "20-21");
+    const [nums, setNums] = useState(getNums(level, year))
     const [num, setNum] = useState('');
 
     const { user } = useContext(UserContext)
@@ -59,8 +37,7 @@ export default function TestSearch() {
 
     const brokentest = () => {
         // Certain tests formatting are just broken beyond repair you cant take those tests
-        if (num === "Kickoff" && year === "18-19" && (type === "SC")) return true;
-        return false;
+        return (num === "Kickoff" && year === "18-19" && type === "SC")
     }
 
     const checkInvalid = () => {
@@ -108,6 +85,7 @@ export default function TestSearch() {
                     <div className="arg">
                         <label htmlFor="year">Choose test year: </label>
                         <select name="year" value={year} onChange={e => setYear(e.target.value)}>
+                            <option value="21-22">2021-22</option>
                             <option value="20-21">2020-21</option>
                             <option value="19-20">2019-20</option>
                             <option value="18-19">2018-19</option>

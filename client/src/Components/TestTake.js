@@ -122,9 +122,8 @@ export default function TestTake() {
 
         let mode = "new"
         for (let i = 0; i < texts.length; i++) {
-
             // Fixes certain sections of questions appearing out of order
-            if (type === "Calculator" && name.slice(-5) !== '20-21') {
+            if (type === "Calculator" && ['17-18', '18-19', '19-20'].includes(name.slice(-5))) {
                 // Filter out undefined terms
                 const len = areas.filter(area => area).length
                 if (question === 72 && len < 72) question = 60;
@@ -264,7 +263,7 @@ export default function TestTake() {
                 }
             })
         }
-        console.log(areas, pageheight)
+
         return areas
     }
 

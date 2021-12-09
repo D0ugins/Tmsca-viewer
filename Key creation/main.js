@@ -360,7 +360,7 @@ async function parseCalc(key, text_path) {
         }
     }
 
-    for (answer in answers) {
+    for (const answer in answers) {
         const { base, exponent } = answers[answer]
         if (exponent) {
             answers[answer] = { base: parseFloat(base.toString().trim()), exponent: parseInt(exponent.toString().trim()) }
@@ -386,17 +386,17 @@ async function parseCalc(key, text_path) {
 
 }
 
-// Gets all text files in working directory
-glob("./Text Keys/Middle/**/*.txt", (err, files) => {
-    if (err) throw err;
-
-    files.forEach(path => parseNs(path));
-})
+// // Gets all text files in working directory
+// glob("./Text Keys/Middle/**/*.txt", (err, files) => {
+//     if (err) throw err;
+//     files.filter(path => path.includes("21-22")).forEach(parseNs);
+// })
 
 
 // glob("../client/public/tests/Middle/**/*CA*.pdf", (err, paths) => {
 //     if (err) throw err;
 //     for (const test_path of paths) {
+//         if (!test_path.includes("21-22")) continue;
 //         let parser = new PDFParser();
 //         parser.on("pdfParser_dataReady", (data) => {
 //             parseCalc(clean(data, "Calculator", test_path), test_path);
@@ -409,6 +409,7 @@ glob("./Text Keys/Middle/**/*.txt", (err, files) => {
 //     if (err) throw err;
 
 //     for (const test_path of paths) {
+//         if (!test_path.includes("21-22")) continue;
 //         let parser = new PDFParser();
 //         parser.on("pdfParser_dataReady", (data) => {
 //             parseMthSci(clean(data, "Math"), test_path);
@@ -422,11 +423,12 @@ glob("./Text Keys/Middle/**/*.txt", (err, files) => {
 //     if (err) throw err;
 
 //     for (const test_path of paths) {
+//         if (!test_path.includes("21-22")) continue;
 //         if (test_path.includes("CA")) continue;
 //         let parser = new PDFParser();
 //         parser.on("pdfParser_dataReady", (data) => {
 //             parseMthSci(clean(data, "Science"), test_path);
-//         })
+//         });
 //         parser.loadPDF(test_path);
 //     }
 // })
