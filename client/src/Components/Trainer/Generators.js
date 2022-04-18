@@ -106,7 +106,7 @@ let Generators = [
             "16.6": [2, 6, 100, "16 " + frac([2, 3]), ["Multiply by factors of 1s and 0s"], "x166.md"],
             "12.5": [2, 8, 100, "12 " + frac([1, 2]), ["Multiply by factors of 1s and 0s"], "x125.md"],
             "143": [2, 7, 1001, "143", ["Multiply by factors of 1s and 0s"], "x143.md"],
-            "75": [2, 4, 100, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x75.md"],
+            "75": [2, 4, 300, "75", ["Multiply by 25s", "Multiply by factors of 1s and 0s"], "x75.md"],
         },
 
         generate(length, factor, base, string) {
